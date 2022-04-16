@@ -26,7 +26,7 @@ class UUIDTestCommon : FunSpec() {
             data.size shouldBe 2
 
             data.first().filter { it == '-' }.length shouldBe 2
-            data.last().filter { it == ':' } shouldBe "--"
+            data.last().filter { it == ':' } shouldBe "::"
         }
 
         context("Multiplication tests") {
