@@ -18,17 +18,17 @@ internal class Junit5DDTTestCase {
     )
 
     private val data = listOf(
-        1 to 13 to 13,
-        2 to 21 to 42,
-        3 to 34 to 102,
-        4 to 55 to 220,
-        5 to 89 to 445,
+        Triple(1, 13, 13),
+        Triple(2, 21, 42),
+        Triple(3, 34, 102),
+        Triple(4, 55, 220),
+        Triple(5, 89, 445),
     )
 
     @TestFactory
-    fun testSquares() = data.map { (nums, expected) ->
-        DynamicTest.dynamicTest("when I multiply ${nums.first}*${nums.second} then I get $expected") {
-            Assertions.assertEquals(expected, nums.first * nums.second)
+    fun testSquares() = data.map { (a, b, expected) ->
+        DynamicTest.dynamicTest("when I multiply $a*$b then I get $expected") {
+            Assertions.assertEquals(expected, a * b)
         }
     }
 }

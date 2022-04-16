@@ -3,7 +3,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldContainOnlyDigits
 
-class UUIDTestJS : StringSpec({
+class UUIDTestJVM : StringSpec({
     "date should starts with year" {
         println(currentDate().iso)
         currentDate().iso

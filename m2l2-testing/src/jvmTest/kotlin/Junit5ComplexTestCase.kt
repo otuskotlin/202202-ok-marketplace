@@ -20,8 +20,8 @@ internal class Junit5ComplexTestCase {
             "?" to "?",
         )
 
-        assertAll("Trimmed lines", *args.map {
-            { assertEquals(it.first.trimStart(), it.second) }
+        assertAll("Trimmed lines", *args.map { (expected, actual) ->
+            { assertEquals(expected.trimStart(), actual) }
         }.toTypedArray())
     }
 
