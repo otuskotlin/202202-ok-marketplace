@@ -1,9 +1,15 @@
-import io.kotest.core.spec.style.FunSpec
+import io.kotest.assertions.assertSoftly
+import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.core.spec.style.ShouldSpec
+import io.kotest.core.spec.style.describeSpec
+import io.kotest.data.forAll
+import io.kotest.data.row
 import io.kotest.datatest.withData
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldMatch
 
-class KotestWithParams : FunSpec({
-    context("Multiplication tests") {
+class KotestWithParams : ShouldSpec({
+    should("Multiplication tests") {
         withData(
             mapOf(
                 "10x2" to Triple(10, 2, 20),
@@ -15,3 +21,23 @@ class KotestWithParams : FunSpec({
         }
     }
 })
+
+class EmailTest : DescribeSpec({
+    include(emailValidation)
+})
+
+val emailValidation = describeSpec {
+
+    describe("Registration") {
+        context("Not existing user") {
+            forAll(
+                row("test@test.com"),
+                row("simple-user@gmail.com"),
+            ) {
+                assertSoftly {
+                    it shouldMatch "/^\\S+@\\S+\\.\\S+\$/"
+                }
+            }
+        }
+    }
+}
