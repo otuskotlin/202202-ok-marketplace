@@ -1,5 +1,9 @@
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+
 plugins {
     kotlin("multiplatform")
+    id("io.kotest.multiplatform")
 }
 
 repositories {
@@ -12,7 +16,7 @@ kotlin {
     *  To find out how to configure the targets, please follow the link:
     *  https://kotlinlang.org/docs/reference/building-mpp-with-gradle.html#setting-up-targets */
     jvm {}
-    js {
+    js(IR) {
         browser()
     }
 
@@ -32,6 +36,7 @@ kotlin {
                 implementation(kotlin("test-annotations-common"))
 
                 implementation("io.kotest:kotest-framework-engine:$kotestVersion")
+                implementation("io.kotest:kotest-framework-datatest:$kotestVersion")
                 implementation("io.kotest:kotest-assertions-core:$kotestVersion")
                 implementation("io.kotest:kotest-property:$kotestVersion")
             }
@@ -59,10 +64,26 @@ kotlin {
         val jvmTest by getting {
             dependencies {
                 implementation(kotlin("test-junit5"))
+                implementation("io.kotest:kotest-runner-junit5-jvm:$kotestVersion")
+                implementation("org.junit.jupiter:junit-jupiter-params:5.8.2")
             }
         }
-        tasks.withType<Test>().configureEach {
-            useJUnitPlatform()
+    }
+}
+
+tasks {
+    withType<Test>().configureEach {
+        useJUnitPlatform {
+//                    includeTags.add("sampling")
+        }
+        filter {
+            isFailOnNoMatchingTests = false
+        }
+        testLogging {
+            showExceptions = true
+            showStandardStreams = true
+            events = setOf(TestLogEvent.FAILED, TestLogEvent.PASSED)
+            exceptionFormat = TestExceptionFormat.FULL
         }
     }
 }
