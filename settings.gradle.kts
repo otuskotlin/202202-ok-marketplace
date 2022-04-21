@@ -15,11 +15,11 @@ pluginManagement {
     }
 }
 
-include("m1l1-hello-world")
-include("m1l4-dsl")
-include("m1l5-coroutines")
-include("m1l7-multiplatform")
-include("m2l2-testing")
+//include("m1l1-hello-world")
+//include("m1l4-dsl")
+//include("m1l5-coroutines")
+//include("m1l7-multiplatform")
+//include("m2l2-testing")
 
 include("ok-marketplace-api-v1-jackson")
 include("ok-marketplace-api-v2-kmp")
