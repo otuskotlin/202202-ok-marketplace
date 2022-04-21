@@ -34,6 +34,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AdCreateResponse'
+  /ad/read:
+    post:
+      tags:
+        - ad
+      summary: Read ad
+      operationId: adRead
+      requestBody:
+        description: Request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdReadRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdReadResponse'
   /ad/update:
     post:
       tags:
@@ -54,6 +74,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AdUpdateResponse'
+  /ad/delete:
+    post:
+      tags:
+        - ad
+      summary: Delete ad
+      operationId: adDelete
+      requestBody:
+        description: Request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdDeleteRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdDeleteResponse'
   /ad/search:
     post:
       tags:
@@ -79,7 +119,7 @@ paths:
       tags:
         - ad
       summary: Update ad
-      operationId: adSearch
+      operationId: adOffers
       requestBody:
         description: Request body
         content:
@@ -98,7 +138,7 @@ paths:
 components:
   schemas:
 
-    BaseRequestDebug:
+    RequestDebug:
       type: object
       properties:
         mode:
@@ -124,8 +164,6 @@ components:
         requestId:
           type: string
           description: Идентификатор запроса для отладки
-        debug:
-          $ref: '#/components/schemas/BaseRequestDebug'
       discriminator:
         propertyName: requestType
         mapping:
@@ -148,6 +186,12 @@ components:
         message:
           type: string
 
+    ResponseResult:
+      type: string
+      enum:
+        - success
+        - error
+
     IResponse:
       type: object
       description: Базовый интерфейс для всех ответов
@@ -160,10 +204,7 @@ components:
           type: string
           description: Идентификатор запроса для отладки
         result:
-          type: string
-          enum:
-            - success
-            - error
+          $ref: '#/components/schemas/ResponseResult'
         errors:
           type: array
           items:
@@ -211,18 +252,13 @@ components:
             - public
 
     BaseAdUpdateableRequest:
-      type: object
-      properties:
-        ad:
-          $ref: '#/components/schemas/BaseAdUpdateable'
-        debug:
-          type: object
+      allOf:
+        - type: object
           properties:
-            stub:
-              type: string
-              enum:
-                - success
-                - badName
+            ad:
+              $ref: '#/components/schemas/BaseAdUpdateable'
+            debug:
+              $ref: '#/components/schemas/RequestDebug'
 
     BaseAdIdRequest:
       type: object
@@ -230,12 +266,15 @@ components:
         ad:
           allOf:
               - $ref: '#/components/schemas/BaseWithId'
-        stub:
-          type: string
-          enum:
-            - success
-            - notFound
-            - badId
+        debug:
+          type: object
+          properties:
+            stub:
+              type: string
+              enum:
+                - success
+                - notFound
+                - badId
 
     BaseWithId:
       type: object
@@ -251,26 +290,42 @@ components:
       allOf:
         - $ref: '#/components/schemas/IRequest'
         - $ref: '#/components/schemas/BaseAdUpdateableRequest'
+        - type: object
+          properties:
+            debug:
+              type: object
+              properties:
+                stub:
+                  type: string
+                  enum:
+                    - badName
 
     AdReadRequest:
       allOf:
-        - $ref: '#/components/schemas/IRequest'
         - $ref: '#/components/schemas/BaseAdIdRequest'
+        - $ref: '#/components/schemas/IRequest'
 
     AdUpdateRequest:
       allOf:
-        - $ref: '#/components/schemas/IRequest'
         - $ref: '#/components/schemas/BaseAdUpdateableRequest'
+        - $ref: '#/components/schemas/IRequest'
         - type: object
           properties:
             ad:
               allOf:
                 - $ref: '#/components/schemas/BaseWithId'
+            debug:
+              type: object
+              properties:
+                stub:
+                  type: string
+                  enum:
+                    - badName
 
     AdDeleteRequest:
       allOf:
-        - $ref: '#/components/schemas/IRequest'
         - $ref: '#/components/schemas/BaseAdIdRequest'
+        - $ref: '#/components/schemas/IRequest'
         - type: object
           properties:
             stub:
@@ -296,8 +351,8 @@ components:
 
     AdOffersRequest:
       allOf:
-        - $ref: '#/components/schemas/IRequest'
         - $ref: '#/components/schemas/BaseAdIdRequest'
+        - $ref: '#/components/schemas/IRequest'
 
     AdPermissions:
       type: string
