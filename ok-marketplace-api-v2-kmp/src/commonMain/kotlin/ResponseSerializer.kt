@@ -21,6 +21,7 @@ internal class ResponseSerializer<T: IResponse>(private val serializer: KSeriali
                 "Unknown class to serialize as IRequest instance in RequestSerializer"
             )
         }
+        @Suppress("UNCHECKED_CAST")
         return serializer.serialize(encoder, request as T)
     }
 }
