@@ -11,7 +11,7 @@ fun apiV2RequestSerialize(request: IRequest): String = when(request) {
     is AdDeleteRequest -> serializationMapper.encodeToString(RequestSerializers.delete, request)
     is AdSearchRequest -> serializationMapper.encodeToString(RequestSerializers.search, request)
     is AdOffersRequest -> serializationMapper.encodeToString(RequestSerializers.offers, request)
-    else -> throw SerializationException("Unknown API class to serialize: ${request::class} in apiV2RequestSerialize")
+    else -> throw SerializationException("Unknown API class to serialize: ${request::class} in ${::apiV2RequestSerialize::class}")
 }
 
 @Suppress("UNCHECKED_CAST")
