@@ -1,6 +1,5 @@
 package ru.otus.otuskotlin.marketplace.api.v2
 
-import kotlinx.serialization.PolymorphicSerializer
 import ru.otus.otuskotlin.marketplace.api.v2.models.*
 import kotlin.test.Test
 import kotlin.test.assertContains
@@ -18,7 +17,7 @@ class SerializationRequestTest {
                 visibility = AdVisibility.PUBLIC
             )
         )
-        val jsonString = apiV2Serialize(createRequest)
+        val jsonString = apiV2RequestSerialize(createRequest)
         println(jsonString)
         assertContains(jsonString, """"title":"Title"""")
         assertContains(jsonString, """"requestType":"create"""")
@@ -27,7 +26,7 @@ class SerializationRequestTest {
     @Test
     fun deserializeTest() {
         val jsonString = "{\"requestType\":\"create\",\"requestId\":null,\"ad\":{\"title\":\"Title\",\"description\":\"Description\",\"ownerId\":null,\"adType\":\"demand\",\"visibility\":\"public\",\"props\":null},\"debug\":null}"
-        val decoded = apiV2Deserialize<AdCreateRequest>(jsonString)
+        val decoded = apiV2RequestDeserialize<AdCreateRequest>(jsonString)
         println(decoded)
         assertEquals("Title", decoded.ad?.title)
         assertEquals("Description", decoded.ad?.description)
@@ -38,7 +37,7 @@ class SerializationRequestTest {
     @Test
     fun deserializeIRequestTest() {
         val jsonString = "{\"requestType\":\"create\",\"requestId\":null,\"ad\":{\"title\":\"Title\",\"description\":\"Description\",\"ownerId\":null,\"adType\":\"demand\",\"visibility\":\"public\",\"props\":null},\"debug\":null}"
-        val decoded = apiV2Deserialize<IRequest>(jsonString) as AdCreateRequest
+        val decoded = apiV2RequestDeserialize<IRequest>(jsonString) as AdCreateRequest
         println(decoded)
         assertEquals("Title", decoded.ad?.title)
         assertEquals("Description", decoded.ad?.description)

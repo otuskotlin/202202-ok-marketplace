@@ -17,7 +17,7 @@ class SerializationResponseTest {
                 visibility = AdVisibility.PUBLIC
             )
         )
-        val jsonString = apiV2Serialize(createResponse)
+        val jsonString = apiV2ResponseSerialize(createResponse)
         println(jsonString)
         assertContains(jsonString, """"title":"Title"""")
         assertContains(jsonString, """"responseType":"create"""")
@@ -26,7 +26,7 @@ class SerializationResponseTest {
     @Test
     fun deserializeTest() {
         val jsonString = "{\"responseType\":\"create\",\"requestId\":null,\"ad\":{\"title\":\"Title\",\"description\":\"Description\",\"ownerId\":null,\"adType\":\"demand\",\"visibility\":\"public\",\"props\":null},\"debug\":null}"
-        val decoded = apiV2Deserialize<AdCreateResponse>(jsonString)
+        val decoded = apiV2ResponseDeserialize<AdCreateResponse>(jsonString)
         println(decoded)
         assertEquals("Title", decoded.ad?.title)
         assertEquals("Description", decoded.ad?.description)
@@ -37,7 +37,7 @@ class SerializationResponseTest {
     @Test
     fun deserializeIResponseTest() {
         val jsonString = "{\"responseType\":\"create\",\"requestId\":null,\"result\":null,\"errors\":null,\"ad\":{\"ad\":null,\"title\":\"Title\",\"description\":\"Description\",\"ownerId\":null,\"adType\":\"demand\",\"visibility\":\"public\",\"props\":null,\"permissions\":null},\"debug\":null}"
-        val decoded = apiV2Deserialize<IResponse>(jsonString) as AdCreateResponse
+        val decoded = apiV2ResponseDeserialize<IResponse>(jsonString) as AdCreateResponse
         println(decoded)
         assertEquals("Title", decoded.ad?.title)
         assertEquals("Description", decoded.ad?.description)
