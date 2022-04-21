@@ -221,7 +221,7 @@ components:
           offers: '#/components/schemas/AdOffersResponse'
 
 
-    AdType:
+    DealSide:
       type: string
       description: 'Сторона сделки: объявление о продаже или о покупке'
       enum:
@@ -242,7 +242,7 @@ components:
           type: string
           description: Идентификатор владельца объявления
         adType:
-          $ref: '#/components/schemas/AdType'
+          $ref: '#/components/schemas/DealSide'
         visibility:
           type: string
           description: 'Тип видимости объявления. Возможные значения: видит только владелец, только зарегистрированный в системе пользователь, видимо всем'
@@ -290,42 +290,26 @@ components:
       allOf:
         - $ref: '#/components/schemas/IRequest'
         - $ref: '#/components/schemas/BaseAdUpdateableRequest'
-        - type: object
-          properties:
-            debug:
-              type: object
-              properties:
-                stub:
-                  type: string
-                  enum:
-                    - badName
 
     AdReadRequest:
       allOf:
-        - $ref: '#/components/schemas/BaseAdIdRequest'
         - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/BaseAdIdRequest'
 
     AdUpdateRequest:
       allOf:
-        - $ref: '#/components/schemas/BaseAdUpdateableRequest'
         - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/BaseAdUpdateableRequest'
         - type: object
           properties:
             ad:
               allOf:
                 - $ref: '#/components/schemas/BaseWithId'
-            debug:
-              type: object
-              properties:
-                stub:
-                  type: string
-                  enum:
-                    - badName
 
     AdDeleteRequest:
       allOf:
-        - $ref: '#/components/schemas/BaseAdIdRequest'
         - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/BaseAdIdRequest'
         - type: object
           properties:
             stub:
@@ -351,8 +335,8 @@ components:
 
     AdOffersRequest:
       allOf:
-        - $ref: '#/components/schemas/BaseAdIdRequest'
         - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/BaseAdIdRequest'
 
     AdPermissions:
       type: string

@@ -9,6 +9,7 @@ pluginManagement {
         kotlin("jvm") version kotlinVersion apply false
         kotlin("multiplatfrom") version kotlinVersion apply false
         id("io.kotest.multiplatform") version kotestVersion apply false
+        kotlin("plugin.serialization") version kotlinVersion apply false
 
         id("org.openapi.generator") version openapiVersion apply false
     }

@@ -18,11 +18,6 @@ dependencies {
 sourceSets {
     main {
         java.srcDir("$buildDir/generate-resources/main/src/main/kotlin")
-        java.srcDir("$projectDir/src/main/kotlin")
-    }
-    test {
-        java.srcDir("$projectDir/src/test/kotlin")
-//        java.srcDir("$buildDir/generate-resources/main/src/main/kotlin")
     }
 }
 
