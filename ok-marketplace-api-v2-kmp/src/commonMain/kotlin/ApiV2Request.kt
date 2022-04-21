@@ -14,6 +14,7 @@ fun apiV2RequestSerialize(request: IRequest): String = when(request) {
     else -> throw SerializationException("Unknown API class to serialize: ${request::class} in apiV2RequestSerialize")
 }
 
+@Suppress("UNCHECKED_CAST")
 fun <T : Any> apiV2RequestDeserializeTyped(json: String, clazz: KClass<T>): T = when(clazz) {
     IRequest::class        -> serializationMapper.decodeFromString(AdRequestSerializer, json) as T
 

@@ -15,6 +15,7 @@ fun apiV2ResponseSerialize(response: IResponse): String = when(response) {
     else -> throw SerializationException("Unknown API class to serialize: ${response::class} in apiV2ResponseSerialize")
 }
 
+@Suppress("UNCHECKED_CAST")
 fun <T : Any> apiV2ResponseDeserializeTyped(json: String, clazz: KClass<T>): T = when(clazz) {
     IResponse::class       -> serializationMapper.decodeFromString(AdResponseSerializer, json) as T
 
