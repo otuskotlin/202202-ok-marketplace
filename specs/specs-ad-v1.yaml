@@ -211,7 +211,7 @@ components:
             $ref: '#/components/schemas/Error'
 
       discriminator:
-        propertyName: requestType
+        propertyName: responseType
         mapping:
           create: '#/components/schemas/AdCreateResponse'
           read:   '#/components/schemas/AdReadResponse'
@@ -352,6 +352,7 @@ components:
     AdResponseObject:
       allOf:
         - $ref: '#/components/schemas/BaseWithId'
+        - $ref: '#/components/schemas/BaseAdUpdateable'
         - type: object
           description: Объект, который возвращается в ответе бэкенда
           properties:

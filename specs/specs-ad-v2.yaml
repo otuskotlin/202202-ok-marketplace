@@ -211,7 +211,7 @@ components:
             $ref: '#/components/schemas/Error'
 
       discriminator:
-        propertyName: requestType
+        propertyName: responseType
         mapping:
           create: '#/components/schemas/AdCreateResponse'
           read:   '#/components/schemas/AdReadResponse'

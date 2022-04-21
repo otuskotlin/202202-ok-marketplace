@@ -2,8 +2,8 @@ package ru.otus.otuskotlin.marketplace.api.v1
 
 import org.junit.Test
 import ru.otus.otuskotlin.marketplace.api.v1.models.AdCreateRequest
-import ru.otus.otuskotlin.marketplace.api.v1.models.AdType
 import ru.otus.otuskotlin.marketplace.api.v1.models.BaseAdUpdateable
+import ru.otus.otuskotlin.marketplace.api.v1.models.DealSide
 import kotlin.test.assertContains
 
 class SerializationTest {
@@ -14,7 +14,7 @@ class SerializationTest {
             ad = BaseAdUpdateable(
                 title = "Title",
                 description = "Description",
-                adType = AdType.DEMAND,
+                adType = DealSide.DEMAND,
                 visibility = BaseAdUpdateable.Visibility.PUBLIC
             )
         )
