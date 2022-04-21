@@ -5,6 +5,9 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encoding.Encoder
 import ru.otus.otuskotlin.marketplace.api.v2.models.*
 
+/**
+ * Делегат сериализаторов для заполнения дескриминатора корректным значением
+ */
 internal class RequestSerializer<T: IRequest>(private val serializer: KSerializer<T>): KSerializer<T> by serializer {
     override fun serialize(encoder: Encoder, value: T) {
         val request = when(value) {

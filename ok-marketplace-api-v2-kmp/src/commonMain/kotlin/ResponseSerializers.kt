@@ -2,6 +2,9 @@ package ru.otus.otuskotlin.marketplace.api.v2
 
 import ru.otus.otuskotlin.marketplace.api.v2.models.*
 
+/**
+ * Список сериализаторов для всех объектов
+ */
 internal object ResponseSerializers {
     val create = ResponseSerializer(AdCreateResponse.serializer())
     val read   = ResponseSerializer(AdReadResponse.serializer())

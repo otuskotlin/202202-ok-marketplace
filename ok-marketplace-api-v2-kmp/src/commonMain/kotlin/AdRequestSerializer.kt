@@ -8,6 +8,9 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import ru.otus.otuskotlin.marketplace.api.v2.models.IRequest
 
+/**
+ * Сериализатор для десериализации Json-строки по значению дескриминатора
+ */
 internal object AdRequestSerializer : JsonContentPolymorphicSerializer<IRequest>(IRequest::class) {
     private const val discriminator = "requestType"
     override fun selectDeserializer(element: JsonElement): KSerializer<out IRequest> =

@@ -8,6 +8,9 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import ru.otus.otuskotlin.marketplace.api.v2.models.IResponse
 
+/**
+ * Сериализатор для десериализации Json-строки по значению дескриминатора
+ */
 internal object AdResponseSerializer : JsonContentPolymorphicSerializer<IResponse>(IResponse::class) {
     private const val discriminator = "responseType"
     override fun selectDeserializer(element: JsonElement): KSerializer<out IResponse> =
