@@ -6,6 +6,7 @@ import kotlinx.serialization.json.JsonContentPolymorphicSerializer
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import ru.otus.otuskotlin.marketplace.api.v2.models.IAdProduct
 import ru.otus.otuskotlin.marketplace.api.v2.models.IRequest
 
 /**
@@ -13,10 +14,11 @@ import ru.otus.otuskotlin.marketplace.api.v2.models.IRequest
  */
 internal object AdRequestSerializer : JsonContentPolymorphicSerializer<IRequest>(IRequest::class) {
     private const val discriminator = "requestType"
-    override fun selectDeserializer(element: JsonElement): KSerializer<out IRequest> =
-        when (val discriminatorValue = element.jsonObject[discriminator]?.jsonPrimitive?.content) {
+    override fun selectDeserializer(element: JsonElement): KSerializer<out IRequest> {
+        println("ELEMENT: ${element.jsonObject["ad"]?.jsonObject?.get("props")}")
+        return when (val discriminatorValue = element.jsonObject[discriminator]?.jsonPrimitive?.content) {
             "create" -> RequestSerializers.create
-            "read"   -> RequestSerializers.read
+            "read" -> RequestSerializers.read
             "update" -> RequestSerializers.update
             "delete" -> RequestSerializers.delete
             "search" -> RequestSerializers.search
@@ -26,4 +28,18 @@ internal object AdRequestSerializer : JsonContentPolymorphicSerializer<IRequest>
                         "property of IRequest implementation"
             )
         }
+    }
+}
+
+internal object AdProductSerializer : JsonContentPolymorphicSerializer<IAdProduct>(IAdProduct::class) {
+    private const val discriminator = "productType"
+    override fun selectDeserializer(element: JsonElement): KSerializer<out IAdProduct> {
+        return when (val discriminatorValue = element.jsonObject[discriminator]?.jsonPrimitive?.content) {
+            "bolt" -> ProductSerializers.bolt
+            else -> throw SerializationException(
+                "Unknown value '${discriminatorValue}' in discriminator '$discriminator' " +
+                        "property of IAdProduct implementation"
+            )
+        }
+    }
 }

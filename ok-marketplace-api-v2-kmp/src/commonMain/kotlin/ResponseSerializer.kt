@@ -12,7 +12,7 @@ internal class ResponseSerializer<T: IResponse>(private val serializer: KSeriali
     override fun serialize(encoder: Encoder, value: T) {
         val request = when(value) {
             is AdCreateResponse -> value.copy(responseType = "create")
-            is AdReadResponse -> value.copy(responseType = "read")
+            is AdReadResponse   -> value.copy(responseType = "read")
             is AdUpdateResponse -> value.copy(responseType = "update")
             is AdDeleteResponse -> value.copy(responseType = "delete")
             is AdSearchResponse -> value.copy(responseType = "search")
