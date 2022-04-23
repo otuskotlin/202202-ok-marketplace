@@ -2,10 +2,12 @@ plugins {
     kotlin("jvm") apply false
 }
 
-group = "org.example"
-version = "1.0-SNAPSHOT"
+group = "ru.otus.otuskotlin.marketplace"
+version = "0.0.1"
 
-repositories {
-    google()
-    mavenCentral()
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
 }
