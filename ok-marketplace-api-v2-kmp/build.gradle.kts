@@ -39,6 +39,10 @@ kotlin {
                 implementation(kotlin("test-junit"))
             }
         }
+
+        all {
+            languageSettings.optIn("kotlin.RequiresOptIn")
+        }
     }
 }
 

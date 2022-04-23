@@ -262,19 +262,22 @@ components:
                 - indentedHexagonWasher
                 - hexagonFlange
             thread:
-              type: object
-              description: Резьба
-              properties:
-                pitch:
-                  type: number
-                  format: double
-                  description: 'Размер резьбы: расстояние между бороздами'
-                pitchConf:
-                  type: string
-                  description: 'Тип резьбы: грубая, мелкая'
-                  enum:
-                    - coarse
-                    - fine
+              $ref: '#/components/schemas/AdProductBoltThread'
+
+    AdProductBoltThread:
+      type: object
+      description: Резьба
+      properties:
+        pitch:
+          type: number
+          format: double
+          description: 'Размер резьбы: расстояние между бороздами'
+        pitchConf:
+          type: string
+          description: 'Тип резьбы: грубая, мелкая'
+          enum:
+            - coarse
+            - fine
 
     AdVisibility:
       type: string

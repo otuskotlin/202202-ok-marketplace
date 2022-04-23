@@ -21,9 +21,9 @@ class SerializationRequestProductTest {
                     length = 25.0,
                     diameter = 8.0,
                     headStyle = AdProductBolt.HeadStyle.HEXAGON_FLANGE,
-                    thread = AdProductBoltAllOfThread(
+                    thread = AdProductBoltThread(
                         pitch = 1.0,
-                        pitchConf = AdProductBoltAllOfThread.PitchConf.COARSE,
+                        pitchConf = AdProductBoltThread.PitchConf.COARSE,
                     )
                 )
             )
@@ -39,7 +39,7 @@ class SerializationRequestProductTest {
         val decoded = serializationMapper.decodeFromString<AdCreateRequest>(jsonString)
         println(decoded)
 //        val decoded = apiV2RequestDeserialize<AdCreateRequest>(jsonString)
-        assertEquals(AdProductBoltAllOfThread.PitchConf.COARSE, (decoded.ad?.props as? AdProductBolt)?.thread?.pitchConf)
+        assertEquals(AdProductBoltThread.PitchConf.COARSE, (decoded.ad?.props as? AdProductBolt)?.thread?.pitchConf)
         assertEquals("bolt", (decoded.ad?.props as? AdProductBolt)?.productType)
     }
     @Test
