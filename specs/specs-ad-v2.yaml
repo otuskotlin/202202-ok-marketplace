@@ -226,7 +226,7 @@ components:
       description: 'Сторона сделки: объявление о продаже или о покупке'
       enum:
         - demand
-        - proposal
+        - supply
 
     IAdProduct:
       type: object
