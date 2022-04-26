@@ -83,7 +83,7 @@ tasks {
     allMetadataJar {
         dependsOn(openApiGenerate)
     }
-    forEach {
-        println("TASK: ${it.name}")
-    }
+//    forEach {
+//        println("TASK: ${it.name}")
+//    }
 }
