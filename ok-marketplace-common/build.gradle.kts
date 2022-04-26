@@ -9,9 +9,13 @@ kotlin {
     jvm {}
 
     sourceSets {
+        val datetimeVersion: String by project
+
         val commonMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-common"))
+
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:$datetimeVersion")
             }
         }
         val commonTest by getting {
