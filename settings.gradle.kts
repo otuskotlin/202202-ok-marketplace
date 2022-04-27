@@ -24,3 +24,4 @@ pluginManagement {
 include("ok-marketplace-api-v1-jackson")
 include("ok-marketplace-api-v2-kmp")
 include("ok-marketplace-common")
+include("ok-marketplace-mappers-v1")

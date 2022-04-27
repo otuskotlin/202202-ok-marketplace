@@ -297,9 +297,6 @@ components:
         description:
           type: string
           description: Описание объявления
-        ownerId:
-          type: string
-          description: Идентификатор владельца объявления
         adType:
           $ref: '#/components/schemas/DealSide'
         visibility:
@@ -362,6 +359,7 @@ components:
             ad:
               allOf:
                 - $ref: '#/components/schemas/BaseWithId'
+                - $ref: '#/components/schemas/BaseAdUpdateable'
 
     AdDeleteRequest:
       allOf:
@@ -413,6 +411,9 @@ components:
         - type: object
           description: Объект, который возвращается в ответе бэкенда
           properties:
+            ownerId:
+              type: string
+              description: Идентификатор владельца объявления
             permissions:
               type: array
               uniqueItems: true
