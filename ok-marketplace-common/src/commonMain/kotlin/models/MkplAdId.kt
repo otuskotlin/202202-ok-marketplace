@@ -1,10 +1,10 @@
 package ru.otus.otuskotlin.marketplace.common.models
 
 @JvmInline
-value class RequestId(val id: String) {
+value class MkplAdId(private val id: String) {
     fun asString() = id
 
     companion object {
-        val NONE = RequestId("")
+        val NONE = MkplAdId("")
     }
 }
