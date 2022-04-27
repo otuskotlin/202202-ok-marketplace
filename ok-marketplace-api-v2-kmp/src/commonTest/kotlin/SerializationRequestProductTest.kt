@@ -8,29 +8,29 @@ import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
 class SerializationRequestProductTest {
-
-    @Test
-    fun serializeTest() {
-        val createRequest = AdCreateRequest(
-            ad = BaseAdUpdateable(
-                title = "Title",
-                description = "Description",
-                adType = DealSide.DEMAND,
-                visibility = AdVisibility.PUBLIC,
-                props = AdProductBolt(
-                    length = 25.0,
-                    diameter = 8.0,
-                    headStyle = AdProductBolt.HeadStyle.HEXAGON_FLANGE,
-                    thread = AdProductBoltThread(
-                        pitch = 1.0,
-                        pitchConf = AdProductBoltThread.PitchConf.COARSE,
-                    )
+    val createRequest = AdCreateRequest(
+        ad = BaseAdUpdateable(
+            title = "Title",
+            description = "Description",
+            adType = DealSide.DEMAND,
+            visibility = AdVisibility.PUBLIC,
+            props = AdProductBolt(
+                length = 25.0,
+                diameter = 8.0,
+                headStyle = AdProductBolt.HeadStyle.HEXAGON_FLANGE,
+                thread = AdProductBoltThread(
+                    pitch = 1.0,
+                    pitchConf = AdProductBoltThread.PitchConf.COARSE,
                 )
             )
         )
-//        val jsonString = apiV2RequestSerialize(createRequest)
+    )
+
+    @Test
+    fun serializeTest() {
+        val jsonString = apiV2RequestSerialize(createRequest)
 //        val jsonString = serializationMapper.encodeToString(createRequest)
-        val jsonString = serializationMapper.encodeToString(AdRequestSerializer, createRequest)
+//        val jsonString = serializationMapper.encodeToString(AdRequestSerializer, createRequest)
         println(jsonString)
         assertContains(jsonString, """"title":"Title"""")
         assertContains(jsonString, """"requestType":"create"""")
@@ -44,7 +44,7 @@ class SerializationRequestProductTest {
     }
     @Test
     fun deserializeTest() {
-        val jsonString = "{\"requestType\":\"create\",\"requestId\":null,\"ad\":{\"title\":\"Title\",\"description\":\"Description\",\"ownerId\":null,\"adType\":\"demand\",\"visibility\":\"public\",\"props\":{\"productType\":\"bolt\",\"length\":25.0,\"diameter\":8.0,\"headStyle\":\"hexagonFlange\",\"thread\":{\"pitch\":1.0,\"pitchConf\":\"coarse\"}}},\"debug\":null}"
+        val jsonString = apiV2RequestSerialize(createRequest)
         val decoded = apiV2RequestDeserialize<AdCreateRequest>(jsonString)
         println(decoded)
         assertEquals("Title", decoded.ad?.title)
