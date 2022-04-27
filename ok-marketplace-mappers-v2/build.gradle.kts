@@ -9,13 +9,12 @@ kotlin {
     jvm {}
 
     sourceSets {
-        val datetimeVersion: String by project
-
         val commonMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-common"))
 
-                api("org.jetbrains.kotlinx:kotlinx-datetime:$datetimeVersion")
+                implementation(project(":ok-marketplace-api-v2-kmp"))
+                implementation(project(":ok-marketplace-common"))
             }
         }
         val commonTest by getting {
@@ -24,5 +23,16 @@ kotlin {
                 implementation(kotlin("test-annotations-common"))
             }
         }
+        val jvmMain by getting {
+            dependencies {
+                implementation(kotlin("stdlib-jdk8"))
+            }
+        }
+        val jvmTest by getting {
+            dependencies {
+                implementation(kotlin("test-junit"))
+            }
+        }
+
     }
 }

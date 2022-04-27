@@ -9,12 +9,12 @@ import kotlin.test.assertEquals
 
 class SerializationRequestProductTest {
     val createRequest = AdCreateRequest(
-        ad = BaseAdUpdateable(
+        ad = AdCreateObject(
             title = "Title",
             description = "Description",
             adType = DealSide.DEMAND,
             visibility = AdVisibility.PUBLIC,
-            props = AdProductBolt(
+            product = AdProductBolt(
                 length = 25.0,
                 diameter = 8.0,
                 headStyle = AdProductBolt.HeadStyle.HEXAGON_FLANGE,
@@ -39,8 +39,8 @@ class SerializationRequestProductTest {
         val decoded = serializationMapper.decodeFromString<AdCreateRequest>(jsonString)
         println(decoded)
 //        val decoded = apiV2RequestDeserialize<AdCreateRequest>(jsonString)
-        assertEquals(AdProductBoltThread.PitchConf.COARSE, (decoded.ad?.props as? AdProductBolt)?.thread?.pitchConf)
-        assertEquals("bolt", (decoded.ad?.props as? AdProductBolt)?.productType)
+        assertEquals(AdProductBoltThread.PitchConf.COARSE, (decoded.ad?.product as? AdProductBolt)?.thread?.pitchConf)
+        assertEquals("bolt", (decoded.ad?.product as? AdProductBolt)?.productType)
     }
     @Test
     fun deserializeTest() {

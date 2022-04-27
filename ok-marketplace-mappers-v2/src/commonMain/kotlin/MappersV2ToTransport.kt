@@ -1,9 +1,10 @@
-package ru.otus.otuskotlin.marketplace.mappers.v1
+package ru.otus.otuskotlin.marketplace.mappers.v2
 
-import ru.otus.otuskotlin.marketplace.api.v1.models.*
+import ru.otus.otuskotlin.marketplace.api.v2.models.*
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.models.*
-import ru.otus.otuskotlin.marketplace.mappers.v1.exceptions.UnknownMkplCommand
+import ru.otus.otuskotlin.marketplace.common.models.product.*
+import ru.otus.otuskotlin.marketplace.mappers.v2.exceptions.UnknownMkplCommand
 
 fun MkplContext.toTransportAd(): IResponse = when (val cmd = command) {
     MkplCommand.CREATE -> toTransportCreate()
@@ -70,7 +71,40 @@ private fun MkplAd.toTransportAd(): AdResponseObject = AdResponseObject(
     adType = adType.toTransportAd(),
     visibility = visibility.toTransportAd(),
     permissions = permissionsClient.toTransportAd(),
+    product = product.toTransport(),
 )
+
+private fun IMkplAdProduct.toTransport(): IAdProduct? = when(this) {
+    IMkplAdProduct.NONE -> null
+    MkplAdProductNone -> null
+    is MkplAdProductBolt -> this.toTransport()
+}
+
+private fun MkplAdProductBolt.toTransport() = AdProductBolt(
+    length = this.length.len,
+    diameter = this.diameter.len,
+    headStyle = this.headStyle.toTransport(),
+    thread = this.thread.toTransport()
+)
+
+private fun MkplAdProductBoltHeadStyle.toTransport() = when(this) {
+    MkplAdProductBoltHeadStyle.SQUARE_SHOULDER -> AdProductBolt.HeadStyle.SQUARE_SHOULDER
+    MkplAdProductBoltHeadStyle.INDENTED_HEXAGON_WASHER -> AdProductBolt.HeadStyle.INDENTED_HEXAGON_WASHER
+    MkplAdProductBoltHeadStyle.INDENTED_HEXAGON -> AdProductBolt.HeadStyle.INDENTED_HEXAGON
+    MkplAdProductBoltHeadStyle.HEXAGON_FLANGE -> AdProductBolt.HeadStyle.HEXAGON_FLANGE
+    MkplAdProductBoltHeadStyle.NONE -> null
+}
+
+private fun MkplAdProductBoltThread.toTransport() = AdProductBoltThread(
+    pitch = this.pitch.len,
+    pitchConf = this.pitchConf.toTransport()
+)
+
+private fun MkplAdProductBoltThread.PitchConf.toTransport(): AdProductBoltThread.PitchConf? = when(this) {
+    MkplAdProductBoltThread.PitchConf.COARSE -> AdProductBoltThread.PitchConf.COARSE
+    MkplAdProductBoltThread.PitchConf.FINE -> AdProductBoltThread.PitchConf.FINE
+    MkplAdProductBoltThread.PitchConf.NONE -> null
+}
 
 private fun Set<MkplAdPermissionClient>.toTransportAd(): Set<AdPermissions>? = this
     .map { it.toTransportAd() }
@@ -95,7 +129,7 @@ private fun MkplVisibility.toTransportAd(): AdVisibility? = when (this) {
 
 private fun MkplDealSide.toTransportAd(): DealSide? = when (this) {
     MkplDealSide.DEMAND -> DealSide.DEMAND
-    MkplDealSide.SUPPLY -> DealSide.PROPOSAL
+    MkplDealSide.SUPPLY -> DealSide.SUPPLY
     MkplDealSide.NONE -> null
 }
 

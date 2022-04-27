@@ -401,8 +401,6 @@ components:
       properties:
         debug:
           $ref: '#/components/schemas/AdDebug'
-        stub:
-          $ref: '#/co'
 
     AdDebug:
       type: object

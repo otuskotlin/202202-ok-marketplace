@@ -1,4 +1,4 @@
-package ru.otus.otuskotlin.marketplace.mappers.v1.ru.otus.otuskotlin.marketplace.mappers.v1.exceptions
+package ru.otus.otuskotlin.marketplace.mappers.v2.exceptions
 
 import ru.otus.otuskotlin.marketplace.common.models.MkplCommand
 

@@ -7,7 +7,7 @@ import kotlin.test.assertEquals
 
 class SerializationRequestTest {
     val createRequest = AdCreateRequest(
-        ad = BaseAdUpdateable(
+        ad = AdCreateObject(
             title = "Title",
             description = "Description",
             adType = DealSide.DEMAND,

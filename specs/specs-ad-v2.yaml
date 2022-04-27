@@ -304,11 +304,6 @@ components:
           properties:
             id:
               type: string
-        debug:
-          type: object
-          properties:
-            stub:
-              $ref: '#/components/schemas/AdIdObjectStubs'
 
     AdCreateRequest:
       allOf:
@@ -394,6 +389,8 @@ components:
           properties:
             id:
               type: string
+            ownerId:
+              type: string
             permissions:
               type: array
               uniqueItems: true
@@ -457,8 +454,6 @@ components:
       properties:
         debug:
           $ref: '#/components/schemas/AdDebug'
-        stub:
-          $ref: '#/co'
 
     AdDebug:
       type: object
