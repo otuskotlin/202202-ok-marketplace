@@ -95,7 +95,6 @@ private fun AdSearchFilter?.toInternal(): MkplAdFilter = MkplAdFilter(
 private fun AdCreateObject.toInternal(): MkplAd = MkplAd(
     title = this.title ?: "",
     description = this.description ?: "",
-    ownerId = this.ownerId?.let { MkplUserId(it) } ?: MkplUserId.NONE,
     adType = this.adType.fromTransport(),
     visibility = this.visibility.fromTransport(),
 )
@@ -104,7 +103,6 @@ private fun AdUpdateObject.toInternal(): MkplAd = MkplAd(
     id = this.id.toAdId(),
     title = this.title ?: "",
     description = this.description ?: "",
-    ownerId = this.ownerId?.let { MkplUserId(it) } ?: MkplUserId.NONE,
     adType = this.adType.fromTransport(),
     visibility = this.visibility.fromTransport(),
 )
