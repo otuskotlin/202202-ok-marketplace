@@ -79,18 +79,8 @@ Marketplace -- это площадка, на которой пользовате
 3. [ok-marketplace-api-v2-kmp](ok-marketplace-api-v2-kmp) - Генерация второй версии транспортных модеелй с KMP
 4. [ok-marketplace-common](ok-marketplace-common) - модуль с общими классами для модулей проекта. В частности,
    там располагаются внутренние модели и контекст.
-
-[//]: # (1. [ok-marketplace-be-transport-mapping-openapi]&#40;ok-marketplace-be-transport-mapping-openapi&#41; - мапинг OpenAPI)
-
-[//]: # (   транспортных моделей во внутренние модели)
-
-[//]: # (1. [ok-marketplace-mp-transport-mp]&#40;ok-marketplace-mp-transport-mp&#41; - подпроект с транспортными моделями на Kotlin)
-
-[//]: # (   Multiplatform)
-
-[//]: # (1. [ok-marketplace-be-transport-mapping-openapi]&#40;ok-marketplace-be-transport-mapping-openapi&#41; - мапинг KMP транспортных)
-
-[//]: # (   моделей во тренние модели)
+5. [ok-marketplace-api-v1-jackson](ok-marketplace-api-v1-jackson) - Мапер между внутренними моделями и моделями API v1
+6. [ok-marketplace-api-v2-kmp](ok-marketplace-api-v2-kmp) - Мапер между внутренними моделями и моделями API v1
 
 ## Фреймворки и транспорты
 
