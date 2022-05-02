@@ -1,4 +1,4 @@
-package ru.otus.otuskotlin.marketplace.mappers.v2.ru.otus.otuskotlin.marketplace.mappers.v2.exceptions
+package ru.otus.otuskotlin.marketplace.mappers.v2.exceptions
 
 import ru.otus.otuskotlin.marketplace.api.v2.models.IAdProduct
 

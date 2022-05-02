@@ -8,7 +8,7 @@ import ru.otus.otuskotlin.marketplace.common.models.MkplWorkMode
 import ru.otus.otuskotlin.marketplace.common.models.product.*
 import ru.otus.otuskotlin.marketplace.common.stubs.MkplStubs
 import ru.otus.otuskotlin.marketplace.mappers.v2.exceptions.UnknownRequestClass
-import ru.otus.otuskotlin.marketplace.mappers.v2.ru.otus.otuskotlin.marketplace.mappers.v2.exceptions.UnknownAdProduct
+import ru.otus.otuskotlin.marketplace.mappers.v2.exceptions.UnknownAdProduct
 
 fun MkplContext.fromTransport(request: IRequest) = when(request){
     is AdCreateRequest -> fromTransport(request)
@@ -98,7 +98,7 @@ private fun AdSearchFilter?.toInternal(): MkplAdFilter = MkplAdFilter(
 private fun AdCreateObject.toInternal(): MkplAd = MkplAd(
     title = this.title ?: "",
     description = this.description ?: "",
-    adType = this.adType.fromTransport(),
+    adType = this.adType.fromTransport(), // HelperMMapper.fromTransport(reuest)
     visibility = this.visibility.fromTransport(),
     product = this.product.fromTransport(),
 )

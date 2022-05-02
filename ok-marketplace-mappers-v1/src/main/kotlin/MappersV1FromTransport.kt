@@ -9,10 +9,10 @@ import ru.otus.otuskotlin.marketplace.mappers.v1.exceptions.UnknownRequestClass
 
 fun MkplContext.fromTransport(request: IRequest) = when(request){
     is AdCreateRequest -> fromTransport(request)
-    is AdReadRequest -> fromTransport(request)
+    is AdReadRequest   -> fromTransport(request)
     is AdUpdateRequest -> fromTransport(request)
     is AdDeleteRequest -> fromTransport(request)
-    is AdSearchRequest-> fromTransport(request)
+    is AdSearchRequest -> fromTransport(request)
     is AdOffersRequest -> fromTransport(request)
     else -> throw UnknownRequestClass(request.javaClass)
 }
