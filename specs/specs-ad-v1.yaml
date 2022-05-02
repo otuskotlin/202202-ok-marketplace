@@ -138,20 +138,12 @@ paths:
 components:
   schemas:
 
-    RequestDebug:
-      type: object
-      properties:
-        mode:
-          type: string
-          enum:
-            - prod
-            - test
-            - stub
-        stub:
-          type: string
-          description: 'Тип стаба, который запрашиваем в режиме mode: stub'
-          enum:
-            - success
+    AdRequestDebugMode:
+      type: string
+      enum:
+        - prod
+        - test
+        - stub
 
     IRequest:
       type: object
@@ -179,7 +171,7 @@ components:
       properties:
         code:
           type: string
-        groupd:
+        group:
           type: string
         field:
           type: string
@@ -238,45 +230,20 @@ components:
         description:
           type: string
           description: Описание объявления
-        ownerId:
-          type: string
-          description: Идентификатор владельца объявления
         adType:
           $ref: '#/components/schemas/DealSide'
         visibility:
-          type: string
-          description: 'Тип видимости объявления. Возможные значения: видит только владелец, только зарегистрированный в системе пользователь, видимо всем'
-          enum:
-            - ownerOnly
-            - registeredOnly
-            - public
+          $ref: '#/components/schemas/AdVisibility'
 
-    BaseAdUpdateableRequest:
-      allOf:
-        - type: object
-          properties:
-            ad:
-              $ref: '#/components/schemas/BaseAdUpdateable'
-            debug:
-              $ref: '#/components/schemas/RequestDebug'
+    AdVisibility:
+      type: string
+      description: 'Тип видимости объявления. Возможные значения: видит только владелец, только зарегистрированный в системе пользователь, видимо всем'
+      enum:
+        - ownerOnly
+        - registeredOnly
+        - public
 
     BaseAdIdRequest:
-      type: object
-      properties:
-        ad:
-          allOf:
-              - $ref: '#/components/schemas/BaseWithId'
-        debug:
-          type: object
-          properties:
-            stub:
-              type: string
-              enum:
-                - success
-                - notFound
-                - badId
-
-    BaseWithId:
       type: object
       properties:
         ad:
@@ -284,38 +251,48 @@ components:
           properties:
             id:
               type: string
-              description: Идентификатор объявления
 
     AdCreateRequest:
       allOf:
         - $ref: '#/components/schemas/IRequest'
-        - $ref: '#/components/schemas/BaseAdUpdateableRequest'
+        - $ref: '#/components/schemas/AdRequestDebug'
+        - type: object
+          properties:
+            ad:
+              $ref: '#/components/schemas/AdCreateObject'
 
     AdReadRequest:
       allOf:
         - $ref: '#/components/schemas/IRequest'
         - $ref: '#/components/schemas/BaseAdIdRequest'
+        - $ref: '#/components/schemas/AdRequestDebug'
+
+    AdCreateObject:
+      allOf:
+        - $ref: '#/components/schemas/BaseAdUpdateable'
+
+    AdUpdateObject:
+      allOf:
+        - $ref: '#/components/schemas/BaseAdUpdateable'
+        - type: object
+          properties:
+            id:
+              type: string
 
     AdUpdateRequest:
       allOf:
         - $ref: '#/components/schemas/IRequest'
-        - $ref: '#/components/schemas/BaseAdUpdateableRequest'
+        - $ref: '#/components/schemas/AdRequestDebug'
         - type: object
           properties:
             ad:
-              allOf:
-                - $ref: '#/components/schemas/BaseWithId'
+              $ref: '#/components/schemas/AdUpdateObject'
 
     AdDeleteRequest:
       allOf:
         - $ref: '#/components/schemas/IRequest'
         - $ref: '#/components/schemas/BaseAdIdRequest'
-        - type: object
-          properties:
-            stub:
-              type: string
-              enum:
-                - cannotDelete
+        - $ref: '#/components/schemas/AdRequestDebug'
 
     AdSearchFilter:
       type: object
@@ -328,6 +305,7 @@ components:
     AdSearchRequest:
       allOf:
         - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/AdRequestDebug'
         - type: object
           properties:
             adFileter:
@@ -337,6 +315,7 @@ components:
       allOf:
         - $ref: '#/components/schemas/IRequest'
         - $ref: '#/components/schemas/BaseAdIdRequest'
+        - $ref: '#/components/schemas/AdRequestDebug'
 
     AdPermissions:
       type: string
@@ -351,11 +330,14 @@ components:
 
     AdResponseObject:
       allOf:
-        - $ref: '#/components/schemas/BaseWithId'
         - $ref: '#/components/schemas/BaseAdUpdateable'
         - type: object
           description: Объект, который возвращается в ответе бэкенда
           properties:
+            id:
+              type: string
+            ownerId:
+              type: string
             permissions:
               type: array
               uniqueItems: true
@@ -364,13 +346,11 @@ components:
 
     AdResponseSingle:
       allOf:
-        - $ref: '#/components/schemas/BaseAdUpdateableRequest'
         - type: object
           description: Ответ с одним объектом объявления
           properties:
             ad:
               $ref: '#/components/schemas/AdResponseObject'
-
 
     AdCreateResponse:
       allOf:
@@ -414,3 +394,31 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/AdResponseObject'
+
+    # STUBS ======================
+    AdRequestDebug:
+      type: object
+      properties:
+        debug:
+          $ref: '#/components/schemas/AdDebug'
+
+    AdDebug:
+      type: object
+      properties:
+        mode:
+          $ref: '#/components/schemas/AdRequestDebugMode'
+        stub:
+          $ref: '#/components/schemas/AdRequestDebugStubs'
+
+    AdRequestDebugStubs:
+      type: string
+      description: Перечисления всех стабов
+      enum:
+        - success
+        - notFound
+        - badId
+        - badTitle
+        - badDescription
+        - badVisibility
+        - cannotDelete
+        - badSearchString

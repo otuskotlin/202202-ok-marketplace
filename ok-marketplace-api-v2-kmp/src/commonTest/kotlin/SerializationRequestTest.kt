@@ -6,17 +6,17 @@ import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
 class SerializationRequestTest {
+    val createRequest = AdCreateRequest(
+        ad = AdCreateObject(
+            title = "Title",
+            description = "Description",
+            adType = DealSide.DEMAND,
+            visibility = AdVisibility.PUBLIC
+        )
+    )
 
     @Test
     fun serializeTest() {
-        val createRequest = AdCreateRequest(
-            ad = BaseAdUpdateable(
-                title = "Title",
-                description = "Description",
-                adType = DealSide.DEMAND,
-                visibility = AdVisibility.PUBLIC
-            )
-        )
         val jsonString = apiV2RequestSerialize(createRequest)
         println(jsonString)
         assertContains(jsonString, """"title":"Title"""")
@@ -25,7 +25,7 @@ class SerializationRequestTest {
     }
     @Test
     fun deserializeTest() {
-        val jsonString = "{\"requestType\":\"create\",\"requestId\":null,\"ad\":{\"title\":\"Title\",\"description\":\"Description\",\"ownerId\":null,\"adType\":\"demand\",\"visibility\":\"public\",\"props\":null},\"debug\":null}"
+        val jsonString = apiV2RequestSerialize(createRequest)
         val decoded = apiV2RequestDeserialize<AdCreateRequest>(jsonString)
         println(decoded)
         assertEquals("Title", decoded.ad?.title)
@@ -36,7 +36,7 @@ class SerializationRequestTest {
 
     @Test
     fun deserializeIRequestTest() {
-        val jsonString = "{\"requestType\":\"create\",\"requestId\":null,\"ad\":{\"title\":\"Title\",\"description\":\"Description\",\"ownerId\":null,\"adType\":\"demand\",\"visibility\":\"public\",\"props\":null},\"debug\":null}"
+        val jsonString = apiV2RequestSerialize(createRequest)
         val decoded = apiV2RequestDeserialize<IRequest>(jsonString) as AdCreateRequest
         println(decoded)
         assertEquals("Title", decoded.ad?.title)

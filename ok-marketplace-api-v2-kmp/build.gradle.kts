@@ -83,7 +83,13 @@ tasks {
     allMetadataJar {
         dependsOn(openApiGenerate)
     }
-    forEach {
-        println("TASK: ${it.name}")
+    val compileKotlinJvm by getting {
+        dependsOn(openApiGenerate)
     }
+    val compileTestKotlinJvm by getting {
+        dependsOn(openApiGenerate)
+    }
+//    forEach {
+//        println("TASK: ${it.name}")
+//    }
 }

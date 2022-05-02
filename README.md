@@ -66,20 +66,19 @@ Marketplace -- это площадка, на которой пользовате
 ## Подпроекты для занятий по языку Kotlin
 
 1. [m1l1-hello-world](m1l1-hello-world) - Вводное занятие, создание первой программы на Kotlin
-   [//]: # (1. [ok-m1l3-oop]&#40;ok-m1l3-oop&#41; - Объектно-ориентированное программирование)
-1. [m1l4-dsl](m1l4-dsl) - Предметно ориентированные языки (DSL)
-1. [m1l5-coroutines](m1l5-coroutines) - Асинхронное и многопоточное программирование с корутинами
-   [//]: # (1. [ok-m1l6-flows-and-channels]&#40;ok-m1l6-flows-and-channels&#41; - Асинхронное и многопоточное
-   программирование с каналами)
-1. [m1l7-multiplatform](m1l7-multiplatform) - Kotlin Multiplatform и интероперабельность с JVM, JS
-1. [m2l2-testing](m2l2-testing) - Тестирование проекта, TDD, MDD
+3. [m1l4-dsl](m1l4-dsl) - Предметно ориентированные языки (DSL)
+4. [m1l5-coroutines](m1l5-coroutines) - Асинхронное и многопоточное программирование с корутинами
+5. [m1l7-multiplatform](m1l7-multiplatform) - Kotlin Multiplatform и интероперабельность с JVM, JS
+6. [m2l2-testing](m2l2-testing) - Тестирование проекта, TDD, MDD
 
 ## Транспортные модели, API
 
 1. [specs](specs) - описание API в форме OpenAPI-спецификаций
-1. [ok-marketplace-api-v1-jackson](ok-marketplace-api-v1-jackson) - Генерация первой версии транспортных модеелй с
+2. [ok-marketplace-api-v1-jackson](ok-marketplace-api-v1-jackson) - Генерация первой версии транспортных модеелй с
    Jackson
-1. [ok-marketplace-api-v2-kmp](ok-marketplace-api-v2-kmp) - Генерация второй версии транспортных модеелй с KMP
+3. [ok-marketplace-api-v2-kmp](ok-marketplace-api-v2-kmp) - Генерация второй версии транспортных модеелй с KMP
+4. [ok-marketplace-common](ok-marketplace-common) - модуль с общими классами для модулей проекта. В частности,
+   там располагаются внутренние модели и контекст.
 
 [//]: # (1. [ok-marketplace-be-transport-mapping-openapi]&#40;ok-marketplace-be-transport-mapping-openapi&#41; - мапинг OpenAPI)
 
