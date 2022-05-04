@@ -76,7 +76,7 @@ fun MkplContext.fromTransport(request: AdDeleteRequest) {
 }
 
 fun MkplContext.fromTransport(request: AdSearchRequest) {
-    command = MkplCommand.DELETE
+    command = MkplCommand.SEARCH
     requestId = request.requestId()
     adFilterRequest = request.adFileter.toInternal()
     workMode = request.debug.transportToWorkMode()
@@ -84,7 +84,7 @@ fun MkplContext.fromTransport(request: AdSearchRequest) {
 }
 
 fun MkplContext.fromTransport(request: AdOffersRequest) {
-    command = MkplCommand.DELETE
+    command = MkplCommand.OFFERS
     requestId = request.requestId()
     adRequest = request.ad.toAdWithId()
     workMode = request.debug.transportToWorkMode()
