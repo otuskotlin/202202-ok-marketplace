@@ -1,15 +1,15 @@
-package ru.otus.otuskotlin.markeplace.springapp.api.v1.service
+package ru.otus.otuskotlin.markeplace.springapp.api.v2.service
 
 import marketplace.stubs.Bolt
 import org.springframework.stereotype.Service
-import ru.otus.otuskotlin.markeplace.springapp.api.v1.errorResponse
 import ru.otus.otuskotlin.markeplace.springapp.api.v1.successResponse
+import ru.otus.otuskotlin.markeplace.springapp.api.v2.errorResponse
 import ru.otus.otuskotlin.markeplace.springapp.common.notFoundError
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.stubs.MkplStubs
 
 @Service
-class OfferService {
+class OfferServiceV2 {
 
     fun searchOffers(context: MkplContext): MkplContext {
         val request = context.adRequest

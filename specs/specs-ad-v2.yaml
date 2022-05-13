@@ -98,7 +98,7 @@ paths:
     post:
       tags:
         - ad
-      summary: Update ad
+      summary: Search ad
       operationId: adSearch
       requestBody:
         description: Request body
@@ -361,7 +361,7 @@ components:
         - $ref: '#/components/schemas/AdRequestDebug'
         - type: object
           properties:
-            adFileter:
+            adFilter:
               $ref: '#/components/schemas/AdSearchFilter'
 
     AdOffersRequest:

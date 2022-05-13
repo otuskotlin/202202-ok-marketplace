@@ -5,12 +5,20 @@ import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.models.MkplError
 import ru.otus.otuskotlin.marketplace.common.models.MkplState
 
-fun MkplContext.addError(error: () -> MkplError) =
+fun MkplContext.errorResponse(error: (MkplError) -> MkplError) =
     apply {
         state = MkplState.FAILING
-        errors.add(error())
+        errors.add(error(buildError()))
     }
 
-fun buildError() = MkplError(
+
+fun MkplContext.successResponse(context: MkplContext.() -> Unit) = apply(context)
+    .apply {
+        state = MkplState.RUNNING
+    }
+
+private fun buildError() = MkplError(
     field = "_", code = ResponseResult.ERROR.value
 )
+
+
