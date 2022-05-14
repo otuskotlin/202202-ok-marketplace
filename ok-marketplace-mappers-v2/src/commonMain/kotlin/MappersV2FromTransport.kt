@@ -4,11 +4,10 @@ import ru.otus.otuskotlin.marketplace.api.v2.models.*
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.helpers.mm
 import ru.otus.otuskotlin.marketplace.common.models.*
-import ru.otus.otuskotlin.marketplace.common.models.MkplWorkMode
 import ru.otus.otuskotlin.marketplace.common.models.product.*
 import ru.otus.otuskotlin.marketplace.common.stubs.MkplStubs
-import ru.otus.otuskotlin.marketplace.mappers.v2.exceptions.UnknownRequestClass
 import ru.otus.otuskotlin.marketplace.mappers.v2.exceptions.UnknownAdProduct
+import ru.otus.otuskotlin.marketplace.mappers.v2.exceptions.UnknownRequestClass
 
 fun MkplContext.fromTransport(request: IRequest) = when(request){
     is AdCreateRequest -> fromTransport(request)
@@ -78,7 +77,7 @@ fun MkplContext.fromTransport(request: AdDeleteRequest) {
 fun MkplContext.fromTransport(request: AdSearchRequest) {
     command = MkplCommand.SEARCH
     requestId = request.requestId()
-    adFilterRequest = request.adFileter.toInternal()
+    adFilterRequest = request.adFilter.toInternal()
     workMode = request.debug.transportToWorkMode()
     stubCase = request.debug.transportToStubCase()
 }
@@ -127,7 +126,7 @@ private fun DealSide?.fromTransport(): MkplDealSide = when(this) {
 
 private fun IAdProduct?.fromTransport(): IMkplAdProduct = when(val prod = this) {
     null -> IMkplAdProduct.NONE
-    is AdProductBolt -> fromTransport()
+    is AdProductBolt -> prod.fromTransport()
     else -> throw UnknownAdProduct(prod)
 }
 

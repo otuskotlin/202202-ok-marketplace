@@ -3,7 +3,6 @@ package ru.otus.otuskotlin.marketplace.mappers.v1
 import ru.otus.otuskotlin.marketplace.api.v1.models.*
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.models.*
-import ru.otus.otuskotlin.marketplace.common.models.MkplWorkMode
 import ru.otus.otuskotlin.marketplace.common.stubs.MkplStubs
 import ru.otus.otuskotlin.marketplace.mappers.v1.exceptions.UnknownRequestClass
 
@@ -75,7 +74,7 @@ fun MkplContext.fromTransport(request: AdDeleteRequest) {
 fun MkplContext.fromTransport(request: AdSearchRequest) {
     command = MkplCommand.SEARCH
     requestId = request.requestId()
-    adFilterRequest = request.adFileter.toInternal()
+    adFilterRequest = request.adFilter.toInternal()
     workMode = request.debug.transportToWorkMode()
     stubCase = request.debug.transportToStubCase()
 }
