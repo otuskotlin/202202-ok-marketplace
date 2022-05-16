@@ -2,7 +2,6 @@ import org.jetbrains.kotlin.util.suffixIfNot
 
 val ktorVersion: String by project
 
-@Suppress("unused")
 // ex: Converts to "io.ktor:ktor-ktor-server-netty:2.0.1" with only ktor("netty")
 fun DependencyHandler.ktor(module: String, prefix: String = "server-", version: String? = ktorVersion): Any =
     "io.ktor:ktor-${prefix.suffixIfNot("-")}$module:$version"
@@ -76,5 +75,5 @@ dependencies {
     implementation(project(":ok-marketplace-stubs"))
 
     testImplementation(kotlin("test-junit"))
-    testImplementation(ktor("server-test-host")) // "io.ktor:ktor-server-test-host:$ktorVersion"
+    testImplementation(ktor("test-host")) // "io.ktor:ktor-server-test-host:$ktorVersion"
 }

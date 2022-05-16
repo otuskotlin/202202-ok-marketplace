@@ -4,8 +4,7 @@ plugins {
     kotlin("plugin.serialization")
 }
 
-group = rootProject.group
-version = rootProject.version
+
 
 kotlin {
     jvm {}
