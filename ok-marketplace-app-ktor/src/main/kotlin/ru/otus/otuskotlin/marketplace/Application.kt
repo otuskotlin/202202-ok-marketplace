@@ -17,6 +17,10 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import org.slf4j.event.Level
+import ru.otus.otuskotlin.marketplace.api.v1
+import ru.otus.otuskotlin.marketplace.api.v2
+import ru.otus.otuskotlin.marketplace.backend.services.AdService
+import ru.otus.otuskotlin.marketplace.backend.services.OfferService
 
 // function with config (application.conf)
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -58,16 +62,16 @@ fun Application.module() {
 
     install(Locations)
 
-//    val adService = AdService()
-//    val offerService = OfferService()
+    val adService = AdService()
+    val offerService = OfferService()
 
     routing {
         get("/") {
             call.respondText("Hello, world!")
         }
 
-//        v1(adService, offerService)
-//        v2(adService, offerService)
+        v1(adService, offerService)
+        v2(adService, offerService)
 
         static("static") {
             resources("static")
