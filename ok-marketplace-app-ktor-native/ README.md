@@ -1,4 +1,4 @@
-# embeddedServer - Native
+# Ktor app - Native
 
 A copy of `ok-marketplace-app-ktor`, but with Kotlin Native realisation
 
