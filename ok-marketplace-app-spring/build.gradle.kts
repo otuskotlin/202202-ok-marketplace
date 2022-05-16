@@ -28,6 +28,9 @@ dependencies {
     // v2 api
     implementation(project(":ok-marketplace-mappers-v2"))
 
+    // Services
+    implementation(project(":ok-marketplace-services"))
+
     // Stubs
     implementation(project(":ok-marketplace-stubs"))
 
