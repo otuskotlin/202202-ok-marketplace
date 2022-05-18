@@ -8,8 +8,7 @@ plugins {
     kotlin("plugin.serialization")
 }
 val kotestVersion = "4.6.1"
-group = rootProject.group
-version = rootProject.version
+
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 dependencies {
@@ -27,6 +26,9 @@ dependencies {
 
     // v2 api
     implementation(project(":ok-marketplace-mappers-v2"))
+
+    // Services
+    implementation(project(":ok-marketplace-services"))
 
     // Stubs
     implementation(project(":ok-marketplace-stubs"))

@@ -2,11 +2,10 @@ plugins {
     kotlin("multiplatform")
 }
 
-group = rootProject.group
-version = rootProject.version
-
 kotlin {
     jvm {}
+    macosX64 {}
+    linuxX64 {}
 
     sourceSets {
         val commonMain by getting {
