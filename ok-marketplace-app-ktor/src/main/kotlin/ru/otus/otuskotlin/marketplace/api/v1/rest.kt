@@ -6,25 +6,29 @@ import ru.otus.otuskotlin.marketplace.backend.services.AdService
 import ru.otus.otuskotlin.marketplace.backend.services.OfferService
 
 fun Route.v1Ad(adService: AdService) {
-    post("create") {
-        call.createAd(adService)
-    }
-    post("read") {
-        call.readAd(adService)
-    }
-    post("update") {
-        call.updateAd(adService)
-    }
-    post("delete") {
-        call.deleteAd(adService)
-    }
-    post("search") {
-        call.searchAd(adService)
+    route("ad") {
+        post("create") {
+            call.createAd(adService)
+        }
+        post("read") {
+            call.readAd(adService)
+        }
+        post("update") {
+            call.updateAd(adService)
+        }
+        post("delete") {
+            call.deleteAd(adService)
+        }
+        post("search") {
+            call.searchAd(adService)
+        }
     }
 }
 
 fun Route.v1Offer(offerService: OfferService) {
-    post("offers") {
-        call.offersAd(offerService)
+    route("ad") {
+        post("offers") {
+            call.offersAd(offerService)
+        }
     }
 }
