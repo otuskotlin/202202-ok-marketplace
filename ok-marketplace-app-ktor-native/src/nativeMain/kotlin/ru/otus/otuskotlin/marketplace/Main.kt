@@ -34,24 +34,26 @@ fun main() {
                 call.respondText("Hello, world!")
             }
             route("v1") {
-                post("create") {
-                    call.createAd(adService)
-                }
-                post("read") {
-                    call.readAd(adService)
-                }
-                post("update") {
-                    call.updateAd(adService)
-                }
-                post("delete") {
-                    call.deleteAd(adService)
-                }
-                post("search") {
-                    call.searchAd(adService)
-                }
+                route("ad") {
+                    post("create") {
+                        call.createAd(adService)
+                    }
+                    post("read") {
+                        call.readAd(adService)
+                    }
+                    post("update") {
+                        call.updateAd(adService)
+                    }
+                    post("delete") {
+                        call.deleteAd(adService)
+                    }
+                    post("search") {
+                        call.searchAd(adService)
+                    }
 
-                post("offers") {
-                    call.offersAd(offerService)
+                    post("offers") {
+                        call.offersAd(offerService)
+                    }
                 }
             }
         }
