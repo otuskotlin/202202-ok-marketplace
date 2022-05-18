@@ -1,19 +1,22 @@
-package ru.otus.otuskotlin.markeplace.springapp.api.v1.controller
+package ru.otus.otuskotlin.marketplace.springapp.api.v2.controller
 
 import org.springframework.web.bind.annotation.*
-import ru.otus.otuskotlin.markeplace.springapp.api.v1.service.AdService
-import ru.otus.otuskotlin.marketplace.api.v1.models.*
+import ru.otus.otuskotlin.marketplace.api.v2.models.*
+import ru.otus.otuskotlin.marketplace.backend.services.AdService
 import ru.otus.otuskotlin.marketplace.common.MkplContext
-import ru.otus.otuskotlin.marketplace.mappers.v1.*
+import ru.otus.otuskotlin.marketplace.mappers.v2.*
+import ru.otus.otuskotlin.marketplace.springapp.api.v2.buildError
 
 @RestController
-@RequestMapping("v1/ad")
-class AdController(
+@RequestMapping("v2/ad")
+class AdControllerV2(
     private val adService: AdService
 ) {
 
     @PostMapping("create")
     fun createAd(@RequestBody createAdRequest: AdCreateRequest): AdCreateResponse {
+
+//        val context = MkplContext().apply { fromTransport(apiV2RequestDeserialize<IRequest>(createAdRequest)) }
         val context = MkplContext().apply { fromTransport(createAdRequest) }
 
         return adService.createAd(context).toTransportCreate()
@@ -24,7 +27,7 @@ class AdController(
         MkplContext().apply {
             fromTransport(readAdRequest)
         }.let {
-            adService.readAd(it)
+            adService.readAd(it, ::buildError)
         }.toTransportRead()
 
     @RequestMapping("update", method = [RequestMethod.POST])
@@ -32,7 +35,7 @@ class AdController(
         return MkplContext().apply {
             fromTransport(updateAdRequest)
         }.let {
-            adService.updateAd(it)
+            adService.updateAd(it, ::buildError)
         }.toTransportUpdate()
     }
 
@@ -40,7 +43,7 @@ class AdController(
     fun deleteAd(@RequestBody deleteAdRequest: AdDeleteRequest): AdDeleteResponse {
         val context = MkplContext().apply { fromTransport(deleteAdRequest) }
 
-        val result = adService.deleteAd(context)
+        val result = adService.deleteAd(context, ::buildError)
 
         return result.toTransportDelete()
     }
@@ -48,6 +51,6 @@ class AdController(
     @PostMapping("search")
     fun searchAd(@RequestBody searchAdRequest: AdSearchRequest) =
         MkplContext().apply { fromTransport(searchAdRequest) }.let {
-            adService.searchAd(it)
+            adService.searchAd(it, ::buildError)
         }.toTransportSearch()
 }

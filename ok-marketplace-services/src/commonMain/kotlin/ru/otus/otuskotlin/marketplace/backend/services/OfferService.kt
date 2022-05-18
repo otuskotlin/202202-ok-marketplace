@@ -1,17 +1,12 @@
-package ru.otus.otuskotlin.markeplace.springapp.api.v1.service
+package ru.otus.otuskotlin.marketplace.backend.services
 
 import marketplace.stubs.Bolt
-import org.springframework.stereotype.Service
-import ru.otus.otuskotlin.markeplace.springapp.api.v1.errorResponse
-import ru.otus.otuskotlin.markeplace.springapp.api.v1.successResponse
-import ru.otus.otuskotlin.markeplace.springapp.common.notFoundError
 import ru.otus.otuskotlin.marketplace.common.MkplContext
+import ru.otus.otuskotlin.marketplace.common.models.MkplError
 import ru.otus.otuskotlin.marketplace.common.stubs.MkplStubs
 
-@Service
 class OfferService {
-
-    fun searchOffers(context: MkplContext): MkplContext {
+    fun searchOffers(context: MkplContext, buildError: () -> MkplError): MkplContext {
         val request = context.adRequest
 
         return when (context.stubCase) {
@@ -19,7 +14,7 @@ class OfferService {
                 adsResponse.addAll(Bolt.getModels().onEach { it.id = request.id })
             }
             else -> {
-                context.errorResponse {
+                context.errorResponse(buildError) {
                     it.copy(field = "ad.id", message = notFoundError(request.id.asString()))
                 }
             }
