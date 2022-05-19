@@ -1,7 +1,6 @@
 val ktorVersion: String by project
 
 plugins {
-    application
     kotlin("multiplatform")
 }
 

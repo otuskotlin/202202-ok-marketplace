@@ -33,7 +33,7 @@ fun main() {
             get("/") {
                 call.respondText("Hello, world!")
             }
-            route("v1") {
+            route("v2") {
                 route("ad") {
                     post("create") {
                         call.createAd(adService)
