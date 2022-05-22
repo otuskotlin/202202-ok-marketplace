@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Personal access token must be created at https://github.com/settings/tokens
+
+DOCKER_EMAIL=<your github email>
+DOCKER_USER=<your github username>
+DOCKER_PASS=<your github personal access token>
+
+kubectl create secret docker-registry container-registry \
+  --docker-server=https://ghcr.io/ \
+  --docker-email=$DOCKER_EMAIL \
+  --docker-username=$DOCKER_USER \
+  --docker-password=$DOCKER_PASS && \
+kubectl patch serviceaccount default -p "{\"imagePullSecrets\": [{\"name\": \"container-registry\"}]}"

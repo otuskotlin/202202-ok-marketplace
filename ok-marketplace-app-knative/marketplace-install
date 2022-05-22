@@ -1,0 +1,6 @@
+#!/bin/bash
+
+kn service create marketplace \
+--image ghcr.io/otuskotlin/ok-marketplace-app-ktor \
+--port 8080
+

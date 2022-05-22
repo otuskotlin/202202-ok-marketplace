@@ -1,0 +1,31 @@
+#!/bin/bash
+
+rm -rf ~/.minikube
+sudo echo
+
+ if [ ! -f minikube-linux-amd64 ]
+ then
+  wget https://storage.googleapis.com/minikube/releases/v1.25.2/minikube-linux-amd64
+  sudo install minikube-linux-amd64 /usr/local/bin/minikube
+ fi
+
+ if [ ! -f kubectl ]
+ then
+  wget https://dl.k8s.io/release/v1.24.0/bin/linux/amd64/kubectl
+  sudo install kubectl /usr/local/bin/kubectl
+ fi
+
+ if [ ! -f kn-linux-amd64 ]
+ then
+  wget https://github.com/knative/client/releases/download/knative-v1.4.1/kn-linux-amd64
+  sudo install kn-linux-amd64 /usr/local/bin/kn
+ fi
+
+ if [ ! -f kn-quickstart-linux-amd64 ]
+ then
+  wget https://github.com/knative-sandbox/kn-plugin-quickstart/releases/download/knative-v1.4.0/kn-quickstart-linux-amd64
+  sudo install kn-quickstart-linux-amd64 /usr/local/bin/kn-quickstart
+ fi
+
+kn quickstart minikube
+minikube profile knative
