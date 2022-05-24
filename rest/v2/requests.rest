@@ -9,11 +9,12 @@ Content-Type: application/json
     "title": "Болт",
     "description": "КРУТЕЙШИЙ",
     "ownerId": "9435",
-    "visibility": "PUBLIC",
-    "adType": "DEMAND"
+    "visibility": "public",
+    "adType": "demand"
   },
   "debug": {
-    "mode": "TEST"
+    "mode": "stub",
+    "stub": "success"
   }
 }
 
@@ -57,10 +58,10 @@ Content-Type: application/json
   "ad": {
     "adType": "SUPPLY",
     "id": "updated",
-    "visibility": "OWNER_ONLY"
+    "visibility": "owner_only"
   },
   "debug": {
-    "stub": "SUCCESS"
+    "stub": "success"
   }
 }
 
@@ -75,7 +76,7 @@ Content-Type: application/json
     "id": "668"
   },
   "debug": {
-    "stub": "BAD_ID"
+    "stub": "bad_id"
   }
 }
 

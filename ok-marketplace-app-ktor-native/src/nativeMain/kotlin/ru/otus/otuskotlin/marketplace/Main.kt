@@ -1,5 +1,6 @@
 package ru.otus.otuskotlin.marketplace
 
+import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.cio.*
@@ -16,14 +17,13 @@ import ru.otus.otuskotlin.marketplace.v2.*
 fun main() {
     embeddedServer(CIO, port = 8080) {
         install(Routing)
-
-        val a: AdCreateRequest? = null
         install(ContentNegotiation) {
-            json(Json {
-                isLenient = true
-                prettyPrint = true
-                ignoreUnknownKeys = true
-            })
+            register(ContentType.Application.Json, CustomJsonConverter())
+//            json(Json {
+//                isLenient = true
+//                prettyPrint = true
+//                ignoreUnknownKeys = true
+//            })
         }
 
         val adService = AdService()
