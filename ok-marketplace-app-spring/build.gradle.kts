@@ -37,6 +37,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
+    testImplementation("org.springframework.boot:spring-boot-starter-webflux") // Controller, Service, etc..
     testImplementation("com.ninja-squad:springmockk:3.0.1") // mockking beans
 }
 

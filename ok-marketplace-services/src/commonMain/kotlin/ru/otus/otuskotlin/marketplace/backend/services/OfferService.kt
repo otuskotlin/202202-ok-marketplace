@@ -11,6 +11,7 @@ class OfferService {
 
         return when (context.stubCase) {
             MkplStubs.SUCCESS -> context.successResponse {
+                adResponse = Bolt.getModel { id = context.adRequest.id }
                 adsResponse.addAll(Bolt.getModels().onEach { it.id = request.id })
             }
             else -> {

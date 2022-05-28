@@ -1,7 +1,11 @@
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+import com.bmuschko.gradle.docker.tasks.image.Dockerfile
+
 val ktorVersion: String by project
 
 plugins {
     kotlin("multiplatform")
+    id("com.bmuschko.docker-remote-api")
 }
 
 repositories {
@@ -51,5 +55,31 @@ kotlin {
                 implementation(kotlin("test"))
             }
         }
+    }
+}
+
+tasks {
+    val linkReleaseExecutableNative by getting(org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink::class) {
+
+    }
+    forEach {
+        println("TASK: $it: ${it::class}")
+    }
+    val dockerDockerfile by creating(Dockerfile::class) {
+        group = "docker"
+        from("ubuntu:22.02")
+        doFirst {
+            copy {
+                from(linkReleaseExecutableNative.binary.outputFile)
+                into("${this@creating.temporaryDir}/app")
+            }
+        }
+        copyFile("app", "/app")
+        entryPoint("/app")
+    }
+    val dockerBuildImage by creating(DockerBuildImage::class) {
+        group = "docker"
+        dependsOn(dockerDockerfile)
+        images.add("${project.name}:${project.version}")
     }
 }
