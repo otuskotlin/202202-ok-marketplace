@@ -62,9 +62,6 @@ tasks {
     val linkReleaseExecutableNative by getting(org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink::class) {
 
     }
-    forEach {
-        println("TASK: $it: ${it::class}")
-    }
     val dockerDockerfile by creating(Dockerfile::class) {
         group = "docker"
         from("ubuntu:22.02")

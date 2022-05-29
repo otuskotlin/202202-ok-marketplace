@@ -15,4 +15,8 @@ allprojects {
 subprojects {
     group = rootProject.group
     version = rootProject.version
+
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+    }
 }

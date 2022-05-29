@@ -90,7 +90,4 @@ tasks {
     val compileTestKotlinJvm by getting {
         dependsOn(openApiGenerate)
     }
-//    forEach {
-//        println("TASK: ${it.name}")
-//    }
 }
