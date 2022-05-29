@@ -147,7 +147,7 @@ class V1AdStubApiTest {
         }
         val responseObj = response.body<AdSearchResponse>()
         assertEquals(200, response.status.value)
-        assertEquals("666", responseObj.ads?.first()?.id)
+        assertEquals("d-666-01", responseObj.ads?.first()?.id)
     }
 
     @Test
@@ -171,7 +171,7 @@ class V1AdStubApiTest {
         val responseObj = response.body<AdOffersResponse>()
         assertEquals(200, response.status.value)
         assertEquals("666", responseObj.ad?.id)
-        assertEquals("666", responseObj.offers?.first()?.id)
+        assertEquals("s-666-01", responseObj.offers?.first()?.id)
     }
 
 }

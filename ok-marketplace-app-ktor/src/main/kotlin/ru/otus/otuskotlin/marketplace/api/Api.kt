@@ -6,18 +6,17 @@ import ru.otus.otuskotlin.marketplace.api.v1.v1Offer
 import ru.otus.otuskotlin.marketplace.api.v2.v2Ad
 import ru.otus.otuskotlin.marketplace.api.v2.v2Offer
 import ru.otus.otuskotlin.marketplace.backend.services.AdService
-import ru.otus.otuskotlin.marketplace.backend.services.OfferService
 
-internal fun Routing.v1(adService: AdService, offerService: OfferService) {
+internal fun Routing.v1(service: AdService) {
     route("v1") {
-        v1Ad(adService)
-        v1Offer(offerService)
+        v1Ad(service)
+        v1Offer(service)
     }
 }
 
-internal fun Routing.v2(adService: AdService, offerService: OfferService) {
+internal fun Routing.v2(service: AdService) {
     route("v2") {
-        v2Ad(adService)
-        v2Offer(offerService)
+        v2Ad(service)
+        v2Offer(service)
     }
 }

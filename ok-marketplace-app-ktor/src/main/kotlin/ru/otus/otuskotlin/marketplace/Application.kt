@@ -20,11 +20,11 @@ import org.slf4j.event.Level
 import ru.otus.otuskotlin.marketplace.api.v1
 import ru.otus.otuskotlin.marketplace.api.v2
 import ru.otus.otuskotlin.marketplace.backend.services.AdService
-import ru.otus.otuskotlin.marketplace.backend.services.OfferService
 
 // function with config (application.conf)
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
+@OptIn(KtorExperimentalLocationsAPI::class)
 @Suppress("unused") // Referenced in application.conf
 fun Application.module() {
     // Generally not needed as it is replaced by a `routing`
@@ -63,15 +63,14 @@ fun Application.module() {
     install(Locations)
 
     val adService = AdService()
-    val offerService = OfferService()
 
     routing {
         get("/") {
             call.respondText("Hello, world!")
         }
 
-        v1(adService, offerService)
-        v2(adService, offerService)
+        v1(adService)
+        v2(adService)
 
         static("static") {
             resources("static")

@@ -3,32 +3,31 @@ package ru.otus.otuskotlin.marketplace.api.v1
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import ru.otus.otuskotlin.marketplace.backend.services.AdService
-import ru.otus.otuskotlin.marketplace.backend.services.OfferService
 
-fun Route.v1Ad(adService: AdService) {
+fun Route.v1Ad(service: AdService) {
     route("ad") {
         post("create") {
-            call.createAd(adService)
+            call.createAd(service)
         }
         post("read") {
-            call.readAd(adService)
+            call.readAd(service)
         }
         post("update") {
-            call.updateAd(adService)
+            call.updateAd(service)
         }
         post("delete") {
-            call.deleteAd(adService)
+            call.deleteAd(service)
         }
         post("search") {
-            call.searchAd(adService)
+            call.searchAd(service)
         }
     }
 }
 
-fun Route.v1Offer(offerService: OfferService) {
+fun Route.v1Offer(service: AdService) {
     route("ad") {
         post("offers") {
-            call.offersAd(offerService)
+            call.offersAd(service)
         }
     }
 }

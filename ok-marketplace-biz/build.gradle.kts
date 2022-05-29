@@ -2,13 +2,9 @@ plugins {
     kotlin("multiplatform")
 }
 
-repositories {
-//    mavenCentral()
-    maven { url = uri("https://jitpack.io") }
-}
-
 kotlin {
     jvm {}
+    linuxX64 {}
 
     sourceSets {
         val coroutinesVersion: String by project
