@@ -31,6 +31,7 @@ kotlin {
         }
     }
     sourceSets {
+        @Suppress("UNUSED_VARIABLE")
         val commonMain by getting {
             dependencies {
                 implementation(project(":ok-marketplace-common"))
@@ -38,9 +39,10 @@ kotlin {
                 implementation(project(":ok-marketplace-mappers-v2"))
 
                 implementation(project(":ok-marketplace-services"))
-                implementation(project(":ok-marketplace-stubs"))
+                implementation(project(":ok-marketplace-app-ktor-common"))
             }
         }
+        @Suppress("UNUSED_VARIABLE")
         val nativeMain by getting {
             dependencies {
                 implementation("io.ktor:ktor-server-core:$ktorVersion")
@@ -50,6 +52,7 @@ kotlin {
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
             }
         }
+        @Suppress("UNUSED_VARIABLE")
         val nativeTest by getting {
             dependencies {
                 implementation(kotlin("test"))
@@ -74,6 +77,7 @@ tasks {
         copyFile("app", "/app")
         entryPoint("/app")
     }
+    @Suppress("UNUSED_VARIABLE")
     val dockerBuildImage by creating(DockerBuildImage::class) {
         group = "docker"
         dependsOn(dockerDockerfile)

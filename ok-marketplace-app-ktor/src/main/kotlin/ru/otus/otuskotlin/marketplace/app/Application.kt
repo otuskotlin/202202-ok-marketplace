@@ -17,8 +17,11 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import org.slf4j.event.Level
-import ru.otus.otuskotlin.marketplace.api.v1
-import ru.otus.otuskotlin.marketplace.api.v2
+import ru.otus.otuskotlin.marketplace.app.v1.v1Ad
+import ru.otus.otuskotlin.marketplace.app.v1.v1Offer
+import ru.otus.otuskotlin.marketplace.app.v2.CustomJsonConverter
+import ru.otus.otuskotlin.marketplace.app.v2.v2Ad
+import ru.otus.otuskotlin.marketplace.app.v2.v2Offer
 import ru.otus.otuskotlin.marketplace.backend.services.AdService
 
 // function with config (application.conf)
@@ -53,6 +56,7 @@ fun Application.module() {
             enable(SerializationFeature.INDENT_OUTPUT)
             writerWithDefaultPrettyPrinter()
         }
+        register(ContentType.Application.Json, CustomJsonConverter())
     }
 
 
@@ -62,15 +66,21 @@ fun Application.module() {
 
     install(Locations)
 
-    val adService = AdService()
+    val service = AdService()
 
     routing {
         get("/") {
             call.respondText("Hello, world!")
         }
 
-        v1(adService)
-        v2(adService)
+        route("v1") {
+            v1Ad(service)
+            v1Offer(service)
+        }
+        route("v2") {
+            v2Ad(service)
+            v2Offer(service)
+        }
 
         static("static") {
             resources("static")

@@ -86,7 +86,7 @@ openApiGenerate {
 
 afterEvaluate {
     val openApiGenerate = tasks.getByName("openApiGenerate")
-    tasks.getByName("compileCommonMainKotlinMetadata") {
-        dependsOn(openApiGenerate)
+    tasks.filter { it.name.startsWith("compile") }.forEach {
+        it.dependsOn(openApiGenerate)
     }
 }

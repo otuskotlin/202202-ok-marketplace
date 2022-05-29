@@ -1,4 +1,4 @@
-package ru.otus.otuskotlin.marketplace.v2
+package ru.otus.otuskotlin.marketplace.app.v2
 
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -55,7 +55,6 @@ class CustomJsonConverter() : ContentConverter {
         }, contentType.withCharsetIfNeeded(charset))
     }
 
-    class NoDataException() : Throwable(message = "Empty data read by ${CustomJsonConverter::class.simpleName}")
     class UnsupportedClassSerialization(clazz: KClass<*>, handler: KFunction<*>) :
         Throwable(message = "Unsupported type expected in ${handler.name}: ${clazz.simpleName}")
 }

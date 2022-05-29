@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.util.suffixIfNot
 val ktorVersion: String by project
 
 // ex: Converts to "io.ktor:ktor-ktor-server-netty:2.0.1" with only ktor("netty")
-fun DependencyHandler.ktor(module: String, prefix: String = "server-", version: String? = ktorVersion): Any =
+fun ktor(module: String, prefix: String = "server-", version: String? = this@Build_gradle.ktorVersion): Any =
     "io.ktor:ktor-${prefix.suffixIfNot("-")}$module:$version"
 
 plugins {
@@ -61,6 +61,7 @@ dependencies {
 
     // transport models
     implementation(project(":ok-marketplace-common"))
+    implementation(project(":ok-marketplace-app-ktor-common"))
     implementation(project(":ok-marketplace-api-v1-jackson"))
     implementation(project(":ok-marketplace-api-v2-kmp"))
     implementation(project(":ok-marketplace-mappers-v1"))

@@ -1,4 +1,4 @@
-package ru.otus.otuskotlin.marketplace.api.v2
+package ru.otus.otuskotlin.marketplace.app.v2
 
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -7,8 +7,8 @@ import kotlinx.datetime.Clock
 import ru.otus.otuskotlin.marketplace.api.v2.models.*
 import ru.otus.otuskotlin.marketplace.backend.services.AdService
 import ru.otus.otuskotlin.marketplace.common.MkplContext
-import ru.otus.otuskotlin.marketplace.mappers.v1.toTransportAd
 import ru.otus.otuskotlin.marketplace.mappers.v2.fromTransport
+import ru.otus.otuskotlin.marketplace.mappers.v2.toTransportAd
 
 suspend fun ApplicationCall.createAd(adService: AdService) {
     val ctx = MkplContext(
