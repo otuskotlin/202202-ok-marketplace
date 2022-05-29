@@ -1,4 +1,4 @@
-package marketplace.stubs
+package ru.otus.otuskotlin.marketplace.stubs.products
 
 import ru.otus.otuskotlin.marketplace.common.models.*
 

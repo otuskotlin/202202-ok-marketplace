@@ -3,13 +3,16 @@ plugins {
 }
 
 repositories {
-    mavenCentral()
+//    mavenCentral()
+    maven { url = uri("https://jitpack.io") }
 }
 
 kotlin {
     jvm {}
 
     sourceSets {
+        val coroutinesVersion: String by project
+        val kotlinCorVersion: String by project
 
         @Suppress("UNUSED_VARIABLE")
         val commonMain by getting {
@@ -17,6 +20,8 @@ kotlin {
                 implementation(kotlin("stdlib-common"))
 
                 implementation(project(":ok-marketplace-common"))
+                implementation(project(":ok-marketplace-stubs"))
+                implementation("com.github.crowdproj.kotlin-cor:kotlin-cor:$kotlinCorVersion")
             }
         }
         @Suppress("UNUSED_VARIABLE")
@@ -24,6 +29,20 @@ kotlin {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
+
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
+            }
+        }
+        @Suppress("UNUSED_VARIABLE")
+        val jvmMain by getting {
+            dependencies {
+                implementation(kotlin("stdlib-jdk8"))
+            }
+        }
+        @Suppress("UNUSED_VARIABLE")
+        val jvmTest by getting {
+            dependencies {
+                implementation(kotlin("test-junit"))
             }
         }
     }
