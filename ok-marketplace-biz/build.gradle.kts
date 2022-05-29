@@ -14,6 +14,8 @@ kotlin {
         val coroutinesVersion: String by project
         val kotlinCorVersion: String by project
 
+        all { languageSettings.optIn("kotlin.RequiresOptIn") }
+
         @Suppress("UNUSED_VARIABLE")
         val commonMain by getting {
             dependencies {

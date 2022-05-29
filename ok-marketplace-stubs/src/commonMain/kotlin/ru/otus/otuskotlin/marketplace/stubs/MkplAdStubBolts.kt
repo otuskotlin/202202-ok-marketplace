@@ -1,4 +1,4 @@
-package ru.otus.otuskotlin.marketplace.stubs.products
+package ru.otus.otuskotlin.marketplace.stubs
 
 import ru.otus.otuskotlin.marketplace.common.helpers.mm
 import ru.otus.otuskotlin.marketplace.common.models.*
@@ -33,4 +33,5 @@ object MkplAdStubBolts {
                 MkplAdPermissionClient.MAKE_VISIBLE_OWNER,
             )
         )
+    val AD_SUPPLY_BOLT1 = AD_DEMAND_BOLT1.copy(adType = MkplDealSide.SUPPLY)
 }

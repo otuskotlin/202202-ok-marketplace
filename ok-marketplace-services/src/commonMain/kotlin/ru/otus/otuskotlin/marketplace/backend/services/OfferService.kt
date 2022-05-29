@@ -1,6 +1,6 @@
 package ru.otus.otuskotlin.marketplace.backend.services
 
-import ru.otus.otuskotlin.marketplace.stubs.products.Bolt
+import ru.otus.otuskotlin.marketplace.stubs.Bolt
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.models.MkplError
 import ru.otus.otuskotlin.marketplace.common.stubs.MkplStubs
