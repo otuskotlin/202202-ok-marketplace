@@ -67,11 +67,12 @@ tasks {
     }
     val dockerDockerfile by creating(Dockerfile::class) {
         group = "docker"
-        from("ubuntu:22.02")
+        from("ubuntu:22.04")
         doFirst {
             copy {
                 from(linkReleaseExecutableNative.binary.outputFile)
-                into("${this@creating.temporaryDir}/app")
+                into("$buildDir/docker")
+                rename(".*", "app")
             }
         }
         copyFile("app", "/app")
