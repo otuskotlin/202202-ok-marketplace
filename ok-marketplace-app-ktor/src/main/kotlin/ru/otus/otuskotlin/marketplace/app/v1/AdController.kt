@@ -32,18 +32,22 @@ suspend fun ApplicationCall.createAd(adService: AdService) {
     }
 }
 
-suspend fun ApplicationCall.readAd(service: AdService) = controllerHelperV1<AdReadRequest, AdReadResponse> {
-    service.readAd(this)
-}
+suspend fun ApplicationCall.readAd(service: AdService) =
+    controllerHelperV1<AdReadRequest, AdReadResponse>(MkplCommand.READ) {
+        service.readAd(this)
+    }
 
-suspend fun ApplicationCall.updateAd(service: AdService) = controllerHelperV1<AdUpdateRequest, AdUpdateResponse> {
-    service.updateAd(this)
-}
+suspend fun ApplicationCall.updateAd(service: AdService) =
+    controllerHelperV1<AdUpdateRequest, AdUpdateResponse>(MkplCommand.UPDATE) {
+        service.updateAd(this)
+    }
 
-suspend fun ApplicationCall.deleteAd(service: AdService) = controllerHelperV1<AdDeleteRequest, AdDeleteResponse> {
+suspend fun ApplicationCall.deleteAd(service: AdService) =
+    controllerHelperV1<AdDeleteRequest, AdDeleteResponse>(MkplCommand.DELETE) {
     service.deleteAd(this)
 }
 
-suspend fun ApplicationCall.searchAd(adService: AdService) = controllerHelperV1<AdSearchRequest, AdSearchResponse> {
+suspend fun ApplicationCall.searchAd(adService: AdService) =
+    controllerHelperV1<AdSearchRequest, AdSearchResponse>(MkplCommand.SEARCH) {
     adService.searchAd(this)
 }
