@@ -15,7 +15,7 @@ import ru.otus.otuskotlin.marketplace.api.v2.models.IRequest
 internal object AdRequestSerializer : JsonContentPolymorphicSerializer<IRequest>(IRequest::class) {
     private const val discriminator = "requestType"
     override fun selectDeserializer(element: JsonElement): KSerializer<out IRequest> {
-        println("ELEMENT: ${element.jsonObject["ad"]?.jsonObject?.get("props")}")
+//        println("ELEMENT: ${element.jsonObject["ad"]?.jsonObject?.get("props")}")
         return when (val discriminatorValue = element.jsonObject[discriminator]?.jsonPrimitive?.content) {
             "create" -> RequestSerializers.create
             "read" -> RequestSerializers.read

@@ -1,11 +1,12 @@
 package ru.otus.otuskotlin.marketplace.springapp.api.v2.controller
 
+import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.Clock
 import org.springframework.web.bind.annotation.*
 import ru.otus.otuskotlin.marketplace.api.v2.models.*
 import ru.otus.otuskotlin.marketplace.backend.services.AdService
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.mappers.v2.*
-import ru.otus.otuskotlin.marketplace.springapp.api.v2.buildError
 
 @RestController
 @RequestMapping("v2/ad")
@@ -14,43 +15,53 @@ class AdControllerV2(
 ) {
 
     @PostMapping("create")
-    fun createAd(@RequestBody createAdRequest: AdCreateRequest): AdCreateResponse {
-
-//        val context = MkplContext().apply { fromTransport(apiV2RequestDeserialize<IRequest>(createAdRequest)) }
-        val context = MkplContext().apply { fromTransport(createAdRequest) }
-
-        return adService.createAd(context).toTransportCreate()
+    fun createAd(@RequestBody request: AdCreateRequest): AdCreateResponse {
+        val ctx = MkplContext(
+            timeStart = Clock.System.now(),
+        )
+        ctx.fromTransport(request)
+        runBlocking { adService.createAd(ctx) }
+        return ctx.toTransportCreate()
     }
 
     @PostMapping("read")
-    fun readAd(@RequestBody readAdRequest: AdReadRequest) =
-        MkplContext().apply {
-            fromTransport(readAdRequest)
-        }.let {
-            adService.readAd(it, ::buildError)
-        }.toTransportRead()
+    fun readAd(@RequestBody request: AdReadRequest): AdReadResponse {
+        val ctx = MkplContext(
+            timeStart = Clock.System.now(),
+        )
+        ctx.fromTransport(request)
+        runBlocking { adService.readAd(ctx) }
+        return ctx.toTransportRead()
+    }
 
     @RequestMapping("update", method = [RequestMethod.POST])
-    fun updateAd(@RequestBody updateAdRequest: AdUpdateRequest): AdUpdateResponse {
-        return MkplContext().apply {
-            fromTransport(updateAdRequest)
-        }.let {
-            adService.updateAd(it, ::buildError)
-        }.toTransportUpdate()
+    fun updateAd(@RequestBody request: AdUpdateRequest): AdUpdateResponse {
+        val ctx = MkplContext(
+            timeStart = Clock.System.now(),
+        )
+        ctx.fromTransport(request)
+        runBlocking { adService.updateAd(ctx) }
+        return ctx.toTransportUpdate()
     }
 
     @PostMapping("delete")
-    fun deleteAd(@RequestBody deleteAdRequest: AdDeleteRequest): AdDeleteResponse {
-        val context = MkplContext().apply { fromTransport(deleteAdRequest) }
-
-        val result = adService.deleteAd(context, ::buildError)
-
-        return result.toTransportDelete()
+    fun deleteAd(@RequestBody request: AdDeleteRequest): AdDeleteResponse {
+        val ctx = MkplContext(
+            timeStart = Clock.System.now(),
+        )
+        ctx.fromTransport(request)
+        runBlocking { adService.deleteAd(ctx) }
+        return ctx.toTransportDelete()
     }
 
     @PostMapping("search")
-    fun searchAd(@RequestBody searchAdRequest: AdSearchRequest) =
-        MkplContext().apply { fromTransport(searchAdRequest) }.let {
-            adService.searchAd(it, ::buildError)
-        }.toTransportSearch()
+    fun searchAd(@RequestBody request: AdSearchRequest): AdSearchResponse {
+        val ctx = MkplContext(
+            timeStart = Clock.System.now(),
+        )
+        ctx.fromTransport(request)
+        runBlocking { adService.searchAd(ctx) }
+        return ctx.toTransportSearch()
+
+    }
 }

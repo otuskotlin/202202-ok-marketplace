@@ -15,6 +15,7 @@ kotlin {
         val coroutinesVersion: String by project
         val serializationVersion: String by project
 
+        @Suppress("UNUSED_VARIABLE")
         val commonMain by getting {
             kotlin.srcDirs("$buildDir/generate-resources/main/src/commonMain/kotlin")
             dependencies {
@@ -24,17 +25,20 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationVersion")
             }
         }
+        @Suppress("UNUSED_VARIABLE")
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
             }
         }
+        @Suppress("UNUSED_VARIABLE")
         val jvmMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-jdk8"))
             }
         }
+        @Suppress("UNUSED_VARIABLE")
         val jvmTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
@@ -80,17 +84,9 @@ openApiGenerate {
     ))
 }
 
-tasks {
-    allMetadataJar {
-        dependsOn(openApiGenerate)
+afterEvaluate {
+    val openApiGenerate = tasks.getByName("openApiGenerate")
+    tasks.filter { it.name.startsWith("compile") }.forEach {
+        it.dependsOn(openApiGenerate)
     }
-    val compileKotlinJvm by getting {
-        dependsOn(openApiGenerate)
-    }
-    val compileTestKotlinJvm by getting {
-        dependsOn(openApiGenerate)
-    }
-//    forEach {
-//        println("TASK: ${it.name}")
-//    }
 }
