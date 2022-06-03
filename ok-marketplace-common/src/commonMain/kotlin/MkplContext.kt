@@ -15,6 +15,8 @@ data class MkplContext(
     var workMode: MkplWorkMode = MkplWorkMode.PROD,
     var stubCase: MkplStubs = MkplStubs.NONE,
 
+    var clientSession: IClientSession<*> = IClientSession.NONE,
+
     var requestId: MkplRequestId = MkplRequestId.NONE,
     var timeStart: Instant = Instant.NONE,
     var adRequest: MkplAd = MkplAd(),
