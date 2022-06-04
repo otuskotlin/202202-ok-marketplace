@@ -5,4 +5,6 @@ data class MkplAdProductBolt(
     var diameter: MkplLength = MkplLength.NONE,
     var headStyle: MkplAdProductBoltHeadStyle = MkplAdProductBoltHeadStyle.NONE,
     var thread: MkplAdProductBoltThread = MkplAdProductBoltThread.NONE,
-): IMkplAdProduct
+): IMkplAdProduct {
+    override fun deepCopy(): MkplAdProductBolt = copy()
+}

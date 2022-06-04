@@ -10,5 +10,17 @@ data class MkplAd(
     var adType: MkplDealSide = MkplDealSide.NONE,
     var visibility: MkplVisibility = MkplVisibility.NONE,
     var product: IMkplAdProduct = IMkplAdProduct.NONE,
-    val permissionsClient: MutableSet<MkplAdPermissionClient> = mutableSetOf()
-)
+    val permissionsClient: MutableSet<MkplAdPermissionClient> = mutableSetOf(),
+) {
+    fun deepCopy(
+    ) = MkplAd(
+        id = this@MkplAd.id,
+        title = this@MkplAd.title,
+        description = this@MkplAd.description,
+        ownerId = this@MkplAd.ownerId,
+        adType = this@MkplAd.adType,
+        visibility = this@MkplAd.visibility,
+        product = this@MkplAd.product.deepCopy(),
+        permissionsClient = this@MkplAd.permissionsClient.toMutableSet()
+    )
+}

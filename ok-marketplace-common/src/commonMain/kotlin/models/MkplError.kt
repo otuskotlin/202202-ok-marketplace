@@ -5,5 +5,6 @@ data class MkplError(
     val group: String = "",
     val field: String = "",
     val message: String = "",
+    val level: MkplErrorLevels = MkplErrorLevels.ERROR,
     val exception: Throwable? = null,
 )

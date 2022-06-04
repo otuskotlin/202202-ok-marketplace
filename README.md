@@ -77,22 +77,20 @@ Marketplace -- это площадка, на которой пользовате
 2. [ok-marketplace-api-v1-jackson](ok-marketplace-api-v1-jackson) - Генерация первой версии транспортных модеелй с
    Jackson
 3. [ok-marketplace-api-v2-kmp](ok-marketplace-api-v2-kmp) - Генерация второй версии транспортных модеелй с KMP
-4. [ok-marketplace-common](ok-marketplace-common) - модуль с общими классами для модулей проекта. В частности,
-   там располагаются внутренние модели и контекст.
+4. [ok-marketplace-common](ok-marketplace-common) - модуль с общими классами для модулей проекта. В частности, там
+   располагаются внутренние модели и контекст.
 5. [ok-marketplace-api-v1-jackson](ok-marketplace-api-v1-jackson) - Мапер между внутренними моделями и моделями API v1
 6. [ok-marketplace-api-v2-kmp](ok-marketplace-api-v2-kmp) - Мапер между внутренними моделями и моделями API v1
 
 ## Фреймворки и транспорты
 
-[//]: # (1. [ok-marketplace-be-service-openapi]&#40;ok-marketplace-be-service-openapi&#41; - Сервис для OpenAPI-реализации. Предназначен)
-
-[//]: # (   для унификации вызовов бизнес-логики при использовании разных транспортных моделей)
-
-[//]: # (1. [ok-marketplace-be-app-spring]&#40;ok-marketplace-be-app-spring&#41; - Приложение на Spring Framework)
-
-[//]: # (1. [ok-marketplace-be-app-ktor]&#40;ok-marketplace-be-app-ktor&#41; - Приложение на Ktor)
-
-[//]: # (1. [ok-marketplace-be-app-serverless]&#40;ok-marketplace-be-app-serverless&#41; - Бессерверное приложение для AWS)
+1. [ok-marketplace-services](ok-marketplace-services) - Сервис. Служит оберткой для модуля бизнес-логики. Подключается
+   всеми фреймворками (модулями `*-app-*`)
+1. [ok-marketplace-app-spring](ok-marketplace-app-spring) - Приложение на Spring Framework
+1. [ok-marketplace-app-ktor](ok-marketplace-app-ktor) - Приложение на Ktor JVM
+1. [ok-marketplace-app-ktor-native](ok-marketplace-app-ktor-native) - Приложение на Ktor Native
+1. [ok-marketplace-app-ktor-common](ok-marketplace-app-ktor-common) - Общая логика для Ktor JVM и Ktor Native
+1. [ok-marketplace-app-knative](ok-marketplace-app-knative) - Скрипты запуска приложения в KNative
 
 [//]: # (1. [ok-marketplace-be-app-rabbit]&#40;ok-marketplace-be-app-rabbit&#41; - Микросервис на RabbitMQ)
 
@@ -100,7 +98,8 @@ Marketplace -- это площадка, на которой пользовате
 
 ## Модули бизнес-логики
 
-[//]: # (1. [ok-marketplace-be-stubs]&#40;ok-marketplace-be-stubs&#41; - Стабы для ответов сервиса)
+1. [ok-marketplace-stubs](ok-marketplace-stubs) - Стабы для ответов сервиса
+1. [ok-marketplace-biz](ok-marketplace-biz) - Модуль бизнес-логики приложения
 
 [//]: # (2. [ok-marketplace-mp-common-cor]&#40;ok-marketplace-mp-common-cor&#41; - Библиотека для реализации шаблона Цепочка обязанностей)
 

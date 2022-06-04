@@ -1,4 +1,4 @@
-package ru.otus.otuskotlin.marketplace.biz.groups
+package ru.otus.otuskotlin.marketplace.biz.stubs
 
 import com.crowdproj.kotlin.cor.ICorChainDsl
 import com.crowdproj.kotlin.cor.handlers.chain

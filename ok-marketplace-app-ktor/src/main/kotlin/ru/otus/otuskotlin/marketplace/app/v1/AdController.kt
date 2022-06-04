@@ -8,53 +8,46 @@ import ru.otus.otuskotlin.marketplace.backend.services.AdService
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.mappers.v1.*
 import kotlinx.datetime.Clock
+import ru.otus.otuskotlin.marketplace.common.errors.asMkplError
+import ru.otus.otuskotlin.marketplace.common.models.MkplCommand
+import ru.otus.otuskotlin.marketplace.common.models.MkplState
 
 suspend fun ApplicationCall.createAd(adService: AdService) {
     val ctx = MkplContext(
         timeStart = Clock.System.now(),
     )
-    val request = receive<AdCreateRequest>()
-    ctx.fromTransport(request)
-    adService.createAd(ctx)
-    respond(ctx.toTransportAd())
+    try {
+        val request = receive<AdCreateRequest>()
+        ctx.fromTransport(request)
+        adService.createAd(ctx)
+        val response = ctx.toTransportAd()
+        respond(response)
+    } catch (e: Throwable) {
+        ctx.command = MkplCommand.CREATE
+        ctx.state = MkplState.FAILING
+        ctx.errors.add(e.asMkplError())
+        adService.createAd(ctx)
+        val response = ctx.toTransportAd()
+        respond(response)
+    }
 }
 
-suspend fun ApplicationCall.readAd(adService: AdService) {
-    val ctx = MkplContext(
-        timeStart = Clock.System.now(),
-    )
-    val request = receive<AdReadRequest>()
-    ctx.fromTransport(request)
-    adService.readAd(ctx)
-    respond(ctx.toTransportAd())
+suspend fun ApplicationCall.readAd(service: AdService) =
+    controllerHelperV1<AdReadRequest, AdReadResponse>(MkplCommand.READ) {
+        service.readAd(this)
+    }
+
+suspend fun ApplicationCall.updateAd(service: AdService) =
+    controllerHelperV1<AdUpdateRequest, AdUpdateResponse>(MkplCommand.UPDATE) {
+        service.updateAd(this)
+    }
+
+suspend fun ApplicationCall.deleteAd(service: AdService) =
+    controllerHelperV1<AdDeleteRequest, AdDeleteResponse>(MkplCommand.DELETE) {
+    service.deleteAd(this)
 }
 
-suspend fun ApplicationCall.updateAd(adService: AdService) {
-    val ctx = MkplContext(
-        timeStart = Clock.System.now(),
-    )
-    val request = receive<AdUpdateRequest>()
-    ctx.fromTransport(request)
-    adService.updateAd(ctx)
-    respond(ctx.toTransportAd())
-}
-
-suspend fun ApplicationCall.deleteAd(service: AdService) {
-    val ctx = MkplContext(
-        timeStart = Clock.System.now(),
-    )
-    val request = receive<AdDeleteRequest>()
-    ctx.fromTransport(request)
-    service.deleteAd(ctx)
-    respond(ctx.toTransportAd())
-}
-
-suspend fun ApplicationCall.searchAd(adService: AdService) {
-    val ctx = MkplContext(
-        timeStart = Clock.System.now(),
-    )
-    val request = receive<AdSearchRequest>()
-    ctx.fromTransport(request)
-    adService.searchAd(ctx)
-    respond(ctx.toTransportAd())
+suspend fun ApplicationCall.searchAd(adService: AdService) =
+    controllerHelperV1<AdSearchRequest, AdSearchResponse>(MkplCommand.SEARCH) {
+    adService.searchAd(this)
 }
