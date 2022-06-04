@@ -6,16 +6,10 @@ import ru.otus.otuskotlin.marketplace.common.models.MkplCommand
 import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class BizValidationUpdateTest {
+class BizValidationDeleteTest {
 
     private val processor = MkplAdProcessor()
-    private val command = MkplCommand.UPDATE
-
-    @Test fun emptyTitle() = validationTitleEmpty(command, processor)
-    @Test fun badSymbolsTitle() = validationTitleSymbols(command, processor)
-
-    @Test fun emptyDescription() = validationDescriptionEmpty(command, processor)
-    @Test fun badSymbolsDescription() = validationDescriptionSymbols(command, processor)
+    private val command = MkplCommand.DELETE
 
     @Test fun emptyId() = validationIdEmpty(command, processor)
     @Test fun badFormatId() = validationIdFormat(command, processor)

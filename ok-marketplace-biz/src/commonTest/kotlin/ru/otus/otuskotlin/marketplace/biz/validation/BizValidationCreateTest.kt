@@ -9,11 +9,13 @@ import kotlin.test.Test
 class BizValidationCreateTest {
 
     private val processor = MkplAdProcessor()
+    private val command = MkplCommand.CREATE
 
-    @Test fun emptyTitle() = validationTitleEmpty(MkplCommand.CREATE, processor)
-    @Test fun badSymbolsTitle() = validationTitleSymbols(MkplCommand.CREATE, processor)
+    @Test fun emptyTitle() = validationTitleEmpty(command, processor)
+    @Test fun badSymbolsTitle() = validationTitleSymbols(command, processor)
 
-    @Test fun emptyDescription() = validationDescriptionEmpty(MkplCommand.CREATE, processor)
+    @Test fun emptyDescription() = validationDescriptionEmpty(command, processor)
+    @Test fun badSymbolsDescription() = validationDescriptionSymbols(command, processor)
 
 }
 

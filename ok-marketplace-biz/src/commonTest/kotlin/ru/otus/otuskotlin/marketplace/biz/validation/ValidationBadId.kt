@@ -9,15 +9,15 @@ import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-fun validationDescriptionEmpty(command: MkplCommand, processor: MkplAdProcessor) = runTest {
+fun validationIdEmpty(command: MkplCommand, processor: MkplAdProcessor) = runTest {
     val ctx = MkplContext(
         command = command,
         state = MkplState.NONE,
         workMode = MkplWorkMode.TEST,
         adRequest = MkplAd(
-            id = MkplAdId("123"),
-            title = "123",
-            description = "",
+            id = MkplAdId(""),
+            title = "234",
+            description = "123",
             adType = MkplDealSide.DEMAND,
             visibility = MkplVisibility.VISIBLE_PUBLIC,
         ),
@@ -26,20 +26,20 @@ fun validationDescriptionEmpty(command: MkplCommand, processor: MkplAdProcessor)
     assertEquals(1, ctx.errors.size)
     assertEquals(MkplState.FAILING, ctx.state)
     val error = ctx.errors.firstOrNull()
-    assertEquals("description", error?.field)
-    assertContains("description", error?.message ?: "")
+    assertEquals("id", error?.field)
+    assertContains("id", error?.message ?: "")
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
-fun validationDescriptionSymbols(command: MkplCommand, processor: MkplAdProcessor) = runTest {
+fun validationIdFormat(command: MkplCommand, processor: MkplAdProcessor) = runTest {
     val ctx = MkplContext(
         command = command,
         state = MkplState.NONE,
         workMode = MkplWorkMode.TEST,
         adRequest = MkplAd(
-            id = MkplAdId("123"),
+            id = MkplAdId("!@#\$%^&*(),.{}"),
             title = "123",
-            description = "!@#$%^&*(),.{}",
+            description = "123",
             adType = MkplDealSide.DEMAND,
             visibility = MkplVisibility.VISIBLE_PUBLIC,
         ),
@@ -48,6 +48,6 @@ fun validationDescriptionSymbols(command: MkplCommand, processor: MkplAdProcesso
     assertEquals(1, ctx.errors.size)
     assertEquals(MkplState.FAILING, ctx.state)
     val error = ctx.errors.firstOrNull()
-    assertEquals("description", error?.field)
-    assertContains("description", error?.message ?: "")
+    assertEquals("id", error?.field)
+    assertContains("id", error?.message ?: "")
 }
