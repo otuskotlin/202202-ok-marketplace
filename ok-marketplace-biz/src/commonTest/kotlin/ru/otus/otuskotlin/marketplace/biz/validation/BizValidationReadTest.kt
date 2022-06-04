@@ -9,8 +9,9 @@ import kotlin.test.Test
 class BizValidationReadTest {
 
     private val processor = MkplAdProcessor()
-    private val command = MkplCommand.DELETE
+    private val command = MkplCommand.READ
 
+    @Test fun correctId() = validationIdCorrect(command, processor)
     @Test fun emptyId() = validationIdEmpty(command, processor)
     @Test fun badFormatId() = validationIdFormat(command, processor)
 

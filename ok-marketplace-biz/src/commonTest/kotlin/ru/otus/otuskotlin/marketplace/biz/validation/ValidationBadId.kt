@@ -7,6 +7,26 @@ import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.models.*
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
+
+@OptIn(ExperimentalCoroutinesApi::class)
+fun validationIdCorrect(command: MkplCommand, processor: MkplAdProcessor) = runTest {
+    val ctx = MkplContext(
+        command = command,
+        state = MkplState.NONE,
+        workMode = MkplWorkMode.TEST,
+        adRequest = MkplAd(
+            id = MkplAdId("123-234-abc-ABC"),
+            title = "abc",
+            description = "abc",
+            adType = MkplDealSide.DEMAND,
+            visibility = MkplVisibility.VISIBLE_PUBLIC,
+        ),
+    )
+    processor.exec(ctx)
+    assertEquals(0, ctx.errors.size)
+    assertNotEquals(MkplState.FAILING, ctx.state)
+}
 
 @OptIn(ExperimentalCoroutinesApi::class)
 fun validationIdEmpty(command: MkplCommand, processor: MkplAdProcessor) = runTest {
@@ -16,8 +36,8 @@ fun validationIdEmpty(command: MkplCommand, processor: MkplAdProcessor) = runTes
         workMode = MkplWorkMode.TEST,
         adRequest = MkplAd(
             id = MkplAdId(""),
-            title = "234",
-            description = "123",
+            title = "abc",
+            description = "abc",
             adType = MkplDealSide.DEMAND,
             visibility = MkplVisibility.VISIBLE_PUBLIC,
         ),
@@ -27,7 +47,7 @@ fun validationIdEmpty(command: MkplCommand, processor: MkplAdProcessor) = runTes
     assertEquals(MkplState.FAILING, ctx.state)
     val error = ctx.errors.firstOrNull()
     assertEquals("id", error?.field)
-    assertContains("id", error?.message ?: "")
+    assertContains(error?.message ?: "", "id")
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -38,8 +58,8 @@ fun validationIdFormat(command: MkplCommand, processor: MkplAdProcessor) = runTe
         workMode = MkplWorkMode.TEST,
         adRequest = MkplAd(
             id = MkplAdId("!@#\$%^&*(),.{}"),
-            title = "123",
-            description = "123",
+            title = "abc",
+            description = "abc",
             adType = MkplDealSide.DEMAND,
             visibility = MkplVisibility.VISIBLE_PUBLIC,
         ),
@@ -49,5 +69,5 @@ fun validationIdFormat(command: MkplCommand, processor: MkplAdProcessor) = runTe
     assertEquals(MkplState.FAILING, ctx.state)
     val error = ctx.errors.firstOrNull()
     assertEquals("id", error?.field)
-    assertContains("id", error?.message ?: "")
+    assertContains(error?.message ?: "", "id")
 }

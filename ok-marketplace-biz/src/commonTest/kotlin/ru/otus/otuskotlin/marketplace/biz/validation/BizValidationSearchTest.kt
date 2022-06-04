@@ -7,6 +7,7 @@ import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.models.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BizValidationSearchTest {
@@ -15,7 +16,7 @@ class BizValidationSearchTest {
     private val command = MkplCommand.SEARCH
 
     @Test
-    fun searchFilterTest() = runTest {
+    fun correctEmpty() = runTest {
         val ctx = MkplContext(
             command = command,
             state = MkplState.NONE,
@@ -24,7 +25,7 @@ class BizValidationSearchTest {
         )
         processor.exec(ctx)
         assertEquals(0, ctx.errors.size)
-        assertEquals(MkplState.FAILING, ctx.state)
+        assertNotEquals(MkplState.FAILING, ctx.state)
     }
 }
 

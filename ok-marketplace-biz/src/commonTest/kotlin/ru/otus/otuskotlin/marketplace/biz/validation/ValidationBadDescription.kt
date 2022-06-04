@@ -16,7 +16,7 @@ fun validationDescriptionEmpty(command: MkplCommand, processor: MkplAdProcessor)
         workMode = MkplWorkMode.TEST,
         adRequest = MkplAd(
             id = MkplAdId("123"),
-            title = "123",
+            title = "abc",
             description = "",
             adType = MkplDealSide.DEMAND,
             visibility = MkplVisibility.VISIBLE_PUBLIC,
@@ -27,7 +27,7 @@ fun validationDescriptionEmpty(command: MkplCommand, processor: MkplAdProcessor)
     assertEquals(MkplState.FAILING, ctx.state)
     val error = ctx.errors.firstOrNull()
     assertEquals("description", error?.field)
-    assertContains("description", error?.message ?: "")
+    assertContains(error?.message ?: "", "description")
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -38,7 +38,7 @@ fun validationDescriptionSymbols(command: MkplCommand, processor: MkplAdProcesso
         workMode = MkplWorkMode.TEST,
         adRequest = MkplAd(
             id = MkplAdId("123"),
-            title = "123",
+            title = "abc",
             description = "!@#$%^&*(),.{}",
             adType = MkplDealSide.DEMAND,
             visibility = MkplVisibility.VISIBLE_PUBLIC,
@@ -49,5 +49,5 @@ fun validationDescriptionSymbols(command: MkplCommand, processor: MkplAdProcesso
     assertEquals(MkplState.FAILING, ctx.state)
     val error = ctx.errors.firstOrNull()
     assertEquals("description", error?.field)
-    assertContains("description", error?.message ?: "")
+    assertContains(error?.message ?: "", "description")
 }
