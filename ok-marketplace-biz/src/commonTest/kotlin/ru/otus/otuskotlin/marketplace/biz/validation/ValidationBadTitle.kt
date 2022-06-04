@@ -17,7 +17,7 @@ fun validationTitleEmpty(command: MkplCommand, processor: MkplAdProcessor) = run
         adRequest = MkplAd(
             id = MkplAdId("123"),
             title = "",
-            description = "123",
+            description = "abc",
             adType = MkplDealSide.DEMAND,
             visibility = MkplVisibility.VISIBLE_PUBLIC,
         ),
@@ -27,7 +27,7 @@ fun validationTitleEmpty(command: MkplCommand, processor: MkplAdProcessor) = run
     assertEquals(MkplState.FAILING, ctx.state)
     val error = ctx.errors.firstOrNull()
     assertEquals("title", error?.field)
-    assertContains("title", error?.message ?: "")
+    assertContains(error?.message ?: "", "title")
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -39,7 +39,7 @@ fun validationTitleSymbols(command: MkplCommand, processor: MkplAdProcessor) = r
         adRequest = MkplAd(
             id = MkplAdId("123"),
             title = "!@#$%^&*(),.{}",
-            description = "123",
+            description = "abc",
             adType = MkplDealSide.DEMAND,
             visibility = MkplVisibility.VISIBLE_PUBLIC,
         ),
@@ -49,5 +49,5 @@ fun validationTitleSymbols(command: MkplCommand, processor: MkplAdProcessor) = r
     assertEquals(MkplState.FAILING, ctx.state)
     val error = ctx.errors.firstOrNull()
     assertEquals("title", error?.field)
-    assertContains("title", error?.message ?: "")
+    assertContains(error?.message ?: "", "title")
 }

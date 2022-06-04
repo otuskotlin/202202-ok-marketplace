@@ -1,4 +1,4 @@
-package ru.otus.otuskotlin.marketplace.biz.workers
+package ru.otus.otuskotlin.marketplace.biz.general
 
 import com.crowdproj.kotlin.cor.ICorChainDsl
 import com.crowdproj.kotlin.cor.handlers.worker
