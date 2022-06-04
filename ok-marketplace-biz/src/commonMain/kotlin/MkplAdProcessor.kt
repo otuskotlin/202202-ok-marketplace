@@ -9,6 +9,7 @@ import ru.otus.otuskotlin.marketplace.biz.stubs.*
 import ru.otus.otuskotlin.marketplace.biz.validation.*
 import ru.otus.otuskotlin.marketplace.biz.general.initStatus
 import ru.otus.otuskotlin.marketplace.common.MkplContext
+import ru.otus.otuskotlin.marketplace.common.models.MkplAdId
 import ru.otus.otuskotlin.marketplace.common.models.MkplCommand
 
 class MkplAdProcessor() {
@@ -28,7 +29,9 @@ class MkplAdProcessor() {
                 }
                 chain {
                     title = "Валидация запроса"
-                    worker("Копируем поля в adValidating") { adValidating = adRequest.copy() }
+                    worker("Копируем поля в adValidating") { adValidating = adRequest.deepCopy() }
+                    worker("Очистка заголовка") { adValidating.title = adValidating.title.trim() }
+                    worker("Очистка описания") { adValidating.description = adValidating.description.trim() }
                     // validate all fields for html TAGs to avoid
                     validateTitleNotEmpty("Проверка на непустой заголовок")
                     validateTitleHasContent("Проверка на наличие содержания в заголовке")
@@ -47,7 +50,8 @@ class MkplAdProcessor() {
                 }
                 chain {
                     title = "Валидация запроса"
-                    worker("Копируем поля в adValidating") { adValidating = adRequest.copy() }
+                    worker("Копируем поля в adValidating") { adValidating = adRequest.deepCopy() }
+                    worker("Очистка id") { adValidating.id = MkplAdId(adValidating.id.asString().trim()) }
                     validateIdNotEmpty("Проверка на непустой id")
                     validateIdProperFormat("Проверка формата id")
 
@@ -65,7 +69,10 @@ class MkplAdProcessor() {
                 }
                 chain {
                     title = "Валидация запроса"
-                    worker("Копируем поля в adValidating") { adValidating = adRequest.copy() }
+                    worker("Копируем поля в adValidating") { adValidating = adRequest.deepCopy() }
+                    worker("Очистка id") { adValidating.id = MkplAdId(adValidating.id.asString().trim()) }
+                    worker("Очистка заголовка") { adValidating.title = adValidating.title.trim() }
+                    worker("Очистка описания") { adValidating.description = adValidating.description.trim() }
                     validateIdNotEmpty("Проверка на непустой id")
                     validateIdProperFormat("Проверка формата id")
                     validateTitleNotEmpty("Проверка на непустой заголовок")
@@ -85,7 +92,8 @@ class MkplAdProcessor() {
                 }
                 chain {
                     title = "Валидация запроса"
-                    worker("Копируем поля в adValidating") { adValidating = adRequest.copy() }
+                    worker("Копируем поля в adValidating") { adValidating = adRequest.deepCopy() }
+                    worker("Очистка id") { adValidating.id = MkplAdId(adValidating.id.asString().trim()) }
                     validateIdNotEmpty("Проверка на непустой id")
                     validateIdProperFormat("Проверка формата id")
 
@@ -116,15 +124,14 @@ class MkplAdProcessor() {
                 }
                 chain {
                     title = "Валидация запроса"
-                    worker("Копируем поля в adValidating") { adValidating = adRequest.copy() }
+                    worker("Копируем поля в adValidating") { adValidating = adRequest.deepCopy() }
+                    worker("Очистка id") { adValidating.id = MkplAdId(adValidating.id.asString().trim()) }
                     validateIdNotEmpty("Проверка на непустой id")
                     validateIdProperFormat("Проверка формата id")
 
                     finishAdValidation("Успешное завершение процедуры валидации")
                 }
             }
-
         }.build()
     }
 }
-

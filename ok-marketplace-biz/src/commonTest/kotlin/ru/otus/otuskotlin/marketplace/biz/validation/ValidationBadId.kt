@@ -29,6 +29,25 @@ fun validationIdCorrect(command: MkplCommand, processor: MkplAdProcessor) = runT
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
+fun validationIdTrim(command: MkplCommand, processor: MkplAdProcessor) = runTest {
+    val ctx = MkplContext(
+        command = command,
+        state = MkplState.NONE,
+        workMode = MkplWorkMode.TEST,
+        adRequest = MkplAd(
+            id = MkplAdId(" \n\t 123-234-abc-ABC \n\t "),
+            title = "abc",
+            description = "abc",
+            adType = MkplDealSide.DEMAND,
+            visibility = MkplVisibility.VISIBLE_PUBLIC,
+        ),
+    )
+    processor.exec(ctx)
+    assertEquals(0, ctx.errors.size)
+    assertNotEquals(MkplState.FAILING, ctx.state)
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
 fun validationIdEmpty(command: MkplCommand, processor: MkplAdProcessor) = runTest {
     val ctx = MkplContext(
         command = command,

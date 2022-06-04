@@ -11,6 +11,8 @@ class BizValidationDeleteTest {
     private val processor = MkplAdProcessor()
     private val command = MkplCommand.DELETE
 
+    @Test fun correctId() = validationIdCorrect(command, processor)
+    @Test fun trimId() = validationIdTrim(command, processor)
     @Test fun emptyId() = validationIdEmpty(command, processor)
     @Test fun badFormatId() = validationIdFormat(command, processor)
 
