@@ -2,13 +2,20 @@ package ru.otus.otuskotlin.marketplace.backend.services
 
 import marketplace.stubs.Bolt
 import ru.otus.otuskotlin.marketplace.common.MkplContext
-import ru.otus.otuskotlin.marketplace.common.models.MkplAdId
-import ru.otus.otuskotlin.marketplace.common.models.MkplError
-import ru.otus.otuskotlin.marketplace.common.models.MkplVisibility
-import ru.otus.otuskotlin.marketplace.common.models.MkplWorkMode
+import ru.otus.otuskotlin.marketplace.common.exceptions.UnknownMkplCommand
+import ru.otus.otuskotlin.marketplace.common.models.*
 import ru.otus.otuskotlin.marketplace.common.stubs.MkplStubs
 
 class AdService {
+
+    fun handleAd(mpContext: MkplContext, buildError: () -> MkplError) = when(val cmd = mpContext.command) {
+        MkplCommand.CREATE -> createAd(mpContext)
+        MkplCommand.READ -> readAd(mpContext, buildError)
+        MkplCommand.UPDATE -> updateAd(mpContext, buildError)
+        MkplCommand.DELETE -> deleteAd(mpContext, buildError)
+        MkplCommand.SEARCH -> searchAd(mpContext, buildError)
+        else -> throw UnknownMkplCommand(cmd)
+    }
     fun createAd(mpContext: MkplContext): MkplContext {
         val response = when (mpContext.workMode) {
             MkplWorkMode.PROD -> TODO()
