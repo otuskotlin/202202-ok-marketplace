@@ -1,6 +1,7 @@
 package ru.otus.otuskotlin.marketplace
 
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
@@ -67,6 +68,8 @@ fun Application.module() {
     install(Locations)
 
     val service = AdService()
+    val sessions = mutableSetOf<KtorUserSession>()
+    val objectMapper = ObjectMapper()
 
     routing {
         get("/") {
@@ -84,6 +87,12 @@ fun Application.module() {
 
         static("static") {
             resources("static")
+        }
+        webSocket("/ws/v1"){
+            mpWsHandlerV1(adService, offerService, sessions, objectMapper)
+        }
+        webSocket("/ws/v2") {
+            mpWsHandlerV2(adService, offerService, sessions)
         }
     }
 }
