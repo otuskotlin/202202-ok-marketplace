@@ -1,6 +1,7 @@
 package ru.otus.otuskotlin.marketplace
 
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
@@ -18,9 +19,12 @@ import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import org.slf4j.event.Level
 import ru.otus.otuskotlin.marketplace.api.v1
+import ru.otus.otuskotlin.marketplace.api.v1.mpWsHandlerV1
 import ru.otus.otuskotlin.marketplace.api.v2
+import ru.otus.otuskotlin.marketplace.api.v2.mpWsHandlerV2
 import ru.otus.otuskotlin.marketplace.backend.services.AdService
 import ru.otus.otuskotlin.marketplace.backend.services.OfferService
+import ru.otus.otuskotlin.marketplace.common.KtorUserSession
 
 // function with config (application.conf)
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -64,6 +68,8 @@ fun Application.module() {
 
     val adService = AdService()
     val offerService = OfferService()
+    val sessions = mutableSetOf<KtorUserSession>()
+    val objectMapper = ObjectMapper()
 
     routing {
         get("/") {
@@ -75,6 +81,12 @@ fun Application.module() {
 
         static("static") {
             resources("static")
+        }
+        webSocket("/ws/v1"){
+            mpWsHandlerV1(adService, offerService, sessions, objectMapper)
+        }
+        webSocket("/ws/v2") {
+            mpWsHandlerV2(adService, offerService, sessions)
         }
     }
 }
