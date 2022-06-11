@@ -1,4 +1,4 @@
-package ru.otus.otuskotlin.marketplace.api.v1
+package ru.otus.otuskotlin.marketplace.app.v1
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.websocket.*
@@ -8,14 +8,14 @@ import kotlinx.coroutines.flow.*
 import kotlinx.datetime.Clock
 import ru.otus.otuskotlin.marketplace.api.v1.models.IRequest
 import ru.otus.otuskotlin.marketplace.backend.services.AdService
-import ru.otus.otuskotlin.marketplace.backend.services.OfferService
-import ru.otus.otuskotlin.marketplace.common.KtorUserSession
+import ru.otus.otuskotlin.marketplace.app.v2.KtorUserSession
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.mappers.v1.fromTransport
+import ru.otus.otuskotlin.marketplace.mappers.v1.toTransportAd
+import ru.otus.otuskotlin.marketplace.mappers.v1.toTransportRead
 
 suspend fun WebSocketSession.mpWsHandlerV1(
-    adService: AdService,
-    offerService: OfferService,
+    service: AdService,
     sessions: MutableSet<KtorUserSession>,
     objectMapper: ObjectMapper,
 ) {
@@ -28,6 +28,7 @@ suspend fun WebSocketSession.mpWsHandlerV1(
                 timeStart = Clock.System.now()
             )
             // обработка запроса на инициализацию
+            outgoing.send(Frame.Text(objectMapper.writeValueAsString(ctx.toTransportRead())))
         }
         incoming
             .receiveAsFlow()
@@ -41,8 +42,14 @@ suspend fun WebSocketSession.mpWsHandlerV1(
                 val ctx = MkplContext(
                     timeStart = Clock.System.now()
                 ).apply { fromTransport(request) }
-                // обработка запроса
+                service.exec(ctx)
+                ctx
             }
+            .flowOn(Dispatchers.Default)
+            .map {
+                outgoing.send(Frame.Text(objectMapper.writeValueAsString(it.toTransportAd())))
+            }
+            .flowOn(Dispatchers.IO)
             .collect()
     } catch (_: ClosedReceiveChannelException) {
         // Веб-сокет закрыт по инициативе клиента

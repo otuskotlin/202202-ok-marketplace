@@ -1,5 +1,6 @@
 package ru.otus.otuskotlin.marketplace.springapp.api.v2.controller
 
+import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.TextMessage
@@ -13,7 +14,6 @@ import ru.otus.otuskotlin.marketplace.common.models.MkplError
 import ru.otus.otuskotlin.marketplace.mappers.v2.fromTransport
 import ru.otus.otuskotlin.marketplace.mappers.v2.toTransportAd
 import ru.otus.otuskotlin.marketplace.mappers.v2.toTransportRead
-import ru.otus.otuskotlin.marketplace.springapp.api.v2.buildError
 import ru.otus.otuskotlin.marketplace.springapp.common.SpringWsSession
 import ru.otus.otuskotlin.marketplace.springapp.common.WsHandlerBase
 
@@ -25,12 +25,15 @@ class WsAdHandlerV2(
 
     public override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
         val ctx = MkplContext(timeStart = Clock.System.now())
-        val response = try {
-            ctx.fromTransport(apiV2RequestDeserialize(message.payload) as IRequest)
-            adService.handleAd(ctx, ::buildError).toTransportAd()
-        } catch (e: Exception) {
-            ctx.errors.add(MkplError(exception = e))
-            ctx.toTransportRead()
+        val response = runBlocking {
+            try {
+                ctx.fromTransport(apiV2RequestDeserialize(message.payload) as IRequest)
+                adService.exec(ctx)
+                ctx.toTransportAd()
+            } catch (e: Exception) {
+                ctx.errors.add(MkplError(exception = e))
+                ctx.toTransportRead()
+            }
         }
 
         sessions.values.forEach {

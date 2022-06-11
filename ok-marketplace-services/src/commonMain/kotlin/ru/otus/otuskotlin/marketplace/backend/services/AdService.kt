@@ -9,16 +9,6 @@ import ru.otus.otuskotlin.marketplace.common.stubs.MkplStubs
 class AdService {
     private val processor = MkplAdProcessor()
 
-    fun handleAd(mpContext: MkplContext, buildError: () -> MkplError) = when(val cmd = mpContext.command) {
-        MkplCommand.CREATE -> createAd(mpContext)
-        MkplCommand.READ -> readAd(mpContext, buildError)
-        MkplCommand.UPDATE -> updateAd(mpContext, buildError)
-        MkplCommand.DELETE -> deleteAd(mpContext, buildError)
-        MkplCommand.SEARCH -> searchAd(mpContext, buildError)
-        else -> throw UnknownMkplCommand(cmd)
-    }
-
-
     suspend fun exec(context: MkplContext) = processor.exec(context)
 
     suspend fun createAd(context: MkplContext) = processor.exec(context)

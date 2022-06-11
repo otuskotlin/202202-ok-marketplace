@@ -1,4 +1,4 @@
-package ru.otus.otuskotlin.marketplace
+package ru.otus.otuskotlin.marketplace.app
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -18,11 +18,11 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import org.slf4j.event.Level
+import ru.otus.otuskotlin.marketplace.app.config.jsonConfig
+import ru.otus.otuskotlin.marketplace.app.v1.mpWsHandlerV1
 import ru.otus.otuskotlin.marketplace.app.v1.v1Ad
 import ru.otus.otuskotlin.marketplace.app.v1.v1Offer
-import ru.otus.otuskotlin.marketplace.app.v2.CustomJsonConverter
-import ru.otus.otuskotlin.marketplace.app.v2.v2Ad
-import ru.otus.otuskotlin.marketplace.app.v2.v2Offer
+import ru.otus.otuskotlin.marketplace.app.v2.*
 import ru.otus.otuskotlin.marketplace.backend.services.AdService
 
 // function with config (application.conf)
@@ -52,10 +52,7 @@ fun Application.module() {
 
     install(ContentNegotiation) {
         jackson {
-            disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-
-            enable(SerializationFeature.INDENT_OUTPUT)
-            writerWithDefaultPrettyPrinter()
+            jsonConfig()
         }
         register(ContentType.Application.Json, CustomJsonConverter())
     }
@@ -69,7 +66,7 @@ fun Application.module() {
 
     val service = AdService()
     val sessions = mutableSetOf<KtorUserSession>()
-    val objectMapper = ObjectMapper()
+    val objectMapper = ObjectMapper().jsonConfig()
 
     routing {
         get("/") {
@@ -89,10 +86,10 @@ fun Application.module() {
             resources("static")
         }
         webSocket("/ws/v1"){
-            mpWsHandlerV1(adService, offerService, sessions, objectMapper)
+            mpWsHandlerV1(service, sessions, objectMapper)
         }
         webSocket("/ws/v2") {
-            mpWsHandlerV2(adService, offerService, sessions)
+            mpWsHandlerV2(service, sessions)
         }
     }
 }
