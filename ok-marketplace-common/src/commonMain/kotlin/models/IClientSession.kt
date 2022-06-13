@@ -5,8 +5,7 @@ interface IClientSession<T> {
 
     companion object {
         val NONE = object : IClientSession<Unit> {
-            override val fwSession: Unit
-                get() = TODO("Not yet implemented")
+            override val fwSession: Unit = Unit
         }
     }
 }

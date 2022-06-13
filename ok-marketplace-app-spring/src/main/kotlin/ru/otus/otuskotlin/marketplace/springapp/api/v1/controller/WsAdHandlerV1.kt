@@ -1,12 +1,12 @@
 package ru.otus.otuskotlin.marketplace.springapp.api.v1.controller
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
+import ru.otus.otuskotlin.marketplace.api.v1.apiV1RequestDeserialize
+import ru.otus.otuskotlin.marketplace.api.v1.apiV1ResponseSerialize
 import ru.otus.otuskotlin.marketplace.api.v1.models.IRequest
 import ru.otus.otuskotlin.marketplace.backend.services.AdService
 import ru.otus.otuskotlin.marketplace.common.MkplContext
@@ -20,14 +20,13 @@ import ru.otus.otuskotlin.marketplace.springapp.common.WsHandlerBase
 @Component
 class WsAdHandlerV1(
     private val adService: AdService,
-    private val objectMapper: ObjectMapper,
     override val sessions: MutableMap<String, SpringWsSession>,
 ) : WsHandlerBase(sessions) {
     public override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
         val ctx = MkplContext(timeStart = Clock.System.now())
         val response = runBlocking {
             try {
-                ctx.fromTransport(objectMapper.readValue<IRequest>(message.payload))
+                ctx.fromTransport(apiV1RequestDeserialize<IRequest>(message.payload))
                 adService.exec(ctx)
                 ctx.toTransportAd()
             } catch (e: Exception) {
@@ -37,7 +36,7 @@ class WsAdHandlerV1(
         }
 
         sessions.values.forEach {
-            it.fwSession.sendMessage(TextMessage(objectMapper.writeValueAsString(response)))
+            it.fwSession.sendMessage(TextMessage(apiV1ResponseSerialize(response)))
         }
     }
 }

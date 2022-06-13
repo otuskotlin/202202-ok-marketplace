@@ -1,6 +1,5 @@
 package ru.otus.otuskotlin.marketplace.springapp.configs
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.socket.config.annotation.EnableWebSocket
@@ -15,7 +14,6 @@ import ru.otus.otuskotlin.marketplace.springapp.common.SpringWsSession
 @EnableWebSocket
 class WebSocketConfig(
     private val adService: AdService,
-    private val objectMapper: ObjectMapper,
 ) : WebSocketConfigurer {
 
     @Bean
@@ -24,7 +22,7 @@ class WebSocketConfig(
     private val sessions = mutableMapOf<String, SpringWsSession>()
 
     override fun registerWebSocketHandlers(registry: WebSocketHandlerRegistry) {
-        registry.addHandler(WsAdHandlerV1(adService, objectMapper, sessions), "/ws/v1").setAllowedOrigins("*")
+        registry.addHandler(WsAdHandlerV1(adService, sessions), "/ws/v1").setAllowedOrigins("*")
         registry.addHandler(WsAdHandlerV2(adService, sessions), "/ws/v2").setAllowedOrigins("*")
     }
 }

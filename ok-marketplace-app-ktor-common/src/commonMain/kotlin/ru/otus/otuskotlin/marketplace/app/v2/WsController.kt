@@ -13,7 +13,7 @@ import ru.otus.otuskotlin.marketplace.api.v2.models.IRequest
 import ru.otus.otuskotlin.marketplace.backend.services.AdService
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.helpers.addError
-import ru.otus.otuskotlin.marketplace.common.models.MkplError
+import ru.otus.otuskotlin.marketplace.common.helpers.asMkplError
 import ru.otus.otuskotlin.marketplace.mappers.v2.fromTransport
 import ru.otus.otuskotlin.marketplace.mappers.v2.toTransportAd
 import ru.otus.otuskotlin.marketplace.mappers.v2.toTransportRead
@@ -48,9 +48,7 @@ suspend fun WebSocketSession.mpWsHandlerV2(
                 } catch (_: ClosedReceiveChannelException) {
                     sessions.remove(userSession)
                 } catch (t: Throwable) {
-                    ctx.addError(
-                        MkplError(exception = t)
-                    )
+                    ctx.addError(t.asMkplError())
                     outgoing.send(Frame.Text(apiV2ResponseSerialize(ctx.toTransportRead())))
                 }
             }

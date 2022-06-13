@@ -66,7 +66,6 @@ fun Application.module() {
 
     val service = AdService()
     val sessions = mutableSetOf<KtorUserSession>()
-    val objectMapper = ObjectMapper().jsonConfig()
 
     routing {
         get("/") {
@@ -86,7 +85,7 @@ fun Application.module() {
             resources("static")
         }
         webSocket("/ws/v1"){
-            mpWsHandlerV1(service, sessions, objectMapper)
+            mpWsHandlerV1(service, sessions)
         }
         webSocket("/ws/v2") {
             mpWsHandlerV2(service, sessions)
