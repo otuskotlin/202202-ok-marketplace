@@ -13,29 +13,42 @@ import org.apache.kafka.clients.consumer.ConsumerRecords
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.errors.WakeupException
-import ru.otus.otuskotlin.marketplace.api.v1.apiV1RequestDeserialize
-import ru.otus.otuskotlin.marketplace.api.v1.apiV1ResponseSerialize
-import ru.otus.otuskotlin.marketplace.api.v1.models.IRequest
-import ru.otus.otuskotlin.marketplace.api.v1.models.IResponse
 import ru.otus.otuskotlin.marketplace.backend.services.AdService
 import ru.otus.otuskotlin.marketplace.common.MkplContext
-import ru.otus.otuskotlin.marketplace.mappers.v1.fromTransport
-import ru.otus.otuskotlin.marketplace.mappers.v1.toTransportAd
 import java.time.Duration
 import java.util.*
 
 private val log = KotlinLogging.logger {}
 
-class AppKafkaConsumer(private val config: AppKafkaConfig,
-                       private val service: AdService = AdService(),
-                       private val consumer: Consumer<String, String> = config.createKafkaConsumer(),
-                       private val producer: Producer<String, String> = config.createKafkaProducer()
+interface ConsumerStrategy {
+    fun serialize(source: MkplContext): String
+    fun deserialize(value: String, target: MkplContext)
+}
+
+class AppKafkaConsumer(
+    private val config: AppKafkaConfig,
+    consumerStrategyByVersion: Map<String, ConsumerStrategy>,
+    private val service: AdService = AdService(),
+    private val consumer: Consumer<String, String> = config.createKafkaConsumer(),
+    private val producer: Producer<String, String> = config.createKafkaProducer()
 ) {
+    init {
+        assert(consumerStrategyByVersion.keys == config.topicsByVersion.keys) {
+            "Strategies and topics versions must be equal: ${consumerStrategyByVersion.keys} <-> ${config.topicsByVersion.keys}"
+        }
+    }
+
     private val process = atomic(true) // пояснить
+    private val topicsAndStrategyByInputTopic = config.topicsByVersion.entries.associate { (version, topics) ->
+        Pair(
+            topics.input,
+            TopicsAndStrategy(topics.input, topics.output, consumerStrategyByVersion[version]!!)
+        )
+    }
 
     fun run() = runBlocking {
         try {
-            consumer.subscribe(listOf(config.kafkaTopicIn))
+            consumer.subscribe(config.topicsByVersion.values.map { it.input })
             while (process.value) {
                 val ctx = MkplContext(
                     timeStart = Clock.System.now(),
@@ -48,14 +61,14 @@ class AppKafkaConsumer(private val config: AppKafkaConfig,
 
                 records.forEach { record: ConsumerRecord<String, String> ->
                     try {
-                        log.info { "process ${record.key()}:\n${record.value()}" }
-                        val request: IRequest = apiV1RequestDeserialize(record.value())
-                        ctx.fromTransport(request)
+                        log.info { "process ${record.key()} from ${record.topic()}:\n${record.value()}" }
+                        val (_, outputTopic, strategy) = topicsAndStrategyByInputTopic[record.topic()] ?: throw RuntimeException("Receive message from unknown topic ${record.topic()}")
+
+                        strategy.deserialize(record.value(), ctx)
                         service.exec(ctx)
 
-                        val response = ctx.toTransportAd()
-                        sendResponse(response)
-                    } catch (ex : Exception) {
+                        sendResponse(ctx, strategy, outputTopic)
+                    } catch (ex: Exception) {
                         log.error(ex) { "error" }
                     }
                 }
@@ -74,18 +87,20 @@ class AppKafkaConsumer(private val config: AppKafkaConfig,
         }
     }
 
-    private fun sendResponse(response: IResponse) {
-        val json = apiV1ResponseSerialize(response)
+    private fun sendResponse(context: MkplContext, strategy: ConsumerStrategy, outputTopic: String) {
+        val json = strategy.serialize(context)
         val resRecord = ProducerRecord(
-            config.kafkaTopicOut,
+            outputTopic,
             UUID.randomUUID().toString(),
             json
         )
-        log.info { "sending ${resRecord.key()}:\n$json" }
+        log.info { "sending ${resRecord.key()} to $outputTopic:\n$json" }
         producer.send(resRecord)
     }
 
     fun stop() {
         process.value = false
     }
+
+    private data class TopicsAndStrategy(val inputTopic: String, val outputTopic: String, val strategy: ConsumerStrategy)
 }

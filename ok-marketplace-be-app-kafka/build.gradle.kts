@@ -50,7 +50,9 @@ dependencies {
     // transport models
     implementation(project(":ok-marketplace-common"))
     implementation(project(":ok-marketplace-api-v1-jackson"))
+    implementation(project(":ok-marketplace-api-v2-kmp"))
     implementation(project(":ok-marketplace-mappers-v1"))
+    implementation(project(":ok-marketplace-mappers-v2"))
     // service
     implementation(project(":ok-marketplace-services"))
     // logic

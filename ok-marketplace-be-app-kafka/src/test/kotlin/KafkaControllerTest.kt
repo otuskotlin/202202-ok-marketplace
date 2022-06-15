@@ -26,14 +26,15 @@ class KafkaControllerTest {
     fun runKafka() {
         val consumer = MockConsumer<String, String>(OffsetResetStrategy.EARLIEST)
         val producer = MockProducer<String, String>(true, StringSerializer(), StringSerializer())
-        val config = AppKafkaConfig()
+        val config = AppKafkaConfig(mapOf("v1" to null))
+        val (inputTopic, outputTopic) = config.topicsByVersion["v1"]!!
 
-        val app = AppKafkaConsumer(config, consumer = consumer, producer = producer)
+        val app = AppKafkaConsumer(config, mapOf("v1" to ConsumerStrategyV1()), consumer = consumer, producer = producer)
         consumer.schedulePollTask {
-            consumer.rebalance(Collections.singletonList(TopicPartition(config.kafkaTopicIn, 0)))
+            consumer.rebalance(Collections.singletonList(TopicPartition(inputTopic, 0)))
             consumer.addRecord(
                 ConsumerRecord(
-                    config.kafkaTopicIn,
+                    inputTopic,
                     PARTITION,
                     0L,
                     "test-1",
@@ -56,7 +57,7 @@ class KafkaControllerTest {
         }
 
         val startOffsets: MutableMap<TopicPartition, Long> = mutableMapOf()
-        val tp = TopicPartition(config.kafkaTopicIn, PARTITION)
+        val tp = TopicPartition(inputTopic, PARTITION)
         startOffsets[tp] = 0L
         consumer.updateBeginningOffsets(startOffsets)
 
@@ -64,6 +65,7 @@ class KafkaControllerTest {
 
         val message = producer.history().first()
         val result = apiV1ResponseDeserialize<AdCreateResponse>(message.value())
+        assertEquals(outputTopic, message.topic())
         assertEquals("11111111-1111-1111-1111-111111111111", result.requestId)
         assertEquals("Some Ad", result.ad?.title)
     }
