@@ -8,5 +8,5 @@ import ru.otus.otuskotlin.marketplace.common.models.MkplCommand
 
 suspend fun ApplicationCall.offersAd(service: AdService) =
     controllerHelperV1<AdOffersRequest, AdOffersResponse>(MkplCommand.OFFERS) {
-    service.searchOffers(this)
-}
+        service.searchOffers(this)
+    }

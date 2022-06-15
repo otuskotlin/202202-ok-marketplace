@@ -8,7 +8,7 @@ import ru.otus.otuskotlin.marketplace.backend.services.AdService
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.mappers.v1.*
 import kotlinx.datetime.Clock
-import ru.otus.otuskotlin.marketplace.common.errors.asMkplError
+import ru.otus.otuskotlin.marketplace.common.helpers.asMkplError
 import ru.otus.otuskotlin.marketplace.common.models.MkplCommand
 import ru.otus.otuskotlin.marketplace.common.models.MkplState
 
@@ -44,10 +44,10 @@ suspend fun ApplicationCall.updateAd(service: AdService) =
 
 suspend fun ApplicationCall.deleteAd(service: AdService) =
     controllerHelperV1<AdDeleteRequest, AdDeleteResponse>(MkplCommand.DELETE) {
-    service.deleteAd(this)
-}
+        service.deleteAd(this)
+    }
 
 suspend fun ApplicationCall.searchAd(adService: AdService) =
     controllerHelperV1<AdSearchRequest, AdSearchResponse>(MkplCommand.SEARCH) {
-    adService.searchAd(this)
-}
+        adService.searchAd(this)
+    }

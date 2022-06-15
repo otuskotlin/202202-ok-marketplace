@@ -67,6 +67,7 @@ tasks {
     }
     val dockerDockerfile by creating(Dockerfile::class) {
         group = "docker"
+        dependsOn(linkReleaseExecutableNative)
         from("ubuntu:22.04")
         doFirst {
             copy {
