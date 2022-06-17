@@ -26,10 +26,11 @@ class KafkaControllerTest {
     fun runKafka() {
         val consumer = MockConsumer<String, String>(OffsetResetStrategy.EARLIEST)
         val producer = MockProducer<String, String>(true, StringSerializer(), StringSerializer())
-        val config = AppKafkaConfig(mapOf("v1" to null))
-        val (inputTopic, outputTopic) = config.topicsByVersion["v1"]!!
+        val config = AppKafkaConfig()
+        val inputTopic = config.kafkaTopicInV1
+        val outputTopic = config.kafkaTopicOutV1
 
-        val app = AppKafkaConsumer(config, mapOf("v1" to ConsumerStrategyV1()), consumer = consumer, producer = producer)
+        val app = AppKafkaConsumer(config, listOf(ConsumerStrategyV1()), consumer = consumer, producer = producer)
         consumer.schedulePollTask {
             consumer.rebalance(Collections.singletonList(TopicPartition(inputTopic, 0)))
             consumer.addRecord(

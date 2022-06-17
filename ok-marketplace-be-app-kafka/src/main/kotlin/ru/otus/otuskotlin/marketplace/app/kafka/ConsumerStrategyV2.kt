@@ -9,6 +9,10 @@ import ru.otus.otuskotlin.marketplace.mappers.v2.fromTransport
 import ru.otus.otuskotlin.marketplace.mappers.v2.toTransportAd
 
 class ConsumerStrategyV2 : ConsumerStrategy {
+    override fun topics(config: AppKafkaConfig): InputOutputTopics {
+        return InputOutputTopics(config.kafkaTopicInV2, config.kafkaTopicOutV2)
+    }
+
     override fun serialize(source: MkplContext): String {
         val response: IResponse = source.toTransportAd()
         return apiV2ResponseSerialize(response)

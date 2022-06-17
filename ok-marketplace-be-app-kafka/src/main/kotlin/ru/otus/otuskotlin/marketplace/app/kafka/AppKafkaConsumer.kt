@@ -20,35 +20,33 @@ import java.util.*
 
 private val log = KotlinLogging.logger {}
 
+data class InputOutputTopics(val input: String, val output: String)
+
 interface ConsumerStrategy {
+    fun topics(config: AppKafkaConfig): InputOutputTopics;
     fun serialize(source: MkplContext): String
     fun deserialize(value: String, target: MkplContext)
 }
 
 class AppKafkaConsumer(
     private val config: AppKafkaConfig,
-    consumerStrategyByVersion: Map<String, ConsumerStrategy>,
+    consumerStrategies: List<ConsumerStrategy>,
     private val service: AdService = AdService(),
     private val consumer: Consumer<String, String> = config.createKafkaConsumer(),
     private val producer: Producer<String, String> = config.createKafkaProducer()
 ) {
-    init {
-        assert(consumerStrategyByVersion.keys == config.topicsByVersion.keys) {
-            "Strategies and topics versions must be equal: ${consumerStrategyByVersion.keys} <-> ${config.topicsByVersion.keys}"
-        }
-    }
-
     private val process = atomic(true) // пояснить
-    private val topicsAndStrategyByInputTopic = config.topicsByVersion.entries.associate { (version, topics) ->
+    private val topicsAndStrategyByInputTopic = consumerStrategies.associate {
+        val topics = it.topics(config)
         Pair(
             topics.input,
-            TopicsAndStrategy(topics.input, topics.output, consumerStrategyByVersion[version]!!)
+            TopicsAndStrategy(topics.input, topics.output, it)
         )
     }
 
     fun run() = runBlocking {
         try {
-            consumer.subscribe(config.topicsByVersion.values.map { it.input })
+            consumer.subscribe(topicsAndStrategyByInputTopic.keys)
             while (process.value) {
                 val ctx = MkplContext(
                     timeStart = Clock.System.now(),
