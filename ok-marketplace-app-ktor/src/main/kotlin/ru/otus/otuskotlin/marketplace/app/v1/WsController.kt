@@ -5,9 +5,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.flow.*
 import kotlinx.datetime.Clock
+import ru.otus.otuskotlin.marketplace.api.v1.apiV1RequestDeserialize
 import ru.otus.otuskotlin.marketplace.api.v1.apiV1ResponseSerialize
 import ru.otus.otuskotlin.marketplace.api.v1.models.IRequest
-import ru.otus.otuskotlin.marketplace.api.v2.apiV2RequestDeserialize
 import ru.otus.otuskotlin.marketplace.app.v2.KtorUserSession
 import ru.otus.otuskotlin.marketplace.backend.services.AdService
 import ru.otus.otuskotlin.marketplace.common.MkplContext
@@ -36,7 +36,7 @@ suspend fun WebSocketSession.mpWsHandlerV1(
         .mapNotNull { it as? Frame.Text }
         .map { frame ->
             val jsonStr = frame.readText()
-            apiV2RequestDeserialize<IRequest>(jsonStr)
+            apiV1RequestDeserialize<IRequest>(jsonStr)
         }
         .flowOn(Dispatchers.IO)
         .map { request ->

@@ -10,7 +10,7 @@ import ru.otus.otuskotlin.marketplace.api.v1.apiV1ResponseSerialize
 import ru.otus.otuskotlin.marketplace.api.v1.models.IRequest
 import ru.otus.otuskotlin.marketplace.backend.services.AdService
 import ru.otus.otuskotlin.marketplace.common.MkplContext
-import ru.otus.otuskotlin.marketplace.common.models.MkplError
+import ru.otus.otuskotlin.marketplace.common.helpers.asMkplError
 import ru.otus.otuskotlin.marketplace.mappers.v1.fromTransport
 import ru.otus.otuskotlin.marketplace.mappers.v1.toTransportAd
 import ru.otus.otuskotlin.marketplace.mappers.v1.toTransportRead
@@ -30,7 +30,7 @@ class WsAdHandlerV1(
                 adService.exec(ctx)
                 ctx.toTransportAd()
             } catch (e: Exception) {
-                ctx.errors.add(MkplError(exception = e))
+                ctx.errors.add(e.asMkplError())
                 ctx.toTransportRead()
             }
         }
