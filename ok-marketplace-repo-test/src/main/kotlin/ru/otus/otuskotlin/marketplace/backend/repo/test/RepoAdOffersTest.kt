@@ -23,11 +23,11 @@ abstract class RepoAdOffersTest {
     }
 
     companion object : BaseInitAds("search") {
-        val searchSuf = "ad1"
+        val searchSuf = "ad"
         override val initObjects: List<MkplAd> = listOf(
             createInitTestModel(suf = searchSuf, adType = MkplDealSide.DEMAND),
-            createInitTestModel(suf = searchSuf, adType = MkplDealSide.SUPPLY),
-            createInitTestModel(suf = searchSuf, adType = MkplDealSide.SUPPLY)
+            createInitTestModel(suf = "1" + searchSuf, adType = MkplDealSide.SUPPLY),
+            createInitTestModel(suf = "2" + searchSuf, adType = MkplDealSide.SUPPLY)
         )
         val searchId = initObjects.first().id
 
