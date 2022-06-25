@@ -5,6 +5,7 @@ import org.junit.Test
 import ru.otus.otuskotlin.marketplace.common.models.MkplAd
 import ru.otus.otuskotlin.marketplace.common.models.MkplAdId
 import ru.otus.otuskotlin.marketplace.common.models.MkplError
+import ru.otus.otuskotlin.marketplace.common.models.MkplRequestId
 import ru.otus.otuskotlin.marketplace.common.repo.DbAdIdRequest
 import ru.otus.otuskotlin.marketplace.common.repo.IAdRepository
 import kotlin.test.assertEquals
@@ -39,7 +40,7 @@ abstract class RepoAdDeleteTest {
             createInitTestModel("delete")
         )
         private val deleteSuccessStub = initObjects.first()
-        val successId = deleteSuccessStub.id
-        val notFoundId = MkplAdId("ad-repo-delete-notFound")
+        val successId = MkplRequestId(deleteSuccessStub.id.asString())
+        val notFoundId = MkplRequestId("ad-repo-delete-notFound")
     }
 }

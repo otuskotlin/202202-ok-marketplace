@@ -3,6 +3,7 @@ package ru.otus.otuskotlin.marketplace.backend.repo.test
 import kotlinx.coroutines.runBlocking
 import ru.otus.otuskotlin.marketplace.common.models.MkplAd
 import ru.otus.otuskotlin.marketplace.common.models.MkplDealSide
+import ru.otus.otuskotlin.marketplace.common.models.MkplRequestId
 import ru.otus.otuskotlin.marketplace.common.repo.DbAdIdRequest
 import ru.otus.otuskotlin.marketplace.common.repo.IAdRepository
 import kotlin.test.Test
@@ -29,7 +30,7 @@ abstract class RepoAdOffersTest {
             createInitTestModel(suf = "1" + searchSuf, adType = MkplDealSide.SUPPLY),
             createInitTestModel(suf = "2" + searchSuf, adType = MkplDealSide.SUPPLY)
         )
-        val searchId = initObjects.first().id
+        val searchId = MkplRequestId(initObjects.first().id.asString())
 
     }
 }

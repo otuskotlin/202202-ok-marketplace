@@ -8,9 +8,12 @@ import ru.otus.otuskotlin.marketplace.biz.validation.validateTitleNotEmpty
 import ru.otus.otuskotlin.marketplace.biz.stubs.*
 import ru.otus.otuskotlin.marketplace.biz.validation.*
 import ru.otus.otuskotlin.marketplace.biz.general.initStatus
+import ru.otus.otuskotlin.marketplace.biz.repo.*
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.models.MkplAdId
 import ru.otus.otuskotlin.marketplace.common.models.MkplCommand
+import ru.otus.otuskotlin.marketplace.common.models.MkplState
+import ru.otus.otuskotlin.marketplace.common.repo.DbAdRequest
 
 class MkplAdProcessor() {
     suspend fun exec(ctx: MkplContext) = BuzinessChain.exec(ctx)
@@ -40,6 +43,9 @@ class MkplAdProcessor() {
 
                     finishAdValidation("Успешное завершение процедуры валидации")
                 }
+
+                repoCreate("Создание объявления в БД")
+
             }
             operation("Получить объявление", MkplCommand.READ) {
                 stubs("Обработка стабов") {
@@ -57,6 +63,8 @@ class MkplAdProcessor() {
 
                     finishAdValidation("Успешное завершение процедуры валидации")
                 }
+
+                repoRead("Чтение объявления из БД")
             }
             operation("Изменить объявление", MkplCommand.UPDATE) {
                 stubs("Обработка стабов") {
@@ -82,6 +90,8 @@ class MkplAdProcessor() {
 
                     finishAdValidation("Успешное завершение процедуры валидации")
                 }
+
+                repoUpdate("Обновление объявления в БД")
             }
             operation("Удалить объявление", MkplCommand.DELETE) {
                 stubs("Обработка стабов") {
@@ -99,6 +109,8 @@ class MkplAdProcessor() {
 
                     finishAdValidation("Успешное завершение процедуры валидации")
                 }
+
+                repoDelete("Удаление объявления из БД")
             }
             operation("Поиск объявлений", MkplCommand.SEARCH) {
                 stubs("Обработка стабов") {
@@ -113,6 +125,8 @@ class MkplAdProcessor() {
 
                     finishAdFilterValidation("Успешное завершение процедуры валидации")
                 }
+
+                repoSearch("Поиск объявления в БД по фильтру")
             }
             operation("Поиск подходящих предложений для объявления", MkplCommand.OFFERS) {
                 stubs("Обработка стабов") {
@@ -131,6 +145,8 @@ class MkplAdProcessor() {
 
                     finishAdValidation("Успешное завершение процедуры валидации")
                 }
+
+                repoOffers("Поиск предложений для объявления в БД")
             }
         }.build()
     }
