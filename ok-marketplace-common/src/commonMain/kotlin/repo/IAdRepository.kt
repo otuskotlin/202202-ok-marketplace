@@ -7,4 +7,32 @@ interface IAdRepository {
     suspend fun deleteAd(rq: DbAdIdRequest): DbAdResponse
     suspend fun searchAd(rq: DbAdFilterRequest): DbAdsResponse
     suspend fun searchOffers(rq: DbAdIdRequest): DbAdsResponse
+
+    companion object {
+        val NONE = object : IAdRepository {
+            override suspend fun createAd(rq: DbAdRequest): DbAdResponse {
+                TODO("Not yet implemented")
+            }
+
+            override suspend fun readAd(rq: DbAdIdRequest): DbAdResponse {
+                TODO("Not yet implemented")
+            }
+
+            override suspend fun updateAd(rq: DbAdRequest): DbAdResponse {
+                TODO("Not yet implemented")
+            }
+
+            override suspend fun deleteAd(rq: DbAdIdRequest): DbAdResponse {
+                TODO("Not yet implemented")
+            }
+
+            override suspend fun searchAd(rq: DbAdFilterRequest): DbAdsResponse {
+                TODO("Not yet implemented")
+            }
+
+            override suspend fun searchOffers(rq: DbAdIdRequest): DbAdsResponse {
+                TODO("Not yet implemented")
+            }
+        }
+    }
 }
