@@ -5,6 +5,7 @@ import org.junit.Test
 import ru.otus.otuskotlin.marketplace.common.models.MkplAd
 import ru.otus.otuskotlin.marketplace.common.models.MkplAdId
 import ru.otus.otuskotlin.marketplace.common.models.MkplError
+import ru.otus.otuskotlin.marketplace.common.models.MkplRequestId
 import ru.otus.otuskotlin.marketplace.common.repo.DbAdIdRequest
 import ru.otus.otuskotlin.marketplace.common.repo.IAdRepository
 import kotlin.test.assertEquals
@@ -40,8 +41,8 @@ abstract class RepoAdReadTest {
         )
         private val readSuccessStub = initObjects.first()
 
-        val successId = readSuccessStub.id
-        val notFoundId = MkplAdId("ad-repo-read-notFound")
+        val successId = MkplRequestId(readSuccessStub.id.asString())
+        val notFoundId = MkplRequestId("ad-repo-read-notFound")
 
     }
 }

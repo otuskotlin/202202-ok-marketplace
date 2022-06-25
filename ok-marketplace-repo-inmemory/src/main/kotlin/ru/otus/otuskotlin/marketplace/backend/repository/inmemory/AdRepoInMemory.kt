@@ -166,8 +166,8 @@ class AdRepoInMemory(
         )
     }
 
-    private fun getOrRemoveById(id: MkplAdId, remove: Boolean = false): DbAdResponse =
-        if (id != MkplAdId.NONE) {
+    private fun getOrRemoveById(id: MkplRequestId, remove: Boolean = false): DbAdResponse =
+        if (id != MkplRequestId.NONE) {
         cache.get(id.asString())?.let {
             if (remove)
                 cache.remove(it.id)
