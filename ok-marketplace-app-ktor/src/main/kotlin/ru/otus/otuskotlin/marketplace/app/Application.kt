@@ -1,8 +1,5 @@
 package ru.otus.otuskotlin.marketplace.app
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
@@ -23,6 +20,7 @@ import ru.otus.otuskotlin.marketplace.app.v1.mpWsHandlerV1
 import ru.otus.otuskotlin.marketplace.app.v1.v1Ad
 import ru.otus.otuskotlin.marketplace.app.v1.v1Offer
 import ru.otus.otuskotlin.marketplace.app.v2.*
+import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.AdRepoInMemory
 import ru.otus.otuskotlin.marketplace.backend.services.AdService
 
 // function with config (application.conf)
@@ -64,7 +62,8 @@ fun Application.module() {
 
     install(Locations)
 
-    val service = AdService()
+    val repo = AdRepoInMemory()
+    val service = AdService(adRepositoty = repo)
     val sessions = mutableSetOf<KtorUserSession>()
 
     routing {
