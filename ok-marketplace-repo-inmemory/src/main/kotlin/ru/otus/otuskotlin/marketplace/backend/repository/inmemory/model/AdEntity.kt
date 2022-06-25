@@ -9,7 +9,7 @@ data class AdEntity(
     val ownerId: String? = null,
     val adType: String? = null,
     val visibility: String? = null,
-//    val product: IMkplAdProduct = IMkplAdProduct.NONE, // TODO подумать как лучше использовать
+    val product: IMkplAdProductEntity? = null,
     val permissionsClient: Set<String>? = null,
 ) {
     constructor(model: MkplAd): this(
@@ -19,6 +19,7 @@ data class AdEntity(
         ownerId = model.ownerId.asString().takeIf { it.isNotBlank() },
         adType = model.adType.takeIf { it != MkplDealSide.NONE }?.name,
         visibility = model.visibility.takeIf { it != MkplVisibility.NONE }?.name,
+        product = model.product.toEntity(),
         permissionsClient = model.permissionsClient.map { it.name }.toSet().takeIf { it.isNotEmpty() },
     )
 
@@ -29,6 +30,7 @@ data class AdEntity(
         ownerId = ownerId?.let { MkplUserId(it) }?: MkplUserId.NONE,
         adType = adType?.let { MkplDealSide.valueOf(it) }?: MkplDealSide.NONE,
         visibility = visibility?.let { MkplVisibility.valueOf(it) }?: MkplVisibility.NONE,
+        product = product.toInternal(),
         permissionsClient = permissionsClient?.map { MkplAdPermissionClient.valueOf(it) }?.toMutableSet()?: mutableSetOf(),
     )
 }
