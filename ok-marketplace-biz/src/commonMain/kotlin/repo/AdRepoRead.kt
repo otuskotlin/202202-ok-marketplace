@@ -7,10 +7,11 @@ import ru.otus.otuskotlin.marketplace.common.models.MkplState
 import ru.otus.otuskotlin.marketplace.common.repo.DbAdIdRequest
 
 fun ICorChainDsl<MkplContext>.repoRead(title: String) = worker {
+    this.title = title
     description = "Чтение объявления из БД"
     on { state == MkplState.RUNNING }
     handle {
-        val request = DbAdIdRequest(requestId)
+        val request = DbAdIdRequest(adValidated.id)
         val result = adRepo.readAd(request)
         val resultAd = result.result
         if (result.isSuccess && resultAd != null) {

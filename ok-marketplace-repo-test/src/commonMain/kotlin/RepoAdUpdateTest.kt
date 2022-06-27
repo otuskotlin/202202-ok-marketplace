@@ -1,10 +1,10 @@
 package ru.otus.otuskotlin.marketplace.backend.repo.test
 
 import kotlinx.coroutines.runBlocking
-import org.junit.Test
 import ru.otus.otuskotlin.marketplace.common.models.*
 import ru.otus.otuskotlin.marketplace.common.repo.DbAdRequest
 import ru.otus.otuskotlin.marketplace.common.repo.IAdRepository
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 

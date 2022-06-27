@@ -8,6 +8,7 @@ import ru.otus.otuskotlin.marketplace.common.repo.DbAdIdRequest
 import ru.otus.otuskotlin.marketplace.common.repo.DbAdRequest
 
 fun ICorChainDsl<MkplContext>.repoUpdate(title: String) = worker {
+    this.title = title
     on { state == MkplState.RUNNING }
     handle {
         val request = DbAdRequest(adRequest)

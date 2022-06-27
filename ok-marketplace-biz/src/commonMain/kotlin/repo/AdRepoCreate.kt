@@ -7,10 +7,11 @@ import ru.otus.otuskotlin.marketplace.common.models.MkplState
 import ru.otus.otuskotlin.marketplace.common.repo.DbAdRequest
 
 fun ICorChainDsl<MkplContext>.repoCreate(title: String) = worker {
+    this.title = title
     description = "Добавление объявления в БД"
     on { state == MkplState.RUNNING }
     handle {
-        val request = DbAdRequest(adRequest)
+        val request = DbAdRequest(adValidated)
         val result = adRepo.createAd(request)
         val resultAd = result.result
         if (result.isSuccess && resultAd != null) {
