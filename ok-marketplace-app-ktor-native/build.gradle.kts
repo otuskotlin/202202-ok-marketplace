@@ -40,6 +40,7 @@ kotlin {
 
                 implementation(project(":ok-marketplace-services"))
                 implementation(project(":ok-marketplace-app-ktor-common"))
+                implementation(project(":ok-marketplace-repo-inmemory"))
             }
         }
         @Suppress("UNUSED_VARIABLE")

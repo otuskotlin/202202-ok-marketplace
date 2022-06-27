@@ -1,15 +1,23 @@
 plugins {
-    kotlin("jvm")
+    kotlin("multiplatform")
 }
 
-dependencies {
 
-    val coroutinesVersion: String by project
 
-    implementation(kotlin("stdlib"))
+kotlin {
+    jvm {}
+    linuxX64 {}
 
-    implementation(project(":ok-marketplace-common"))
+    sourceSets {
+        val coroutinesVersion: String by project
 
-    api(kotlin("test-junit"))
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+        val commonMain by getting {
+            dependencies {
+                implementation(project(":ok-marketplace-common"))
+
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+                api(kotlin("test-junit"))
+            }
+        }
+    }
 }

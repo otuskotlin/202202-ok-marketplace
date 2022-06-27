@@ -10,6 +10,7 @@ import io.ktor.server.routing.*
 import ru.otus.otuskotlin.marketplace.app.v2.CustomJsonConverter
 import ru.otus.otuskotlin.marketplace.app.v2.v2Ad
 import ru.otus.otuskotlin.marketplace.app.v2.v2Offer
+import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.AdRepoInMemory
 import ru.otus.otuskotlin.marketplace.backend.services.AdService
 
 fun main() {
@@ -18,8 +19,8 @@ fun main() {
         install(ContentNegotiation) {
             register(ContentType.Application.Json, CustomJsonConverter())
         }
-
-        val service = AdService()
+        val repository = AdRepoInMemory()
+        val service = AdService(repository)
 
         routing {
             get("/") {

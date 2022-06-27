@@ -7,10 +7,11 @@ import ru.otus.otuskotlin.marketplace.common.models.MkplState
 import ru.otus.otuskotlin.marketplace.common.repo.DbAdIdRequest
 
 fun ICorChainDsl<MkplContext>.repoDelete(title: String) = worker {
+    this.title = title
     description = "Удаление объявления из БД по ID"
     on { state == MkplState.RUNNING }
     handle {
-        val request = DbAdIdRequest(requestId)
+        val request = DbAdIdRequest(adValidated.id)
         val result = adRepo.deleteAd(request)
         val resultAd = result.result
         if (result.isSuccess && resultAd != null) {

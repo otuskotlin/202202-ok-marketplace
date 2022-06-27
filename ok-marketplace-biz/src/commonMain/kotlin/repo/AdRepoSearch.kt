@@ -7,6 +7,7 @@ import ru.otus.otuskotlin.marketplace.common.models.MkplState
 import ru.otus.otuskotlin.marketplace.common.repo.DbAdFilterRequest
 
 fun ICorChainDsl<MkplContext>.repoSearch(title: String) = worker {
+    this.title = title
     description = "Поиск объявлений в БД по фильтру"
     on { state == MkplState.RUNNING }
     handle {
