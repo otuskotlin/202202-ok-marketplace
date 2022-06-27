@@ -1,19 +1,16 @@
 package ru.otus.otuskotlin.marketplace.biz
 
-import com.crowdproj.kotlin.cor.*
 import com.crowdproj.kotlin.cor.handlers.chain
 import com.crowdproj.kotlin.cor.handlers.worker
+import com.crowdproj.kotlin.cor.rootChain
+import ru.otus.otuskotlin.marketplace.biz.general.initStatus
 import ru.otus.otuskotlin.marketplace.biz.general.operation
-import ru.otus.otuskotlin.marketplace.biz.validation.validateTitleNotEmpty
+import ru.otus.otuskotlin.marketplace.biz.repo.*
 import ru.otus.otuskotlin.marketplace.biz.stubs.*
 import ru.otus.otuskotlin.marketplace.biz.validation.*
-import ru.otus.otuskotlin.marketplace.biz.general.initStatus
-import ru.otus.otuskotlin.marketplace.biz.repo.*
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.models.MkplAdId
 import ru.otus.otuskotlin.marketplace.common.models.MkplCommand
-import ru.otus.otuskotlin.marketplace.common.models.MkplState
-import ru.otus.otuskotlin.marketplace.common.repo.DbAdRequest
 
 class MkplAdProcessor() {
     suspend fun exec(ctx: MkplContext) = BuzinessChain.exec(ctx)
@@ -91,6 +88,7 @@ class MkplAdProcessor() {
                     finishAdValidation("Успешное завершение процедуры валидации")
                 }
 
+                repoRead("Чтение объявления из БД")
                 repoUpdate("Обновление объявления в БД")
             }
             operation("Удалить объявление", MkplCommand.DELETE) {
@@ -110,6 +108,7 @@ class MkplAdProcessor() {
                     finishAdValidation("Успешное завершение процедуры валидации")
                 }
 
+                repoRead("Чтение объявления из БД")
                 repoDelete("Удаление объявления из БД")
             }
             operation("Поиск объявлений", MkplCommand.SEARCH) {
@@ -146,6 +145,7 @@ class MkplAdProcessor() {
                     finishAdValidation("Успешное завершение процедуры валидации")
                 }
 
+                repoRead("Чтение объявления из БД")
                 repoOffers("Поиск предложений для объявления в БД")
             }
         }.build()

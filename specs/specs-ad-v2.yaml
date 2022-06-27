@@ -231,6 +231,10 @@ components:
         mapping:
           bolt: '#/components/schemas/AdProductBolt'
 
+    AdLock:
+      type: string
+      description: Оптимистичная блокировка для объявления, характеризующая его версию
+
     AdProductBolt:
       allOf:
         - $ref: '#/components/schemas/IAdProduct'
@@ -296,14 +300,28 @@ components:
         - registeredOnly
         - public
 
-    BaseAdIdRequest:
+#    BaseAdIdRequest:
+#      type: object
+#      properties:
+#        ad:
+#          $ref: '#/components/schemas/AdIdObject'
+
+    AdIdObject:
       type: object
       properties:
-        ad:
-          type: object
+        id:
+          type: string
+
+    AdDeleteObject:
+      allOf:
+        - $ref: '#/components/schemas/AdIdObject'
+        - type: object
           properties:
-            id:
-              type: string
+            lock:
+              $ref: '#/components/schemas/AdLock'
+
+    AdReadObject:
+      $ref: '#/components/schemas/AdIdObject'
 
     AdCreateRequest:
       allOf:
@@ -317,8 +335,11 @@ components:
     AdReadRequest:
       allOf:
         - $ref: '#/components/schemas/IRequest'
-        - $ref: '#/components/schemas/BaseAdIdRequest'
         - $ref: '#/components/schemas/AdRequestDebug'
+        - type: object
+          properties:
+            ad:
+              $ref: '#/components/schemas/AdReadObject'
 
     AdCreateObject:
       allOf:
@@ -331,6 +352,8 @@ components:
           properties:
             id:
               type: string
+            lock:
+              $ref: '#/components/schemas/AdLock'
 
     AdUpdateRequest:
       allOf:
@@ -344,8 +367,11 @@ components:
     AdDeleteRequest:
       allOf:
         - $ref: '#/components/schemas/IRequest'
-        - $ref: '#/components/schemas/BaseAdIdRequest'
         - $ref: '#/components/schemas/AdRequestDebug'
+        - type: object
+          properties:
+            ad:
+              $ref: '#/components/schemas/AdDeleteObject'
 
     AdSearchFilter:
       type: object
@@ -367,8 +393,11 @@ components:
     AdOffersRequest:
       allOf:
         - $ref: '#/components/schemas/IRequest'
-        - $ref: '#/components/schemas/BaseAdIdRequest'
         - $ref: '#/components/schemas/AdRequestDebug'
+        - type: object
+          properties:
+            ad:
+              $ref: '#/components/schemas/AdReadObject'
 
     AdPermissions:
       type: string
@@ -391,6 +420,8 @@ components:
               type: string
             ownerId:
               type: string
+            lock:
+              $ref: '#/components/schemas/AdLock'
             permissions:
               type: array
               uniqueItems: true
