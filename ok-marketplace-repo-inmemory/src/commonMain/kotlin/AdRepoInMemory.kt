@@ -1,40 +1,21 @@
 package ru.otus.otuskotlin.marketplace.backend.repository.inmemory
 
-import kotlinx.coroutines.flow.*
+import com.benasher44.uuid.uuid4
+import io.github.reactivecircus.cache4k.Cache
 import kotlinx.coroutines.runBlocking
-import org.ehcache.Cache
-import org.ehcache.CacheManager
-import org.ehcache.config.builders.CacheConfigurationBuilder
-import org.ehcache.config.builders.CacheManagerBuilder
-import org.ehcache.config.builders.ExpiryPolicyBuilder
-import org.ehcache.config.builders.ResourcePoolsBuilder
 import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.model.AdEntity
 import ru.otus.otuskotlin.marketplace.common.models.*
 import ru.otus.otuskotlin.marketplace.common.repo.*
-import java.time.Duration
-import java.util.UUID
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 
-class AdRepoInMemory(
+class AdRepoInMemory constructor(
     private val initObjects: List<MkplAd> = emptyList(),
-    private val ttl: Duration = Duration.ofMinutes(2),
+    private val ttl: Duration = 2.minutes
 ): IAdRepository {
-    private val cache: Cache<String, AdEntity> = let {
-        val cacheManager: CacheManager = CacheManagerBuilder
-            .newCacheManagerBuilder()
-            .build(true)
-
-        cacheManager.createCache(
-            "mkpl-ad-cache",
-            CacheConfigurationBuilder
-                .newCacheConfigurationBuilder(
-                    String::class.java,
-                    AdEntity::class.java,
-                    ResourcePoolsBuilder.heap(100)
-                )
-                .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(ttl))
-                .build()
-        )
-    }
+    private val cache =  Cache.Builder()
+        .expireAfterWrite(ttl)
+        .build<String, AdEntity>()
 
     init {
         runBlocking { initObjects.forEach {
@@ -64,7 +45,7 @@ class AdRepoInMemory(
     }
 
     override suspend fun createAd(rq: DbAdRequest): DbAdResponse =
-        save(rq.ad.copy(id = MkplAdId(UUID.randomUUID().toString())))
+        save(rq.ad.copy(id = MkplAdId(uuid4().toString())))
 
     override suspend fun readAd(rq: DbAdIdRequest): DbAdResponse =
         getOrRemoveById(rq.id)
@@ -81,7 +62,7 @@ class AdRepoInMemory(
                 )
             )
 
-        return if (cache.containsKey(key)) {
+        return if (cache.asMap().containsKey(key)) {
             save(rq.ad)
         } else {
             DbAdResponse(
@@ -101,7 +82,7 @@ class AdRepoInMemory(
         getOrRemoveById(rq.id, true)
 
     override suspend fun searchAd(rq: DbAdFilterRequest): DbAdsResponse {
-        val result = cache.asFlow()
+        val result = cache.asMap()
             .filter { entry ->
                 rq.ownerId.takeIf { it != MkplUserId.NONE }?.let {
                     it.asString() == entry.value.ownerId
@@ -125,52 +106,11 @@ class AdRepoInMemory(
         )
     }
 
-    override suspend fun searchOffers(rq: DbAdIdRequest): DbAdsResponse {
-        val entityResponse = getOrRemoveById(rq.id)
-        if (entityResponse.isSuccess) {
-            with(entityResponse.result!!) {
-                if (adType == MkplDealSide.NONE) {
-                    return DbAdsResponse(
-                        result = null,
-                        isSuccess = false,
-                        errors = listOf(
-                            MkplError(
-                                field = "adType",
-                                message = "Type of ad must not be empty"
-                            )
-                        ),
-                    )
-                }
-                val result = cache.asFlow()
-                    .filter {
-                        when(adType) {
-                            MkplDealSide.DEMAND -> it.value.adType == MkplDealSide.SUPPLY.name
-                            MkplDealSide.SUPPLY -> it.value.adType == MkplDealSide.DEMAND.name
-                            else -> false
-                        }
-                    }
-                    .filter {
-                        it.value.title?.contains(title)?: false
-                    }
-                    .map { it.value.toInternal() }
-                    .toList()
-                return DbAdsResponse(
-                    result = result,
-                    isSuccess = true
-                )
-            }
-        } else return DbAdsResponse(
-            result = null,
-            isSuccess = false,
-            errors = entityResponse.errors
-        )
-    }
-
-    private fun getOrRemoveById(id: MkplRequestId, remove: Boolean = false): DbAdResponse =
-        if (id != MkplRequestId.NONE) {
+    private fun getOrRemoveById(id: MkplAdId, remove: Boolean = false): DbAdResponse =
+        if (id != MkplAdId.NONE) {
         cache.get(id.asString())?.let {
             if (remove)
-                cache.remove(it.id)
+                cache.invalidate(it.id!!)
             DbAdResponse(
                 result = it.toInternal(),
                 isSuccess = true,
