@@ -18,6 +18,11 @@ fun ICorChainDsl<MkplContext>.repoOffers(title: String) = worker {
         val request = DbAdIdRequest(adValidated.id)
         val adResponse = adRepo.readAd(request)
         val adRequest = adResponse.takeIf { it.isSuccess && it.result != null }?.result
+
+        /**
+         * Формирование фильтра по заголовку
+         * Для объявлений типа DEMAND подбираются SUPPLY и наоборот
+         */
         val filterResponse = if (adRequest == null) {
             DbAdsResponse(
                 result = null,
