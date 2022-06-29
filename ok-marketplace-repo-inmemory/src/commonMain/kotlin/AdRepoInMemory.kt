@@ -11,8 +11,11 @@ import kotlin.time.Duration.Companion.minutes
 
 class AdRepoInMemory constructor(
     private val initObjects: List<MkplAd> = emptyList(),
-    private val ttl: Duration = 2.minutes
+    ttl: Duration = 2.minutes
 ): IAdRepository {
+    /**
+     * Инициализация кеша с установкой "времени жизни" данных после записи
+     */
     private val cache =  Cache.Builder()
         .expireAfterWrite(ttl)
         .build<String, AdEntity>()
@@ -81,8 +84,12 @@ class AdRepoInMemory constructor(
     override suspend fun deleteAd(rq: DbAdIdRequest): DbAdResponse  =
         getOrRemoveById(rq.id, true)
 
+    /**
+     * Поиск объявлений по фильтру
+     * Если в фильтре не установлен какой-либо из параметров - по нему фильтрация не идет
+     */
     override suspend fun searchAd(rq: DbAdFilterRequest): DbAdsResponse {
-        val result = cache.asMap()
+        val result = cache.asMap().asSequence()
             .filter { entry ->
                 rq.ownerId.takeIf { it != MkplUserId.NONE }?.let {
                     it.asString() == entry.value.ownerId

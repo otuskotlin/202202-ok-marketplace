@@ -12,9 +12,9 @@ fun ICorChainDsl<MkplContext>.repoSearch(title: String) = worker {
     on { state == MkplState.RUNNING }
     handle {
         val request = DbAdFilterRequest(
-            titleFilter = adFilterRequest.searchString,
-            ownerId = adFilterRequest.ownerId,
-            dealSide = adFilterRequest.dealSide,
+            titleFilter = adFilterValidated.searchString,
+            ownerId = adFilterValidated.ownerId,
+            dealSide = adFilterValidated.dealSide,
         )
         val result = adRepo.searchAd(request)
         val resultAds = result.result
