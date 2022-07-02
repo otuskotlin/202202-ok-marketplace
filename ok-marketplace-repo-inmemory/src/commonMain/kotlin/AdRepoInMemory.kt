@@ -2,87 +2,100 @@ package ru.otus.otuskotlin.marketplace.backend.repository.inmemory
 
 import com.benasher44.uuid.uuid4
 import io.github.reactivecircus.cache4k.Cache
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.model.AdEntity
 import ru.otus.otuskotlin.marketplace.common.models.*
 import ru.otus.otuskotlin.marketplace.common.repo.*
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
-class AdRepoInMemory constructor(
-    private val initObjects: List<MkplAd> = emptyList(),
-    ttl: Duration = 2.minutes
-): IAdRepository {
+class AdRepoInMemory(
+    initObjects: List<MkplAd> = emptyList(),
+    ttl: Duration = 2.minutes,
+) : IAdRepository {
     /**
      * Инициализация кеша с установкой "времени жизни" данных после записи
      */
-    private val cache =  Cache.Builder()
+    private val cache = Cache.Builder()
         .expireAfterWrite(ttl)
         .build<String, AdEntity>()
+    private val mutex = Mutex()
 
     init {
-        runBlocking { initObjects.forEach {
+        initObjects.forEach {
             save(it)
-        } }
+        }
     }
 
-    private fun save(ad: MkplAd): DbAdResponse {
+    private fun save(ad: MkplAd) {
         val entity = AdEntity(ad)
         if (entity.id == null) {
-            return DbAdResponse(
-                result = null,
-                isSuccess = false,
-                errors = listOf(
-                    MkplError(
-                        field = "id",
-                        message = "Id must not be null or empty",
-                    )
-                )
-            )
+            return
         }
         cache.put(entity.id, entity)
+    }
+
+    override suspend fun createAd(rq: DbAdRequest): DbAdResponse {
+        val key = uuid4().toString()
+        val ad = rq.ad.copy(id = MkplAdId(key), lock = MkplAdLock(uuid4().toString()))
+        val entity = AdEntity(ad)
+        mutex.withLock {
+            cache.put(key, entity)
+        }
         return DbAdResponse(
-            result = entity.toInternal(),
+            result = ad,
             isSuccess = true,
         )
     }
 
-    override suspend fun createAd(rq: DbAdRequest): DbAdResponse =
-        save(rq.ad.copy(id = MkplAdId(uuid4().toString())))
+    override suspend fun readAd(rq: DbAdIdRequest): DbAdResponse {
+        val key = rq.id.takeIf { it != MkplAdId.NONE }?.asString() ?: return resultErrorEmptyId
 
-    override suspend fun readAd(rq: DbAdIdRequest): DbAdResponse =
-        getOrRemoveById(rq.id)
-
-    override suspend fun updateAd(rq: DbAdRequest): DbAdResponse {
-        val key = rq.ad.id.takeIf { it != MkplAdId.NONE }?.asString()
-            ?: return DbAdResponse(
-                result = null,
-                isSuccess = false,
-                errors = listOf(
-                    MkplError(
-                        field = "id",
-                        message = "Id must not be null or blank")
+        return cache.get(key)
+            ?.let {
+                DbAdResponse(
+                    result = it.toInternal(),
+                    isSuccess = true,
                 )
-            )
-
-        return if (cache.asMap().containsKey(key)) {
-            save(rq.ad)
-        } else {
-            DbAdResponse(
-                result = null,
-                isSuccess = false,
-                errors = listOf(
-                    MkplError(
-                        field = "id",
-                        message = "Not Found"
-                    )
-                )
-            )
-        }
+            } ?: resultErrorNotFound
     }
 
-    override suspend fun deleteAd(rq: DbAdIdRequest): DbAdResponse  =
-        getOrRemoveById(rq.id, true)
+    override suspend fun updateAd(rq: DbAdRequest): DbAdResponse {
+        val key = rq.ad.id.takeIf { it != MkplAdId.NONE }?.asString() ?: return resultErrorEmptyId
+        val oldLock = rq.ad.lock.takeIf { it != MkplAdLock.NONE }?.asString()
+        val newAd = rq.ad.copy(lock = MkplAdLock(uuid4().toString()))
+        val entity = AdEntity(newAd)
+        mutex.withLock {
+            val local = cache.get(key)
+            when {
+                local == null -> return resultErrorNotFound
+                local.lock == null || local.lock == oldLock -> cache.put(key, entity)
+                else -> return resultErrorConcurrent
+            }
+        }
+        return DbAdResponse(
+            result = newAd,
+            isSuccess = true,
+        )
+    }
+
+    override suspend fun deleteAd(rq: DbAdIdRequest): DbAdResponse {
+        val key = rq.id.takeIf { it != MkplAdId.NONE }?.asString() ?: return resultErrorEmptyId
+        mutex.withLock {
+            val local = cache.get(key)
+            if (local?.lock == null || local.lock == rq.lock.asString()) {
+                cache.invalidate(key)
+                return DbAdResponse(
+                    result = null,
+                    isSuccess = false,
+                    errors = emptyList()
+                )
+            } else {
+                return resultErrorConcurrent
+            }
+        }
+    }
 
     /**
      * Поиск объявлений по фильтру
@@ -93,17 +106,17 @@ class AdRepoInMemory constructor(
             .filter { entry ->
                 rq.ownerId.takeIf { it != MkplUserId.NONE }?.let {
                     it.asString() == entry.value.ownerId
-                }?: true
+                } ?: true
             }
             .filter { entry ->
                 rq.dealSide.takeIf { it != MkplDealSide.NONE }?.let {
                     it.name == entry.value.adType
-                }?: true
+                } ?: true
             }
             .filter { entry ->
                 rq.titleFilter.takeIf { it.isNotBlank() }?.let {
-                    entry.value.title?.contains(it)?: false
-                }?: true
+                    entry.value.title?.contains(it) ?: false
+                } ?: true
             }
             .map { it.value.toInternal() }
             .toList()
@@ -113,36 +126,36 @@ class AdRepoInMemory constructor(
         )
     }
 
-    private fun getOrRemoveById(id: MkplAdId, remove: Boolean = false): DbAdResponse =
-        if (id != MkplAdId.NONE) {
-        cache.get(id.asString())?.let {
-            if (remove)
-                cache.invalidate(it.id!!)
-            DbAdResponse(
-                result = it.toInternal(),
-                isSuccess = true,
-            )
-        }?: DbAdResponse(
+    companion object {
+        val resultErrorEmptyId = DbAdResponse(
             result = null,
             isSuccess = false,
             errors = listOf(
                 MkplError(
                     field = "id",
-                    message = "Not Found",
+                    message = "Id must not be null or blank"
                 )
             )
         )
-    } else {
-        DbAdResponse(
+        val resultErrorConcurrent = DbAdResponse(
             result = null,
             isSuccess = false,
             errors = listOf(
                 MkplError(
+                    field = "lock",
+                    message = "Concurrent access to object",
+                )
+            )
+        )
+        val resultErrorNotFound = DbAdResponse(
+            isSuccess = true,
+            result = null,
+            errors = listOf(
+                MkplError(
                     field = "id",
-                    message = "Id must not be null or empty",
+                    message = "Not Found"
                 )
             )
         )
     }
-
 }

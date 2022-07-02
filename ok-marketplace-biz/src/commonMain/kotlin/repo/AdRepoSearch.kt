@@ -19,7 +19,7 @@ fun ICorChainDsl<MkplContext>.repoSearch(title: String) = worker {
         val result = adRepo.searchAd(request)
         val resultAds = result.result
         if (result.isSuccess && resultAds != null) {
-            adsResponse = resultAds.toMutableList()
+            adsRepoDone = resultAds.toMutableList()
         } else {
             state = MkplState.FAILING
             errors.addAll(result.errors)

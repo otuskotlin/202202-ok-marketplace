@@ -11,11 +11,11 @@ fun ICorChainDsl<MkplContext>.repoRead(title: String) = worker {
     description = "Чтение объявления из БД"
     on { state == MkplState.RUNNING }
     handle {
-        val request = DbAdIdRequest(adValidated.id)
+        val request = DbAdIdRequest(adValidated)
         val result = adRepo.readAd(request)
         val resultAd = result.result
         if (result.isSuccess && resultAd != null) {
-            adResponse = resultAd
+            adRepoPrepare = resultAd
         } else {
             state = MkplState.FAILING
             errors.addAll(result.errors)

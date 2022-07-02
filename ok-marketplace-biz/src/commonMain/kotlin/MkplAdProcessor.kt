@@ -11,6 +11,7 @@ import ru.otus.otuskotlin.marketplace.biz.validation.*
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.models.MkplAdId
 import ru.otus.otuskotlin.marketplace.common.models.MkplCommand
+import ru.otus.otuskotlin.marketplace.common.models.MkplState
 
 class MkplAdProcessor() {
     suspend fun exec(ctx: MkplContext) = BuzinessChain.exec(ctx)
@@ -41,8 +42,16 @@ class MkplAdProcessor() {
                     finishAdValidation("Успешное завершение процедуры валидации")
                 }
 
-                repoCreate("Создание объявления в БД")
-
+                chain {
+                    title = "Логика сохранения"
+                    repoPrepareCreate("Подготовка объекта для сохранения")
+                    repoCreate("Создание объявления в БД")
+                }
+                worker {
+                    title = "Подготовка ответа"
+                    on { state == MkplState.RUNNING }
+                    handle { adResponse = adRepoDone }
+                }
             }
             operation("Получить объявление", MkplCommand.READ) {
                 stubs("Обработка стабов") {
@@ -61,7 +70,15 @@ class MkplAdProcessor() {
                     finishAdValidation("Успешное завершение процедуры валидации")
                 }
 
-                repoRead("Чтение объявления из БД")
+                chain {
+                    title = "Логика сохранения"
+                    repoRead("Чтение объявления из БД")
+                }
+                worker {
+                    title = "Подготовка ответа"
+                    on { state == MkplState.RUNNING }
+                    handle { adResponse = adRepoPrepare }
+                }
             }
             operation("Изменить объявление", MkplCommand.UPDATE) {
                 stubs("Обработка стабов") {
@@ -88,8 +105,16 @@ class MkplAdProcessor() {
                     finishAdValidation("Успешное завершение процедуры валидации")
                 }
 
-                repoRead("Чтение объявления из БД")
-                repoUpdate("Обновление объявления в БД")
+                chain {
+                    title = "Логика сохранения"
+                    repoRead("Чтение объявления из БД")
+                    repoUpdate("Обновление объявления в БД")
+                }
+                worker {
+                    title = "Подготовка ответа"
+                    on { state == MkplState.RUNNING }
+                    handle { adResponse = adRepoDone }
+                }
             }
             operation("Удалить объявление", MkplCommand.DELETE) {
                 stubs("Обработка стабов") {
@@ -108,8 +133,16 @@ class MkplAdProcessor() {
                     finishAdValidation("Успешное завершение процедуры валидации")
                 }
 
-                repoRead("Чтение объявления из БД")
-                repoDelete("Удаление объявления из БД")
+                chain {
+                    title = "Логика сохранения"
+                    repoRead("Чтение объявления из БД")
+                    repoDelete("Удаление объявления из БД")
+                }
+                worker {
+                    title = "Подготовка ответа"
+                    on { state == MkplState.RUNNING }
+                    handle { adResponse = adRepoPrepare }
+                }
             }
             operation("Поиск объявлений", MkplCommand.SEARCH) {
                 stubs("Обработка стабов") {
@@ -126,6 +159,11 @@ class MkplAdProcessor() {
                 }
 
                 repoSearch("Поиск объявления в БД по фильтру")
+                worker {
+                    title = "Подготовка ответа"
+                    on { state == MkplState.RUNNING }
+                    handle { adsResponse = adsRepoDone }
+                }
             }
             operation("Поиск подходящих предложений для объявления", MkplCommand.OFFERS) {
                 stubs("Обработка стабов") {
@@ -145,8 +183,16 @@ class MkplAdProcessor() {
                     finishAdValidation("Успешное завершение процедуры валидации")
                 }
 
-                repoRead("Чтение объявления из БД")
-                repoOffers("Поиск предложений для объявления в БД")
+                chain {
+                    title = "Логика сохранения"
+                    repoRead("Чтение объявления из БД")
+                    repoOffers("Поиск предложений для объявления в БД")
+                }
+                worker {
+                    title = "Подготовка ответа"
+                    on { state == MkplState.RUNNING }
+                    handle { adsResponse = adsRepoDone }
+                }
             }
         }.build()
     }

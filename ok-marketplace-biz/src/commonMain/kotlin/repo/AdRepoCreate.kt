@@ -11,11 +11,11 @@ fun ICorChainDsl<MkplContext>.repoCreate(title: String) = worker {
     description = "Добавление объявления в БД"
     on { state == MkplState.RUNNING }
     handle {
-        val request = DbAdRequest(adValidated)
+        val request = DbAdRequest(adRepoPrepare)
         val result = adRepo.createAd(request)
         val resultAd = result.result
         if (result.isSuccess && resultAd != null) {
-            adResponse = resultAd
+            adRepoDone = resultAd
             state = MkplState.FINISHING
         } else {
             state = MkplState.FAILING

@@ -10,7 +10,7 @@ data class AdEntity(
     val adType: String? = null,
     val visibility: String? = null,
     val product: IMkplAdProductEntity? = null,
-    val permissionsClient: Set<String>? = null,
+    val lock: String? = null,
 ) {
     constructor(model: MkplAd): this(
         id = model.id.asString().takeIf { it.isNotBlank() },
@@ -20,7 +20,7 @@ data class AdEntity(
         adType = model.adType.takeIf { it != MkplDealSide.NONE }?.name,
         visibility = model.visibility.takeIf { it != MkplVisibility.NONE }?.name,
         product = model.product.toEntity(),
-        permissionsClient = model.permissionsClient.map { it.name }.toSet().takeIf { it.isNotEmpty() },
+        lock = model.lock.asString().takeIf { it.isNotBlank() }
     )
 
     fun toInternal() = MkplAd(
@@ -31,6 +31,6 @@ data class AdEntity(
         adType = adType?.let { MkplDealSide.valueOf(it) }?: MkplDealSide.NONE,
         visibility = visibility?.let { MkplVisibility.valueOf(it) }?: MkplVisibility.NONE,
         product = product.toInternal(),
-        permissionsClient = permissionsClient?.map { MkplAdPermissionClient.valueOf(it) }?.toMutableSet()?: mutableSetOf(),
+        lock = lock?.let { MkplAdLock(it) } ?: MkplAdLock.NONE,
     )
 }

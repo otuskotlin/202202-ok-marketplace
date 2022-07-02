@@ -11,12 +11,9 @@ fun ICorChainDsl<MkplContext>.repoDelete(title: String) = worker {
     description = "Удаление объявления из БД по ID"
     on { state == MkplState.RUNNING }
     handle {
-        val request = DbAdIdRequest(adValidated.id)
+        val request = DbAdIdRequest(adRepoPrepare)
         val result = adRepo.deleteAd(request)
-        val resultAd = result.result
-        if (result.isSuccess && resultAd != null) {
-            adResponse = resultAd
-        } else {
+        if (! result.isSuccess) {
             state = MkplState.FAILING
             errors.addAll(result.errors)
         }

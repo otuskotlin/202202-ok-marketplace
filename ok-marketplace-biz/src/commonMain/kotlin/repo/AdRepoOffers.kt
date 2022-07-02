@@ -7,7 +7,6 @@ import ru.otus.otuskotlin.marketplace.common.models.MkplDealSide
 import ru.otus.otuskotlin.marketplace.common.models.MkplError
 import ru.otus.otuskotlin.marketplace.common.models.MkplState
 import ru.otus.otuskotlin.marketplace.common.repo.DbAdFilterRequest
-import ru.otus.otuskotlin.marketplace.common.repo.DbAdIdRequest
 import ru.otus.otuskotlin.marketplace.common.repo.DbAdsResponse
 
 fun ICorChainDsl<MkplContext>.repoOffers(title: String) = worker {
@@ -15,43 +14,36 @@ fun ICorChainDsl<MkplContext>.repoOffers(title: String) = worker {
     description = "Поиск предложений для объявления по названию"
     on { state == MkplState.RUNNING }
     handle {
-        val request = DbAdIdRequest(adValidated.id)
-        val adResponse = adRepo.readAd(request)
-        val adRequest = adResponse.takeIf { it.isSuccess && it.result != null }?.result
-
-        /**
-         * Формирование фильтра по заголовку
-         * Для объявлений типа DEMAND подбираются SUPPLY и наоборот
-         */
-        val filterResponse = if (adRequest == null) {
+        val adRequest = adRepoPrepare
+        val filter = DbAdFilterRequest(
+            titleFilter = adRequest.title,
+            dealSide = when(adRequest.adType) {
+                MkplDealSide.DEMAND -> MkplDealSide.SUPPLY
+                MkplDealSide.SUPPLY -> MkplDealSide.DEMAND
+                MkplDealSide.NONE -> MkplDealSide.NONE
+            }
+        )
+        val dbResponse = if (filter.dealSide == MkplDealSide.NONE) {
             DbAdsResponse(
                 result = null,
                 isSuccess = false,
-                errors = adResponse.errors
-            )
-        } else {
-            when(adRequest.adType) {
-                MkplDealSide.DEMAND -> adRepo.searchAd(DbAdFilterRequest(titleFilter = adRequest.title, dealSide = MkplDealSide.SUPPLY))
-                MkplDealSide.SUPPLY -> adRepo.searchAd(DbAdFilterRequest(titleFilter = adRequest.title, dealSide = MkplDealSide.DEMAND))
-                else -> DbAdsResponse(
-                    result = null,
-                    isSuccess = false,
-                    errors = listOf(
-                        MkplError(
-                            field = "adType",
-                            message = "Type of ad must not be empty"
-                        )
+                errors = listOf(
+                    MkplError(
+                        field = "adType",
+                        message = "Type of ad must not be empty"
                     )
                 )
-            }
+            )
+        } else {
+            adRepo.searchAd(filter)
         }
 
-        val resultAds = filterResponse.result
-        if (filterResponse.isSuccess && resultAds != null) {
-            adsResponse = resultAds.toMutableList()
+        val resultAds = dbResponse.result
+        if (dbResponse.isSuccess && resultAds != null) {
+            adsRepoDone = resultAds.toMutableList()
         } else {
             state = MkplState.FAILING
-            errors.addAll(filterResponse.errors)
+            errors.addAll(dbResponse.errors)
         }
     }
 }
