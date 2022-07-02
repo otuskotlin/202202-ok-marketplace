@@ -99,10 +99,8 @@ Marketplace -- это площадка, на которой пользовате
 1. [ok-marketplace-app-ktor-native](ok-marketplace-app-ktor-native) - Приложение на Ktor Native
 1. [ok-marketplace-app-ktor-common](ok-marketplace-app-ktor-common) - Общая логика для Ktor JVM и Ktor Native
 1. [ok-marketplace-app-knative](ok-marketplace-app-knative) - Скрипты запуска приложения в KNative
-
-[//]: # (1. [ok-marketplace-be-app-rabbit]&#40;ok-marketplace-be-app-rabbit&#41; - Микросервис на RabbitMQ)
-
-[//]: # (1. [ok-marketplace-be-app-kafka]&#40;ok-marketplace-be-app-kafka&#41; - Микросервис на Kafka)
+1. [ok-marketplace-app-rabbit](ok-marketplace-app-rabbit) - Микросервис на RabbitMQ
+1. [ok-marketplace-app-kafka](ok-marketplace-app-kafka) - Микросервис на Kafka
 
 ## Модули бизнес-логики
 
