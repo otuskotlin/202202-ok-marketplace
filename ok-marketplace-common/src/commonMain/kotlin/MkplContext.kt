@@ -31,6 +31,9 @@ data class MkplContext(
     var adValidated: MkplAd = MkplAd(),
     var adFilterValidated: MkplAdFilter = MkplAdFilter(),
 
+    var adRepoRead: MkplAd = MkplAd(),
+    var adRepoSave: MkplAd = MkplAd(),
+
     var adResponse: MkplAd = MkplAd(),
     var adsResponse: MutableList<MkplAd> = mutableListOf(),
 )
