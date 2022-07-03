@@ -2,20 +2,23 @@ plugins {
     kotlin("multiplatform")
 }
 
+
+
 kotlin {
     jvm {}
-//    macosX64 {}
     linuxX64 {}
 
     sourceSets {
-        all { languageSettings.optIn("kotlin.RequiresOptIn") }
+        val coroutinesVersion: String by project
 
         @Suppress("UNUSED_VARIABLE")
         val commonMain by getting {
             dependencies {
-                implementation(kotlin("stdlib-common"))
-
                 implementation(project(":ok-marketplace-common"))
+                implementation(project(":ok-marketplace-stubs"))
+
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+
             }
         }
         @Suppress("UNUSED_VARIABLE")
@@ -23,6 +26,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
+                implementation(project(":ok-marketplace-repo-test"))
             }
         }
         @Suppress("UNUSED_VARIABLE")

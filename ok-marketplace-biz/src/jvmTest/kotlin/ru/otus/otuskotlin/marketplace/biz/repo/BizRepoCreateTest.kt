@@ -10,22 +10,18 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
-class BizRepoReadTest {
+class BizRepoCreateTest {
 
     private val processor = MkplAdProcessor()
-    private val command = MkplCommand.READ
-    private val initAd = MkplAd(
-        id = MkplAdId("123"),
-        title = "abc",
-        description = "abc",
-        adType = MkplDealSide.DEMAND,
-        visibility = MkplVisibility.VISIBLE_PUBLIC,
+    private val command = MkplCommand.CREATE
+    private val uuid = "10000000-0000-0000-0000-000000000001"
+    private val repo = AdRepoInMemory(
+        randomUuid = { uuid }
     )
-    private val repo by lazy { AdRepoInMemory(initObjects = listOf(initAd)) }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun repoReadSuccessTest() = runTest {
+    fun repoCreateSuccessTest() = runTest {
         val ctx = MkplContext(
             command = command,
             state = MkplState.NONE,
@@ -33,18 +29,19 @@ class BizRepoReadTest {
             adRepo = repo,
             adRequest = MkplAd(
                 id = MkplAdId("123"),
+                title = "abc",
+                description = "abc",
+                adType = MkplDealSide.DEMAND,
+                visibility = MkplVisibility.VISIBLE_PUBLIC,
             ),
         )
         processor.exec(ctx)
         assertEquals(MkplState.FINISHING, ctx.state)
-        assertEquals(initAd.id, ctx.adResponse.id)
-        assertEquals(initAd.title, ctx.adResponse.title)
-        assertEquals(initAd.description, ctx.adResponse.description)
-        assertEquals(initAd.adType, ctx.adResponse.adType)
-        assertEquals(initAd.visibility, ctx.adResponse.visibility)
+        assertNotEquals(MkplAdId.NONE, ctx.adResponse.id)
+        assertEquals("abc", ctx.adResponse.title)
+        assertEquals("abc", ctx.adResponse.description)
+        assertEquals(MkplDealSide.DEMAND, ctx.adResponse.adType)
+        assertEquals(MkplVisibility.VISIBLE_PUBLIC, ctx.adResponse.visibility)
+        assertEquals(uuid, ctx.adResponse.lock.asString())
     }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun repoReadNotFoundTest() = repoNotFoundTest(processor, command)
 }

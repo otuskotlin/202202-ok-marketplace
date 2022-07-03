@@ -6,13 +6,14 @@ plugins {
 
 kotlin {
     jvm {}
-    linuxX64 {}
+//    linuxX64 {}
 
     sourceSets {
         val cache4kVersion: String by project
         val coroutinesVersion: String by project
         val kmpUUIDVersion: String by project
 
+        @Suppress("UNUSED_VARIABLE")
         val commonMain by getting {
             dependencies {
                 implementation(project(":ok-marketplace-common"))
@@ -23,6 +24,7 @@ kotlin {
 
             }
         }
+        @Suppress("UNUSED_VARIABLE")
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test-common"))

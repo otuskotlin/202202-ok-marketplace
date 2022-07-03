@@ -8,13 +8,11 @@ import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.models.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
-import kotlin.test.assertTrue
 
-class BizRepoDeleteTest {
+class BizRepoReadTest {
 
     private val processor = MkplAdProcessor()
-    private val command = MkplCommand.DELETE
+    private val command = MkplCommand.READ
     private val initAd = MkplAd(
         id = MkplAdId("123"),
         title = "abc",
@@ -26,23 +24,26 @@ class BizRepoDeleteTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun repoDeleteSuccessTest() = runTest {
-        val adToUpdate = MkplAd(
-            id = MkplAdId("123"),
-        )
+    fun repoReadSuccessTest() = runTest {
         val ctx = MkplContext(
             command = command,
             state = MkplState.NONE,
             workMode = MkplWorkMode.TEST,
             adRepo = repo,
-            adRequest = adToUpdate,
+            adRequest = MkplAd(
+                id = MkplAdId("123"),
+            ),
         )
         processor.exec(ctx)
         assertEquals(MkplState.FINISHING, ctx.state)
-        assertTrue { ctx.errors.isEmpty() }
+        assertEquals(initAd.id, ctx.adResponse.id)
+        assertEquals(initAd.title, ctx.adResponse.title)
+        assertEquals(initAd.description, ctx.adResponse.description)
+        assertEquals(initAd.adType, ctx.adResponse.adType)
+        assertEquals(initAd.visibility, ctx.adResponse.visibility)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun repoDeleteNotFoundTest() = repoNotFoundTest(processor, command)
+    fun repoReadNotFoundTest() = repoNotFoundTest(processor, command)
 }

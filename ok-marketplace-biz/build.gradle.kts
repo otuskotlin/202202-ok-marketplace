@@ -4,6 +4,7 @@ plugins {
 
 kotlin {
     jvm {}
+//    macosX64 {}
     linuxX64 {}
 
     sourceSets {
@@ -27,9 +28,9 @@ kotlin {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
-                implementation(project(":ok-marketplace-repo-inmemory"))
+                implementation(project(":ok-marketplace-repo-stub"))
 
-                api("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
             }
         }
         @Suppress("UNUSED_VARIABLE")
@@ -42,6 +43,7 @@ kotlin {
         val jvmTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
+                implementation(project(":ok-marketplace-repo-inmemory"))
             }
         }
     }

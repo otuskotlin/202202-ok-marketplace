@@ -34,6 +34,7 @@ class AdCreateStubTest {
                 description = description,
                 adType = dealSide,
                 visibility = visibility,
+                lock = AD_DEMAND_BOLT1.lock,
             ),
         )
         processor.exec(ctx)

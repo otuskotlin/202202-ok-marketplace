@@ -2,7 +2,7 @@ package ru.otus.otuskotlin.marketplace.biz.validation
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.AdRepoInMemory
+import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.AdRepoStub
 import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.models.*
@@ -22,7 +22,7 @@ class BizValidationSearchTest {
             command = command,
             state = MkplState.NONE,
             workMode = MkplWorkMode.TEST,
-            adRepo = AdRepoInMemory(),
+            adRepo = AdRepoStub(),
             adFilterRequest = MkplAdFilter()
         )
         processor.exec(ctx)

@@ -5,6 +5,7 @@ import io.github.reactivecircus.cache4k.Cache
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.model.AdEntity
+import ru.otus.otuskotlin.marketplace.common.helpers.errorConcurrency
 import ru.otus.otuskotlin.marketplace.common.models.*
 import ru.otus.otuskotlin.marketplace.common.repo.*
 import kotlin.time.Duration
@@ -13,6 +14,7 @@ import kotlin.time.Duration.Companion.minutes
 class AdRepoInMemory(
     initObjects: List<MkplAd> = emptyList(),
     ttl: Duration = 2.minutes,
+    val randomUuid: () -> String = { uuid4().toString() }
 ) : IAdRepository {
     /**
      * Инициализация кеша с установкой "времени жизни" данных после записи
@@ -37,8 +39,8 @@ class AdRepoInMemory(
     }
 
     override suspend fun createAd(rq: DbAdRequest): DbAdResponse {
-        val key = uuid4().toString()
-        val ad = rq.ad.copy(id = MkplAdId(key), lock = MkplAdLock(uuid4().toString()))
+        val key = randomUuid()
+        val ad = rq.ad.copy(id = MkplAdId(key), lock = MkplAdLock(randomUuid()))
         val entity = AdEntity(ad)
         mutex.withLock {
             cache.put(key, entity)
@@ -64,7 +66,7 @@ class AdRepoInMemory(
     override suspend fun updateAd(rq: DbAdRequest): DbAdResponse {
         val key = rq.ad.id.takeIf { it != MkplAdId.NONE }?.asString() ?: return resultErrorEmptyId
         val oldLock = rq.ad.lock.takeIf { it != MkplAdLock.NONE }?.asString()
-        val newAd = rq.ad.copy(lock = MkplAdLock(uuid4().toString()))
+        val newAd = rq.ad.copy(lock = MkplAdLock(randomUuid()))
         val entity = AdEntity(newAd)
         mutex.withLock {
             val local = cache.get(key)
@@ -141,10 +143,10 @@ class AdRepoInMemory(
             result = null,
             isSuccess = false,
             errors = listOf(
-                MkplError(
-                    field = "lock",
-                    message = "Concurrent access to object",
-                )
+                errorConcurrency(
+                    violationCode = "changed",
+                    description = "Object has changed during request handling"
+                ),
             )
         )
         val resultErrorNotFound = DbAdResponse(

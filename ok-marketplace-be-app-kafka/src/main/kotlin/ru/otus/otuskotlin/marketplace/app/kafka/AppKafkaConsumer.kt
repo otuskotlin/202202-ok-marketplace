@@ -13,8 +13,10 @@ import org.apache.kafka.clients.consumer.ConsumerRecords
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.errors.WakeupException
+import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.AdRepoStub
 import ru.otus.otuskotlin.marketplace.backend.services.AdService
 import ru.otus.otuskotlin.marketplace.common.MkplContext
+import ru.otus.otuskotlin.marketplace.common.repo.IAdRepository
 import java.time.Duration
 import java.util.*
 
@@ -23,7 +25,7 @@ private val log = KotlinLogging.logger {}
 data class InputOutputTopics(val input: String, val output: String)
 
 interface ConsumerStrategy {
-    fun topics(config: AppKafkaConfig): InputOutputTopics;
+    fun topics(config: AppKafkaConfig): InputOutputTopics
     fun serialize(source: MkplContext): String
     fun deserialize(value: String, target: MkplContext)
 }
@@ -31,7 +33,8 @@ interface ConsumerStrategy {
 class AppKafkaConsumer(
     private val config: AppKafkaConfig,
     consumerStrategies: List<ConsumerStrategy>,
-    private val service: AdService = AdService(),
+    private val repo: IAdRepository = AdRepoStub(),
+    private val service: AdService = AdService(repo),
     private val consumer: Consumer<String, String> = config.createKafkaConsumer(),
     private val producer: Producer<String, String> = config.createKafkaProducer()
 ) {

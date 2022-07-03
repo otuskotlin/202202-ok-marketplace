@@ -8,22 +8,25 @@ import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.models.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class BizRepoUpdateTest {
 
     private val processor = MkplAdProcessor()
     private val command = MkplCommand.UPDATE
+    private val uuidOld = "10000000-0000-0000-0000-000000000001"
+    private val uuidNew = "10000000-0000-0000-0000-000000000002"
+    private val uuidBad = "10000000-0000-0000-0000-000000000003"
     private val initAd = MkplAd(
         id = MkplAdId("123"),
         title = "abc",
         description = "abc",
         adType = MkplDealSide.DEMAND,
         visibility = MkplVisibility.VISIBLE_PUBLIC,
+        lock = MkplAdLock(uuidOld),
     )
-    private val repo by lazy { AdRepoInMemory(initObjects = listOf(initAd)) }
+    private val repo by lazy { AdRepoInMemory(initObjects = listOf(initAd), randomUuid = { uuidNew }) }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun repoUpdateSuccessTest() = runTest {
         val adToUpdate = MkplAd(
@@ -32,6 +35,7 @@ class BizRepoUpdateTest {
             description = "xyz",
             adType = MkplDealSide.DEMAND,
             visibility = MkplVisibility.VISIBLE_TO_GROUP,
+            lock = MkplAdLock(uuidOld),
         )
         val ctx = MkplContext(
             command = command,
@@ -47,9 +51,36 @@ class BizRepoUpdateTest {
         assertEquals(adToUpdate.description, ctx.adResponse.description)
         assertEquals(adToUpdate.adType, ctx.adResponse.adType)
         assertEquals(adToUpdate.visibility, ctx.adResponse.visibility)
+        assertEquals(uuidNew, ctx.adResponse.lock.asString())
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun repoUpdateConcurrentTest() = runTest {
+        val adToUpdate = MkplAd(
+            id = MkplAdId("123"),
+            title = "xyz",
+            description = "xyz",
+            adType = MkplDealSide.DEMAND,
+            visibility = MkplVisibility.VISIBLE_TO_GROUP,
+            lock = MkplAdLock(uuidBad)
+        )
+        val ctx = MkplContext(
+            command = command,
+            state = MkplState.NONE,
+            workMode = MkplWorkMode.TEST,
+            adRepo = repo,
+            adRequest = adToUpdate,
+        )
+        processor.exec(ctx)
+        assertEquals(MkplState.FAILING, ctx.state)
+        assertEquals(initAd.id, ctx.adResponse.id)
+        assertEquals(initAd.title, ctx.adResponse.title)
+        assertEquals(initAd.description, ctx.adResponse.description)
+        assertEquals(initAd.adType, ctx.adResponse.adType)
+        assertEquals(initAd.visibility, ctx.adResponse.visibility)
+        assertEquals(uuidOld, ctx.adResponse.lock.asString())
+    }
+
     @Test
     fun repoUpdateNotFoundTest() = repoNotFoundTest(processor, command)
 }

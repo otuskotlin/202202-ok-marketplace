@@ -15,7 +15,7 @@ fun ICorChainDsl<MkplContext>.repoRead(title: String) = worker {
         val result = adRepo.readAd(request)
         val resultAd = result.result
         if (result.isSuccess && resultAd != null) {
-            adRepoPrepare = resultAd
+            adRepoRead = resultAd
         } else {
             state = MkplState.FAILING
             errors.addAll(result.errors)
