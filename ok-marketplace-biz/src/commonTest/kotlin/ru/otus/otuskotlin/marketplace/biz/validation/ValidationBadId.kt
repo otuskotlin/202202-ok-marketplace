@@ -2,9 +2,11 @@ package ru.otus.otuskotlin.marketplace.biz.validation
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.AdRepoInMemory
 import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.models.*
+import ru.otus.otuskotlin.marketplace.common.repo.IAdRepository
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -15,6 +17,7 @@ fun validationIdCorrect(command: MkplCommand, processor: MkplAdProcessor) = runT
         command = command,
         state = MkplState.NONE,
         workMode = MkplWorkMode.TEST,
+        adRepo = IAdRepository.MOCK_DEMAND,
         adRequest = MkplAd(
             id = MkplAdId("123-234-abc-ABC"),
             title = "abc",
@@ -34,6 +37,7 @@ fun validationIdTrim(command: MkplCommand, processor: MkplAdProcessor) = runTest
         command = command,
         state = MkplState.NONE,
         workMode = MkplWorkMode.TEST,
+        adRepo = IAdRepository.MOCK_DEMAND,
         adRequest = MkplAd(
             id = MkplAdId(" \n\t 123-234-abc-ABC \n\t "),
             title = "abc",
@@ -53,6 +57,7 @@ fun validationIdEmpty(command: MkplCommand, processor: MkplAdProcessor) = runTes
         command = command,
         state = MkplState.NONE,
         workMode = MkplWorkMode.TEST,
+        adRepo = IAdRepository.MOCK_DEMAND,
         adRequest = MkplAd(
             id = MkplAdId(""),
             title = "abc",
@@ -75,6 +80,7 @@ fun validationIdFormat(command: MkplCommand, processor: MkplAdProcessor) = runTe
         command = command,
         state = MkplState.NONE,
         workMode = MkplWorkMode.TEST,
+        adRepo = IAdRepository.MOCK_DEMAND,
         adRequest = MkplAd(
             id = MkplAdId("!@#\$%^&*(),.{}"),
             title = "abc",

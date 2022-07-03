@@ -50,7 +50,10 @@ class MkplAdProcessor() {
                 worker {
                     title = "Подготовка ответа"
                     on { state == MkplState.RUNNING }
-                    handle { adResponse = adRepoDone }
+                    handle {
+                        state = MkplState.FINISHING
+                        adResponse = adRepoDone
+                    }
                 }
             }
             operation("Получить объявление", MkplCommand.READ) {
@@ -77,7 +80,10 @@ class MkplAdProcessor() {
                 worker {
                     title = "Подготовка ответа"
                     on { state == MkplState.RUNNING }
-                    handle { adResponse = adRepoPrepare }
+                    handle {
+                        state = MkplState.FINISHING
+                        adResponse = adRepoPrepare
+                    }
                 }
             }
             operation("Изменить объявление", MkplCommand.UPDATE) {
@@ -113,7 +119,10 @@ class MkplAdProcessor() {
                 worker {
                     title = "Подготовка ответа"
                     on { state == MkplState.RUNNING }
-                    handle { adResponse = adRepoDone }
+                    handle {
+                        state = MkplState.FINISHING
+                        adResponse = adRepoDone
+                    }
                 }
             }
             operation("Удалить объявление", MkplCommand.DELETE) {
@@ -141,7 +150,10 @@ class MkplAdProcessor() {
                 worker {
                     title = "Подготовка ответа"
                     on { state == MkplState.RUNNING }
-                    handle { adResponse = adRepoPrepare }
+                    handle {
+                        state = MkplState.FINISHING
+                        adResponse = adRepoPrepare
+                    }
                 }
             }
             operation("Поиск объявлений", MkplCommand.SEARCH) {
@@ -162,7 +174,10 @@ class MkplAdProcessor() {
                 worker {
                     title = "Подготовка ответа"
                     on { state == MkplState.RUNNING }
-                    handle { adsResponse = adsRepoDone }
+                    handle {
+                        state = MkplState.FINISHING
+                        adsResponse = adsRepoDone
+                    }
                 }
             }
             operation("Поиск подходящих предложений для объявления", MkplCommand.OFFERS) {
@@ -191,7 +206,10 @@ class MkplAdProcessor() {
                 worker {
                     title = "Подготовка ответа"
                     on { state == MkplState.RUNNING }
-                    handle { adsResponse = adsRepoDone }
+                    handle {
+                        state = MkplState.FINISHING
+                        adsResponse = adsRepoDone
+                    }
                 }
             }
         }.build()

@@ -18,7 +18,6 @@ abstract class RepoAdDeleteTest {
         val result = runBlocking { repo.deleteAd(DbAdIdRequest(successId)) }
 
         assertEquals(true, result.isSuccess)
-        assertEquals(deleteSuccessStub, result.result)
         assertEquals(emptyList(), result.errors)
     }
 

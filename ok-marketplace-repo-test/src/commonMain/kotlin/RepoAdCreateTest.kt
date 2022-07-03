@@ -17,7 +17,9 @@ abstract class RepoAdCreateTest {
         val result = runBlocking { repo.createAd(DbAdRequest(createObj)) }
         val expected = createObj.copy(id = result.result?.id ?: MkplAdId.NONE)
         assertEquals(true, result.isSuccess)
-        assertEquals(expected, result.result)
+        assertEquals(expected.title, result.result?.title)
+        assertEquals(expected.description, result.result?.description)
+        assertEquals(expected.adType, result.result?.adType)
         assertNotEquals(MkplAdId.NONE, result.result?.id)
         assertEquals(emptyList(), result.errors)
     }

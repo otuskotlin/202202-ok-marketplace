@@ -22,13 +22,16 @@ import ru.otus.otuskotlin.marketplace.app.v1.v1Offer
 import ru.otus.otuskotlin.marketplace.app.v2.*
 import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.AdRepoInMemory
 import ru.otus.otuskotlin.marketplace.backend.services.AdService
+import ru.otus.otuskotlin.marketplace.common.repo.IAdRepository
 
 // function with config (application.conf)
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 @OptIn(KtorExperimentalLocationsAPI::class)
 @Suppress("unused") // Referenced in application.conf
-fun Application.module() {
+fun Application.module(
+    adRepo: IAdRepository? = null,
+) {
     // Generally not needed as it is replaced by a `routing`
     install(Routing)
 
@@ -62,7 +65,7 @@ fun Application.module() {
 
     install(Locations)
 
-    val repo = AdRepoInMemory()
+    val repo by lazy { adRepo ?: AdRepoInMemory() }
     val service = AdService(adRepositoty = repo)
     val sessions = mutableSetOf<KtorUserSession>()
 

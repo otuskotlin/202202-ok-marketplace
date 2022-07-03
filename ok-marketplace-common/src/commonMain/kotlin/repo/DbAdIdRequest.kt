@@ -6,7 +6,7 @@ import ru.otus.otuskotlin.marketplace.common.models.MkplAdLock
 
 data class DbAdIdRequest(
     val id: MkplAdId,
-    val lock: MkplAdLock,
+    val lock: MkplAdLock = MkplAdLock.NONE,
 ) {
     constructor(ad: MkplAd): this(ad.id, ad.lock)
 }

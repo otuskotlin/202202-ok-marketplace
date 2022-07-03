@@ -16,7 +16,6 @@ fun ICorChainDsl<MkplContext>.repoCreate(title: String) = worker {
         val resultAd = result.result
         if (result.isSuccess && resultAd != null) {
             adRepoDone = resultAd
-            state = MkplState.FINISHING
         } else {
             state = MkplState.FAILING
             errors.addAll(result.errors)

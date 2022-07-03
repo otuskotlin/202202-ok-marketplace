@@ -15,7 +15,10 @@ abstract class RepoAdUpdateTest {
     fun updateSuccess() {
         val result = runBlocking { repo.updateAd(DbAdRequest(updateObj)) }
         assertEquals(true, result.isSuccess)
-        assertEquals(updateObj, result.result)
+        assertEquals(updateObj.id, result.result?.id)
+        assertEquals(updateObj.title, result.result?.title)
+        assertEquals(updateObj.description, result.result?.description)
+        assertEquals(updateObj.adType, result.result?.adType)
         assertEquals(emptyList(), result.errors)
     }
 

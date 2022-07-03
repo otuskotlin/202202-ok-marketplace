@@ -88,7 +88,7 @@ class AdRepoInMemory(
                 cache.invalidate(key)
                 return DbAdResponse(
                     result = null,
-                    isSuccess = false,
+                    isSuccess = true,
                     errors = emptyList()
                 )
             } else {
@@ -148,7 +148,7 @@ class AdRepoInMemory(
             )
         )
         val resultErrorNotFound = DbAdResponse(
-            isSuccess = true,
+            isSuccess = false,
             result = null,
             errors = listOf(
                 MkplError(
