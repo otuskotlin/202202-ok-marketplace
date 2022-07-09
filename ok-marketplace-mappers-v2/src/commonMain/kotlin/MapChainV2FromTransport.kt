@@ -6,6 +6,7 @@ import com.crowdproj.kotlin.cor.rootChain
 import ru.otus.otuskotlin.marketplace.api.v2.models.*
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.models.MkplState
+import ru.otus.otuskotlin.marketplace.mappers.v2.workers.*
 import ru.otus.otuskotlin.marketplace.mappers.v2.workers.takeDescription
 import ru.otus.otuskotlin.marketplace.mappers.v2.workers.takeId
 import ru.otus.otuskotlin.marketplace.mappers.v2.workers.takeSearchString
@@ -44,6 +45,7 @@ private object CreateTransportChain {
             title = "Mapping Update request"
             on { req is AdUpdateRequest }
             takeId("Extracting Id from Request")
+            takeLock("Extracting Id from Request")
             takeTitle("Extracting Title from Request")
             takeDescription("Extracting Description from Request")
         }
@@ -51,6 +53,7 @@ private object CreateTransportChain {
             title = "Mapping Delete request"
             on { req is AdDeleteRequest }
             takeId("Extracting Id from Request")
+            takeLock("Extracting Id from Request")
         }
         chain {
             title = "Mapping Search request"

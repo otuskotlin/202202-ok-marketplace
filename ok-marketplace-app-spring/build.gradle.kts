@@ -34,6 +34,9 @@ dependencies {
     // Stubs
     implementation(project(":ok-marketplace-stubs"))
 
+    // Repositories
+    implementation(project(":ok-marketplace-repo-inmemory"))
+
     // tests
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 

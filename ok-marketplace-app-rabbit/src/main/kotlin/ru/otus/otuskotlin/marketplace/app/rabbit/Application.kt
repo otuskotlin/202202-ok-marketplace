@@ -5,11 +5,13 @@ import ru.otus.otuskotlin.marketplace.app.rabbit.config.RabbitExchangeConfigurat
 import ru.otus.otuskotlin.marketplace.app.rabbit.controller.RabbitController
 import ru.otus.otuskotlin.marketplace.app.rabbit.processor.RabbitDirectProcessor
 import ru.otus.otuskotlin.marketplace.app.rabbit.processor.RabbitDirectProcessorV2
+import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.AdRepoInMemory
 import ru.otus.otuskotlin.marketplace.backend.services.AdService
 
 fun main() {
     val config = RabbitConfig()
-    val service = AdService()
+    val repository = AdRepoInMemory()
+    val service = AdService(repository)
 
     val producerConfig = RabbitExchangeConfiguration(
         keyIn = "in-v1",

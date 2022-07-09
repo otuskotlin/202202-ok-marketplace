@@ -20,7 +20,8 @@ fun MkplContext.fromTransport(request: IRequest) = when(request){
 }
 
 private fun String?.toAdId() = this?.let { MkplAdId(it) } ?: MkplAdId.NONE
-private fun BaseAdIdRequestAd?.toAdWithId() = MkplAd(id = this?.id.toAdId())
+private fun String?.toAdLock() = this?.let { MkplAdLock(it) } ?: MkplAdLock.NONE
+private fun AdIdObject?.toAdWithId() = MkplAd(id = this?.id.toAdId())
 private fun IRequest?.requestId() = this?.requestId?.let { MkplRequestId(it) } ?: MkplRequestId.NONE
 
 private fun AdDebug?.transportToWorkMode(): MkplWorkMode = when(this?.mode) {
@@ -69,7 +70,7 @@ fun MkplContext.fromTransport(request: AdUpdateRequest) {
 fun MkplContext.fromTransport(request: AdDeleteRequest) {
     command = MkplCommand.DELETE
     requestId = request.requestId()
-    adRequest = request.ad.toAdWithId()
+    adRequest = request.ad?.toInternal() ?: MkplAd()
     workMode = request.debug.transportToWorkMode()
     stubCase = request.debug.transportToStubCase()
 }
@@ -109,6 +110,11 @@ private fun AdUpdateObject.toInternal(): MkplAd = MkplAd(
     adType = this.adType.fromTransport(),
     visibility = this.visibility.fromTransport(),
     product = this.product.fromTransport()
+)
+
+private fun AdDeleteObject.toInternal(): MkplAd = MkplAd(
+    id = this.id.toAdId(),
+    lock = this.lock.toAdLock(),
 )
 
 private fun AdVisibility?.fromTransport(): MkplVisibility = when(this) {

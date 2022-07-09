@@ -21,6 +21,7 @@ import ru.otus.otuskotlin.marketplace.app.rabbit.config.RabbitExchangeConfigurat
 import ru.otus.otuskotlin.marketplace.app.rabbit.controller.RabbitController
 import ru.otus.otuskotlin.marketplace.app.rabbit.processor.RabbitDirectProcessor
 import ru.otus.otuskotlin.marketplace.app.rabbit.processor.RabbitDirectProcessorV2
+import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.AdRepoInMemory
 import ru.otus.otuskotlin.marketplace.backend.services.AdService
 import ru.otus.otuskotlin.marketplace.stubs.MkplAdStub
 import kotlin.test.BeforeTest
@@ -59,7 +60,8 @@ internal class RabbitMqTest {
             port = rabbitMqTestPort
         )
     }
-    val service = AdService()
+    val repository = AdRepoInMemory()
+    val service = AdService(repository)
     val processor by lazy {
         RabbitDirectProcessor(
             config = config,

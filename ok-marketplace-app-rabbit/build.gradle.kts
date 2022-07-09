@@ -32,6 +32,9 @@ dependencies {
     // Stubs
     implementation(project(":ok-marketplace-stubs"))
 
+    // Repo
+    implementation(project(":ok-marketplace-repo-inmemory"))
+
     testImplementation("org.testcontainers:rabbitmq:$testContainersVersion")
     testImplementation(kotlin("test"))
 }
