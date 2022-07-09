@@ -54,6 +54,11 @@ class AdRepoInMemory(
     override suspend fun readAd(rq: DbAdIdRequest): DbAdResponse {
         val key = rq.id.takeIf { it != MkplAdId.NONE }?.asString() ?: return resultErrorEmptyId
 
+        println("PRINTING all CACHE")
+        cache.asMap().forEach {
+            println("KEY=${it.key} VAL=${it.value}")
+        }
+
         return cache.get(key)
             ?.let {
                 DbAdResponse(

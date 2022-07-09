@@ -14,9 +14,9 @@ fun ICorChainDsl<MkplContext>.initRepo(title: String) = worker {
         Вычисление основного рабочего репозитория в зависимости от зпрошенного режима работы        
     """.trimIndent()
     handle {
-        adRepo = when {
-            workMode == MkplWorkMode.TEST -> settings.repoTest
-            workMode == MkplWorkMode.STUB -> IAdRepository.NONE
+        adRepo = when (workMode) {
+            MkplWorkMode.TEST -> settings.repoTest
+            MkplWorkMode.STUB -> IAdRepository.NONE
             else -> settings.repoProd
         }
         if (workMode != MkplWorkMode.STUB && adRepo == IAdRepository.NONE) fail(

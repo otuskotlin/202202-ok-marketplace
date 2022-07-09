@@ -9,10 +9,10 @@ import ru.otus.otuskotlin.marketplace.mappers.v2.exceptions.UnknownMkplCommand
 fun MkplContext.toTransportAd(): IResponse = when (val cmd = command) {
     MkplCommand.CREATE -> toTransportCreate()
     MkplCommand.READ -> toTransportRead()
-    MkplCommand.UPDATE -> toTransportRead()
-    MkplCommand.DELETE -> toTransportRead()
-    MkplCommand.SEARCH -> toTransportRead()
-    MkplCommand.OFFERS -> toTransportRead()
+    MkplCommand.UPDATE -> toTransportUpdate()
+    MkplCommand.DELETE -> toTransportDelete()
+    MkplCommand.SEARCH -> toTransportSearch()
+    MkplCommand.OFFERS -> toTransportOffers()
     MkplCommand.NONE -> throw UnknownMkplCommand(cmd)
 }
 

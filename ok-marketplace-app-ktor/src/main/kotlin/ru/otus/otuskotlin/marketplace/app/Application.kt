@@ -3,8 +3,11 @@ package ru.otus.otuskotlin.marketplace.app
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
+import io.ktor.server.config.*
+import io.ktor.server.engine.*
 import io.ktor.server.http.content.*
 import io.ktor.server.locations.*
+import io.ktor.server.netty.*
 import io.ktor.server.plugins.autohead.*
 import io.ktor.server.plugins.cachingheaders.*
 import io.ktor.server.plugins.callloging.*
@@ -24,11 +27,25 @@ import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.AdRepoInMemory
 import ru.otus.otuskotlin.marketplace.backend.services.AdService
 import ru.otus.otuskotlin.marketplace.common.models.MkplSettings
 
-// function with config (application.conf)
-fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+// function with config (application.conf.old)
+//fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+fun main() {
+    embeddedServer(Netty, environment = applicationEngineEnvironment {
+//        log = LoggerFactory.getLogger("ktor.application")
+        config = MapApplicationConfig()
+        module {
+            module()
+        }
+
+        connector {
+            port = 8080
+            host = "0.0.0.0"
+        }
+    }).start(true)
+}
 
 @OptIn(KtorExperimentalLocationsAPI::class)
-@Suppress("unused") // Referenced in application.conf
+@Suppress("unused") // Referenced in application.conf.old
 fun Application.module(
     settings: MkplSettings? = null,
 ) {
@@ -66,9 +83,15 @@ fun Application.module(
     install(Locations)
 
     val corSettings by lazy {
-        settings ?: MkplSettings(
-            repoTest = AdRepoInMemory(),
-        )
+        if (settings != null) {
+            println("USING test settings")
+            settings
+        } else {
+            println("USING app settings")
+            MkplSettings(
+                repoTest = AdRepoInMemory(),
+            )
+        }
     }
     val service by lazy { AdService(corSettings) }
     val sessions = mutableSetOf<KtorUserSession>()

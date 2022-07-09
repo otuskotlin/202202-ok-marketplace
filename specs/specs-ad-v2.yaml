@@ -118,7 +118,7 @@ paths:
     post:
       tags:
         - ad
-      summary: Update ad
+      summary: Search offers
       operationId: adOffers
       requestBody:
         description: Request body

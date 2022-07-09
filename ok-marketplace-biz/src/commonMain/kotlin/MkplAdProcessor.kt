@@ -131,7 +131,8 @@ class MkplAdProcessor(private val settings: MkplSettings = MkplSettings()) {
                 }
                 chain {
                     title = "Валидация запроса"
-                    worker("Копируем поля в adValidating") { adValidating = adRequest.deepCopy() }
+                    worker("Копируем поля в adValidating") {
+                        adValidating = adRequest.deepCopy() }
                     worker("Очистка id") { adValidating.id = MkplAdId(adValidating.id.asString().trim()) }
                     worker("Очистка lock") { adValidating.lock = MkplAdLock(adValidating.lock.asString().trim()) }
                     validateIdNotEmpty("Проверка на непустой id")
