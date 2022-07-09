@@ -17,5 +17,6 @@ fun ICorChainDsl<MkplContext>.repoDelete(title: String) = worker {
             state = MkplState.FAILING
             errors.addAll(result.errors)
         }
+        adRepoDone = adRepoRead
     }
 }

@@ -16,5 +16,6 @@ fun ICorChainDsl<MkplContext>.stubOffersSuccess(title: String) = worker {
             adRequest.id.takeIf { it != MkplAdId.NONE }?.also { this.id = it }
         }
         adsResponse.addAll(MkplAdStub.prepareOffersList(adResponse.title, MkplDealSide.SUPPLY))
+        println("x")
     }
 }

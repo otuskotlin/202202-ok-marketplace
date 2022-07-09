@@ -57,6 +57,8 @@ dependencies {
     implementation(project(":ok-marketplace-services"))
     // logic
     implementation(project(":ok-marketplace-biz"))
+    // db
+    implementation(project(":ok-marketplace-repo-stub"))
 
     testImplementation(kotlin("test-junit"))
 }

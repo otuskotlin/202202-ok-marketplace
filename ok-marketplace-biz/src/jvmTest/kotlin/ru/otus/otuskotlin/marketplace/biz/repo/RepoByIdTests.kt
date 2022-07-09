@@ -7,7 +7,6 @@ import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.models.*
 import ru.otus.otuskotlin.marketplace.common.repo.IAdRepository
-import kotlin.test.Test
 import kotlin.test.assertEquals
 
 private val initAd = MkplAd(
@@ -17,8 +16,9 @@ private val initAd = MkplAd(
     adType = MkplDealSide.DEMAND,
     visibility = MkplVisibility.VISIBLE_PUBLIC,
 )
+private val uuid = "10000000-0000-0000-0000-000000000001"
 private val repo: IAdRepository
-    get() = AdRepoInMemory(initObjects = listOf(initAd))
+    get() = AdRepoInMemory(initObjects = listOf(initAd), randomUuid = { uuid })
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -34,6 +34,7 @@ fun repoNotFoundTest(processor: MkplAdProcessor, command: MkplCommand) = runTest
             description = "xyz",
             adType = MkplDealSide.DEMAND,
             visibility = MkplVisibility.VISIBLE_TO_GROUP,
+            lock = MkplAdLock(uuid),
         ),
     )
     processor.exec(ctx)

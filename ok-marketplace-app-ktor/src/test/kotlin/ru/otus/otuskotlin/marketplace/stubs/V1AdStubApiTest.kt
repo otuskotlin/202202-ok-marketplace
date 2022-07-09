@@ -10,6 +10,7 @@ import io.ktor.serialization.jackson.*
 import io.ktor.server.testing.*
 import org.junit.Test
 import ru.otus.otuskotlin.marketplace.api.v1.models.*
+import ru.otus.otuskotlin.marketplace.app.module
 import kotlin.test.assertEquals
 
 class V1AdStubApiTest {
@@ -27,13 +28,7 @@ class V1AdStubApiTest {
 
     @Test
     fun create() = testApplication {
-//        application {
-//            dispose()
-//            module()
-//        }
-//        environment {
-//            config = MapApplicationConfig("ktor.deployment.port" to "8080")
-//        }
+        application { module() }
         val client = myClient()
 
         val response = client.post("/v1/ad/create") {
@@ -60,6 +55,7 @@ class V1AdStubApiTest {
 
     @Test
     fun read() = testApplication {
+        application { module() }
         val client = myClient()
 
         val response = client.post("/v1/ad/read") {
@@ -81,6 +77,7 @@ class V1AdStubApiTest {
 
     @Test
     fun update() = testApplication {
+        application { module() }
         val client = myClient()
 
         val response = client.post("/v1/ad/update") {
@@ -108,6 +105,7 @@ class V1AdStubApiTest {
 
     @Test
     fun delete() = testApplication {
+        application { module() }
         val client = myClient()
 
         val response = client.post("/v1/ad/delete") {
@@ -131,6 +129,7 @@ class V1AdStubApiTest {
 
     @Test
     fun search() = testApplication {
+        application { module() }
         val client = myClient()
 
         val response = client.post("/v1/ad/search") {
@@ -152,6 +151,7 @@ class V1AdStubApiTest {
 
     @Test
     fun offers() = testApplication {
+        application { module() }
         val client = myClient()
 
         val response = client.post("/v1/ad/offers") {

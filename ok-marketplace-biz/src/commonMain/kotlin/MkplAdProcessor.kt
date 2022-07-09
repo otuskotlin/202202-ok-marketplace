@@ -3,22 +3,23 @@ package ru.otus.otuskotlin.marketplace.biz
 import com.crowdproj.kotlin.cor.handlers.chain
 import com.crowdproj.kotlin.cor.handlers.worker
 import com.crowdproj.kotlin.cor.rootChain
+import ru.otus.otuskotlin.marketplace.biz.general.initRepo
 import ru.otus.otuskotlin.marketplace.biz.general.initStatus
 import ru.otus.otuskotlin.marketplace.biz.general.operation
+import ru.otus.otuskotlin.marketplace.biz.general.prepareResult
 import ru.otus.otuskotlin.marketplace.biz.repo.*
 import ru.otus.otuskotlin.marketplace.biz.stubs.*
 import ru.otus.otuskotlin.marketplace.biz.validation.*
 import ru.otus.otuskotlin.marketplace.common.MkplContext
-import ru.otus.otuskotlin.marketplace.common.models.MkplAdId
-import ru.otus.otuskotlin.marketplace.common.models.MkplCommand
-import ru.otus.otuskotlin.marketplace.common.models.MkplState
+import ru.otus.otuskotlin.marketplace.common.models.*
 
-class MkplAdProcessor() {
-    suspend fun exec(ctx: MkplContext) = BuzinessChain.exec(ctx)
+class MkplAdProcessor(private val settings: MkplSettings = MkplSettings()) {
+    suspend fun exec(ctx: MkplContext) = BuzinessChain.exec(ctx.apply { settings = this@MkplAdProcessor.settings })
 
     companion object {
         private val BuzinessChain = rootChain<MkplContext> {
             initStatus("Инициализация статуса")
+            initRepo("Инициализация репозитория")
 
             operation("Создание объявления", MkplCommand.CREATE) {
                 stubs("Обработка стабов") {
@@ -47,14 +48,15 @@ class MkplAdProcessor() {
                     repoPrepareCreate("Подготовка объекта для сохранения")
                     repoCreate("Создание объявления в БД")
                 }
-                worker {
-                    title = "Подготовка ответа"
-                    on { state == MkplState.RUNNING }
-                    handle {
-                        state = MkplState.FINISHING
-                        adResponse = adRepoDone
-                    }
-                }
+                prepareResult("Подготовка ответа")
+//                worker {
+//                    title = "Подготовка ответа"
+//                    on { state == MkplState.RUNNING }
+//                    handle {
+//                        state = MkplState.FINISHING
+//                        adResponse = adRepoDone
+//                    }
+//                }
             }
             operation("Получить объявление", MkplCommand.READ) {
                 stubs("Обработка стабов") {
@@ -76,15 +78,13 @@ class MkplAdProcessor() {
                 chain {
                     title = "Логика сохранения"
                     repoRead("Чтение объявления из БД")
-                }
-                worker {
-                    title = "Подготовка ответа"
-                    on { state == MkplState.RUNNING }
-                    handle {
-                        state = MkplState.FINISHING
-                        adResponse = adRepoPrepare
+                    worker {
+                        title = "Подготовка ответа для Read"
+                        on { state == MkplState.RUNNING }
+                        handle { adRepoDone = adRepoRead }
                     }
                 }
+                prepareResult("Подготовка ответа")
             }
             operation("Изменить объявление", MkplCommand.UPDATE) {
                 stubs("Обработка стабов") {
@@ -103,6 +103,8 @@ class MkplAdProcessor() {
                     worker("Очистка описания") { adValidating.description = adValidating.description.trim() }
                     validateIdNotEmpty("Проверка на непустой id")
                     validateIdProperFormat("Проверка формата id")
+                    validateLockNotEmpty("Проверка на непустой lock")
+                    validateLockProperFormat("Проверка формата lock")
                     validateTitleNotEmpty("Проверка на непустой заголовок")
                     validateTitleHasContent("Проверка на наличие содержания в заголовке")
                     validateDescriptionNotEmpty("Проверка на непустое описание")
@@ -114,16 +116,11 @@ class MkplAdProcessor() {
                 chain {
                     title = "Логика сохранения"
                     repoRead("Чтение объявления из БД")
+                    repoCheckReadLock("Проверяем блокировку")
+                    repoPrepareUpdate("Подготовка объекта для обновления")
                     repoUpdate("Обновление объявления в БД")
                 }
-                worker {
-                    title = "Подготовка ответа"
-                    on { state == MkplState.RUNNING }
-                    handle {
-                        state = MkplState.FINISHING
-                        adResponse = adRepoDone
-                    }
-                }
+                prepareResult("Подготовка ответа")
             }
             operation("Удалить объявление", MkplCommand.DELETE) {
                 stubs("Обработка стабов") {
@@ -134,10 +131,14 @@ class MkplAdProcessor() {
                 }
                 chain {
                     title = "Валидация запроса"
-                    worker("Копируем поля в adValidating") { adValidating = adRequest.deepCopy() }
+                    worker("Копируем поля в adValidating") {
+                        adValidating = adRequest.deepCopy() }
                     worker("Очистка id") { adValidating.id = MkplAdId(adValidating.id.asString().trim()) }
+                    worker("Очистка lock") { adValidating.lock = MkplAdLock(adValidating.lock.asString().trim()) }
                     validateIdNotEmpty("Проверка на непустой id")
                     validateIdProperFormat("Проверка формата id")
+                    validateLockNotEmpty("Проверка на непустой lock")
+                    validateLockProperFormat("Проверка формата lock")
 
                     finishAdValidation("Успешное завершение процедуры валидации")
                 }
@@ -145,16 +146,11 @@ class MkplAdProcessor() {
                 chain {
                     title = "Логика сохранения"
                     repoRead("Чтение объявления из БД")
+                    repoCheckReadLock("Проверяем блокировку")
+                    repoPrepareDelete("Подготовка объекта для удаления")
                     repoDelete("Удаление объявления из БД")
                 }
-                worker {
-                    title = "Подготовка ответа"
-                    on { state == MkplState.RUNNING }
-                    handle {
-                        state = MkplState.FINISHING
-                        adResponse = adRepoPrepare
-                    }
-                }
+                prepareResult("Подготовка ответа")
             }
             operation("Поиск объявлений", MkplCommand.SEARCH) {
                 stubs("Обработка стабов") {
@@ -171,14 +167,7 @@ class MkplAdProcessor() {
                 }
 
                 repoSearch("Поиск объявления в БД по фильтру")
-                worker {
-                    title = "Подготовка ответа"
-                    on { state == MkplState.RUNNING }
-                    handle {
-                        state = MkplState.FINISHING
-                        adsResponse = adsRepoDone
-                    }
-                }
+                prepareResult("Подготовка ответа")
             }
             operation("Поиск подходящих предложений для объявления", MkplCommand.OFFERS) {
                 stubs("Обработка стабов") {
@@ -201,16 +190,10 @@ class MkplAdProcessor() {
                 chain {
                     title = "Логика сохранения"
                     repoRead("Чтение объявления из БД")
+                    repoPrepareOffers("Подготовка данных для поиска предложений")
                     repoOffers("Поиск предложений для объявления в БД")
                 }
-                worker {
-                    title = "Подготовка ответа"
-                    on { state == MkplState.RUNNING }
-                    handle {
-                        state = MkplState.FINISHING
-                        adsResponse = adsRepoDone
-                    }
-                }
+                prepareResult("Подготовка ответа")
             }
         }.build()
     }

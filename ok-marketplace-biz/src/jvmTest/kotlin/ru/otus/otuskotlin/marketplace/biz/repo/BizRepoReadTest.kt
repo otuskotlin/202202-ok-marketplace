@@ -8,11 +8,9 @@ import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.models.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
 
 class BizRepoReadTest {
 
-    private val processor = MkplAdProcessor()
     private val command = MkplCommand.READ
     private val initAd = MkplAd(
         id = MkplAdId("123"),
@@ -22,6 +20,12 @@ class BizRepoReadTest {
         visibility = MkplVisibility.VISIBLE_PUBLIC,
     )
     private val repo by lazy { AdRepoInMemory(initObjects = listOf(initAd)) }
+    private val settings by lazy {
+        MkplSettings(
+            repoTest = repo
+        )
+    }
+    private val processor by lazy { MkplAdProcessor(settings) }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
@@ -30,7 +34,6 @@ class BizRepoReadTest {
             command = command,
             state = MkplState.NONE,
             workMode = MkplWorkMode.TEST,
-            adRepo = repo,
             adRequest = MkplAd(
                 id = MkplAdId("123"),
             ),

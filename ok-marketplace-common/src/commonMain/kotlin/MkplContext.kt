@@ -9,6 +9,7 @@ import ru.otus.otuskotlin.marketplace.common.repo.IAdRepository
 import ru.otus.otuskotlin.marketplace.common.stubs.MkplStubs
 
 data class MkplContext(
+    var settings: MkplSettings = MkplSettings(),
     var command: MkplCommand = MkplCommand.NONE,
     var state: MkplState = MkplState.NONE,
     val errors: MutableList<MkplError> = mutableListOf(),
@@ -31,6 +32,7 @@ data class MkplContext(
     var adValidated: MkplAd = MkplAd(),
     var adFilterValidated: MkplAdFilter = MkplAdFilter(),
 
+    var adRepoRead: MkplAd = MkplAd(),
     var adRepoPrepare: MkplAd = MkplAd(),
     var adRepoDone: MkplAd = MkplAd(),
     var adsRepoDone: MutableList<MkplAd> = mutableListOf(),

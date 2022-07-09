@@ -3,34 +3,47 @@ package ru.otus.otuskotlin.marketplace.app
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
+import io.ktor.server.config.*
+import io.ktor.server.engine.*
 import io.ktor.server.http.content.*
-import io.ktor.server.locations.*
+import io.ktor.server.netty.*
 import io.ktor.server.plugins.autohead.*
 import io.ktor.server.plugins.cachingheaders.*
-import io.ktor.server.plugins.callloging.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.plugins.defaultheaders.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
-import org.slf4j.event.Level
 import ru.otus.otuskotlin.marketplace.app.config.jsonConfig
 import ru.otus.otuskotlin.marketplace.app.v1.mpWsHandlerV1
 import ru.otus.otuskotlin.marketplace.app.v1.v1Ad
 import ru.otus.otuskotlin.marketplace.app.v1.v1Offer
-import ru.otus.otuskotlin.marketplace.app.v2.*
+import ru.otus.otuskotlin.marketplace.app.v2.KtorUserSession
+import ru.otus.otuskotlin.marketplace.app.v2.mpWsHandlerV2
+import ru.otus.otuskotlin.marketplace.app.v2.v2Ad
+import ru.otus.otuskotlin.marketplace.app.v2.v2Offer
 import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.AdRepoInMemory
 import ru.otus.otuskotlin.marketplace.backend.services.AdService
-import ru.otus.otuskotlin.marketplace.common.repo.IAdRepository
+import ru.otus.otuskotlin.marketplace.common.models.MkplSettings
 
-// function with config (application.conf)
-fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+fun main() {
+    embeddedServer(Netty, environment = applicationEngineEnvironment {
+        config = MapApplicationConfig()
+        module {
+            module()
+        }
 
-@OptIn(KtorExperimentalLocationsAPI::class)
-@Suppress("unused") // Referenced in application.conf
+        connector {
+            port = 8080
+            host = "0.0.0.0"
+        }
+    }).start(true)
+}
+
+@Suppress("unused") // Referenced in application.conf.old
 fun Application.module(
-    adRepo: IAdRepository? = null,
+    settings: MkplSettings? = null,
 ) {
     // Generally not needed as it is replaced by a `routing`
     install(Routing)
@@ -55,18 +68,14 @@ fun Application.module(
         jackson {
             jsonConfig()
         }
-        register(ContentType.Application.Json, CustomJsonConverter())
     }
 
-
-    install(CallLogging) {
-        level = Level.INFO
+    val corSettings by lazy {
+        settings ?: MkplSettings(
+            repoTest = AdRepoInMemory(),
+        )
     }
-
-    install(Locations)
-
-    val repo by lazy { adRepo ?: AdRepoInMemory() }
-    val service = AdService(adRepositoty = repo)
+    val service by lazy { AdService(corSettings) }
     val sessions = mutableSetOf<KtorUserSession>()
 
     routing {
@@ -86,7 +95,7 @@ fun Application.module(
         static("static") {
             resources("static")
         }
-        webSocket("/ws/v1"){
+        webSocket("/ws/v1") {
             mpWsHandlerV1(service, sessions)
         }
         webSocket("/ws/v2") {

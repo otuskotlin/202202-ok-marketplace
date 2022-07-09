@@ -2,23 +2,19 @@ package ru.otus.otuskotlin.marketplace.backend.services
 
 import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
 import ru.otus.otuskotlin.marketplace.common.MkplContext
-import ru.otus.otuskotlin.marketplace.common.repo.IAdRepository
+import ru.otus.otuskotlin.marketplace.common.models.MkplSettings
 
 class AdService(
-    val adRepositoty: IAdRepository
+    val settings: MkplSettings
 ) {
-    private val processor = MkplAdProcessor()
+    private val processor = MkplAdProcessor(settings)
 
-    suspend fun exec(context: MkplContext) = processor.exec(context.applySettings())
+    suspend fun exec(context: MkplContext) = processor.exec(context)
 
-    suspend fun createAd(context: MkplContext) = processor.exec(context.applySettings())
-    suspend fun readAd(context: MkplContext) = processor.exec(context.applySettings())
-    suspend fun updateAd(context: MkplContext) = processor.exec(context.applySettings())
-    suspend fun deleteAd(context: MkplContext) = processor.exec(context.applySettings())
-    suspend fun searchAd(context: MkplContext) = processor.exec(context.applySettings())
-    suspend fun searchOffers(context: MkplContext) = processor.exec(context.applySettings())
-
-    private fun MkplContext.applySettings() = apply {
-        adRepo = adRepositoty
-    }
+    suspend fun createAd(context: MkplContext) = processor.exec(context)
+    suspend fun readAd(context: MkplContext) = processor.exec(context)
+    suspend fun updateAd(context: MkplContext) = processor.exec(context)
+    suspend fun deleteAd(context: MkplContext) = processor.exec(context)
+    suspend fun searchAd(context: MkplContext) = processor.exec(context)
+    suspend fun searchOffers(context: MkplContext) = processor.exec(context)
 }

@@ -7,6 +7,10 @@ import ru.otus.otuskotlin.marketplace.common.models.product.MkplAdProductBoltHea
 import ru.otus.otuskotlin.marketplace.common.models.product.MkplAdProductBoltThread
 
 object MkplAdStubBolts {
+    val uuidOld = "10000000-0000-0000-0000-000000000001"
+//    val uuidNew = "10000000-0000-0000-0000-000000000002"
+//    val uuidBad = "10000000-0000-0000-0000-000000000003"
+
     val AD_DEMAND_BOLT1: MkplAd
         get() = MkplAd(
             id = MkplAdId("666"),
@@ -24,6 +28,7 @@ object MkplAdStubBolts {
                     pitchConf = MkplAdProductBoltThread.PitchConf.FINE
                 )
             ),
+            lock = MkplAdLock(uuidOld),
             permissionsClient = mutableSetOf(
                 MkplAdPermissionClient.READ,
                 MkplAdPermissionClient.UPDATE,

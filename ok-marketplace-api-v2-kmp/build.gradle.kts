@@ -8,7 +8,7 @@ plugins {
 
 kotlin {
     jvm {}
-    macosX64 {}
+//    macosX64 {}
     linuxX64 {}
 
     sourceSets {
