@@ -1,9 +1,9 @@
 package ru.otus.otuskotlin.marketplace.biz
 
-import com.crowdproj.kotlin.cor.ICorChainDsl
 import com.crowdproj.kotlin.cor.handlers.chain
 import com.crowdproj.kotlin.cor.handlers.worker
 import com.crowdproj.kotlin.cor.rootChain
+import ru.otus.otuskotlin.marketplace.biz.general.initRepo
 import ru.otus.otuskotlin.marketplace.biz.general.initStatus
 import ru.otus.otuskotlin.marketplace.biz.general.operation
 import ru.otus.otuskotlin.marketplace.biz.general.prepareResult
@@ -11,18 +11,15 @@ import ru.otus.otuskotlin.marketplace.biz.repo.*
 import ru.otus.otuskotlin.marketplace.biz.stubs.*
 import ru.otus.otuskotlin.marketplace.biz.validation.*
 import ru.otus.otuskotlin.marketplace.common.MkplContext
-import ru.otus.otuskotlin.marketplace.common.models.MkplAdId
-import ru.otus.otuskotlin.marketplace.common.models.MkplAdLock
-import ru.otus.otuskotlin.marketplace.common.models.MkplCommand
-import ru.otus.otuskotlin.marketplace.common.models.MkplState
+import ru.otus.otuskotlin.marketplace.common.models.*
 
-class MkplAdProcessor() {
-    suspend fun exec(ctx: MkplContext) = BuzinessChain.exec(ctx)
+class MkplAdProcessor(private val settings: MkplSettings = MkplSettings()) {
+    suspend fun exec(ctx: MkplContext) = BuzinessChain.exec(ctx.apply { settings = this@MkplAdProcessor.settings })
 
     companion object {
         private val BuzinessChain = rootChain<MkplContext> {
             initStatus("Инициализация статуса")
-//            initRepo("Инициализация репозитория")
+            initRepo("Инициализация репозитория")
 
             operation("Создание объявления", MkplCommand.CREATE) {
                 stubs("Обработка стабов") {
@@ -199,11 +196,4 @@ class MkplAdProcessor() {
             }
         }.build()
     }
-}
-
-private fun ICorChainDsl<MkplContext>.initRepo(title: String) = worker {
-    this.title = title
-    description = """
-        
-    """.trimIndent()
 }

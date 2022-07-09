@@ -12,7 +12,6 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class BizRepoUpdateTest {
 
-    private val processor = MkplAdProcessor()
     private val command = MkplCommand.UPDATE
     private val uuidOld = "10000000-0000-0000-0000-000000000001"
     private val uuidNew = "10000000-0000-0000-0000-000000000002"
@@ -26,6 +25,12 @@ class BizRepoUpdateTest {
         lock = MkplAdLock(uuidOld),
     )
     private val repo by lazy { AdRepoInMemory(initObjects = listOf(initAd), randomUuid = { uuidNew }) }
+    private val settings by lazy {
+        MkplSettings(
+            repoTest = repo
+        )
+    }
+    private val processor by lazy { MkplAdProcessor(settings) }
 
     @Test
     fun repoUpdateSuccessTest() = runTest {
@@ -41,7 +46,6 @@ class BizRepoUpdateTest {
             command = command,
             state = MkplState.NONE,
             workMode = MkplWorkMode.TEST,
-            adRepo = repo,
             adRequest = adToUpdate,
         )
         processor.exec(ctx)
@@ -68,7 +72,6 @@ class BizRepoUpdateTest {
             command = command,
             state = MkplState.NONE,
             workMode = MkplWorkMode.TEST,
-            adRepo = repo,
             adRequest = adToUpdate,
         )
         processor.exec(ctx)

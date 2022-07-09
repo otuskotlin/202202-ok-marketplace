@@ -13,8 +13,13 @@ import kotlin.test.assertNotEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class BizValidationSearchTest {
 
-    private val processor = MkplAdProcessor()
     private val command = MkplCommand.SEARCH
+    private val settings by lazy {
+        MkplSettings(
+            repoTest = AdRepoStub()
+        )
+    }
+    private val processor by lazy { MkplAdProcessor(settings) }
 
     @Test
     fun correctEmpty() = runTest {

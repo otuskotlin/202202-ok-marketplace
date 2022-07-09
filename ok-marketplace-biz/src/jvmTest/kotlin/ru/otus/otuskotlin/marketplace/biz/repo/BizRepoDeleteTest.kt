@@ -13,7 +13,6 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class BizRepoDeleteTest {
 
-    private val processor = MkplAdProcessor()
     private val command = MkplCommand.DELETE
     private val uuidOld = "10000000-0000-0000-0000-000000000001"
     private val uuidNew = "10000000-0000-0000-0000-000000000002"
@@ -29,6 +28,12 @@ class BizRepoDeleteTest {
     private val repo by lazy {
         AdRepoInMemory(initObjects = listOf(initAd), randomUuid = { uuidNew })
     }
+    private val settings by lazy {
+        MkplSettings(
+            repoTest = repo
+        )
+    }
+    private val processor by lazy { MkplAdProcessor(settings) }
 
     @Test
     fun repoDeleteSuccessTest() = runTest {
@@ -40,7 +45,6 @@ class BizRepoDeleteTest {
             command = command,
             state = MkplState.NONE,
             workMode = MkplWorkMode.TEST,
-            adRepo = repo,
             adRequest = adToUpdate,
         )
         processor.exec(ctx)
@@ -64,7 +68,6 @@ class BizRepoDeleteTest {
             command = command,
             state = MkplState.NONE,
             workMode = MkplWorkMode.TEST,
-            adRepo = repo,
             adRequest = adToUpdate,
         )
         processor.exec(ctx)

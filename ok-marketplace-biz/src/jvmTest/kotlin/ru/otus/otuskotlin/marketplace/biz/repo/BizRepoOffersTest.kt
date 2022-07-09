@@ -11,7 +11,6 @@ import kotlin.test.assertEquals
 
 class BizRepoOffersTest {
 
-    private val processor = MkplAdProcessor()
     private val command = MkplCommand.OFFERS
     private val initAd = MkplAd(
         id = MkplAdId("123"),
@@ -35,6 +34,12 @@ class BizRepoOffersTest {
         visibility = MkplVisibility.VISIBLE_PUBLIC,
     )
     private val repo by lazy { AdRepoInMemory(initObjects = listOf(initAd, offerAd, noneTypeAd)) }
+    private val settings by lazy {
+        MkplSettings(
+            repoTest = repo
+        )
+    }
+    private val processor by lazy { MkplAdProcessor(settings) }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
@@ -43,7 +48,6 @@ class BizRepoOffersTest {
             command = command,
             state = MkplState.NONE,
             workMode = MkplWorkMode.TEST,
-            adRepo = repo,
             adRequest = MkplAd(
                 id = MkplAdId("123"),
             ),
@@ -61,7 +65,6 @@ class BizRepoOffersTest {
             command = command,
             state = MkplState.NONE,
             workMode = MkplWorkMode.TEST,
-            adRepo = repo,
             adRequest = MkplAd(
                 id = MkplAdId("213"),
             ),

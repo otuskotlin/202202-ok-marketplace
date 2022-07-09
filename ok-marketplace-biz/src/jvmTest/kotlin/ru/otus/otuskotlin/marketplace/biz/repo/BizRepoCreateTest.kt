@@ -12,12 +12,15 @@ import kotlin.test.assertNotEquals
 
 class BizRepoCreateTest {
 
-    private val processor = MkplAdProcessor()
     private val command = MkplCommand.CREATE
     private val uuid = "10000000-0000-0000-0000-000000000001"
     private val repo = AdRepoInMemory(
         randomUuid = { uuid }
     )
+    private val settings = MkplSettings(
+        repoTest = repo
+    )
+    private val processor = MkplAdProcessor(settings)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
@@ -26,7 +29,6 @@ class BizRepoCreateTest {
             command = command,
             state = MkplState.NONE,
             workMode = MkplWorkMode.TEST,
-            adRepo = repo,
             adRequest = MkplAd(
                 id = MkplAdId("123"),
                 title = "abc",

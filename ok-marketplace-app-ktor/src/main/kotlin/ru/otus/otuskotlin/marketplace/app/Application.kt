@@ -22,7 +22,7 @@ import ru.otus.otuskotlin.marketplace.app.v1.v1Offer
 import ru.otus.otuskotlin.marketplace.app.v2.*
 import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.AdRepoInMemory
 import ru.otus.otuskotlin.marketplace.backend.services.AdService
-import ru.otus.otuskotlin.marketplace.common.repo.IAdRepository
+import ru.otus.otuskotlin.marketplace.common.models.MkplSettings
 
 // function with config (application.conf)
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -30,7 +30,7 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 @OptIn(KtorExperimentalLocationsAPI::class)
 @Suppress("unused") // Referenced in application.conf
 fun Application.module(
-    adRepo: IAdRepository? = null,
+    settings: MkplSettings? = null,
 ) {
     // Generally not needed as it is replaced by a `routing`
     install(Routing)
@@ -65,8 +65,12 @@ fun Application.module(
 
     install(Locations)
 
-    val repo by lazy { adRepo ?: AdRepoInMemory() }
-    val service = AdService(adRepositoty = repo)
+    val corSettings by lazy {
+        settings ?: MkplSettings(
+            repoTest = AdRepoInMemory(),
+        )
+    }
+    val service by lazy { AdService(corSettings) }
     val sessions = mutableSetOf<KtorUserSession>()
 
     routing {
@@ -86,7 +90,7 @@ fun Application.module(
         static("static") {
             resources("static")
         }
-        webSocket("/ws/v1"){
+        webSocket("/ws/v1") {
             mpWsHandlerV1(service, sessions)
         }
         webSocket("/ws/v2") {

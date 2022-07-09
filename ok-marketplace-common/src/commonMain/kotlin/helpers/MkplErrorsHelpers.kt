@@ -72,3 +72,20 @@ fun errorConcurrency(
     message = "Concurrent object access error: $description",
     level = level,
 )
+
+fun errorAdministration(
+    /**
+     * Код, характеризующий ошибку. Не должен включать имя поля или указание на валидацию.
+     * Например: empty, badSymbols, tooLong, etc
+     */
+    field: String = "",
+    violationCode: String,
+    description: String,
+    level: MkplErrorLevels = MkplErrorLevels.ERROR,
+) = MkplError(
+    field = field,
+    code = "administration-$violationCode",
+    group = "administration",
+    message = "Microservice management error: $description",
+    level = level,
+)
