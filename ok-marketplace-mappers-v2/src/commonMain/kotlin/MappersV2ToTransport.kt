@@ -55,7 +55,8 @@ fun MkplContext.toTransportOffers() = AdOffersResponse(
     requestId = this.requestId.asString().takeIf { it.isNotBlank() },
     result = state.toTransport(),
     errors = errors.toTransportErrors(),
-    offers = adsResponse.toTransportAd()
+    ad = adResponse.toTransportAd(),
+    offers = adsResponse.toTransportAd(),
 )
 
 private fun MkplState.toTransport(): ResponseResult? = when(this) {

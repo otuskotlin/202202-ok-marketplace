@@ -17,6 +17,7 @@ class V2AdTestApiTest {
 
     private val uuidOld = "10000000-0000-0000-0000-000000000001"
     private val uuidNew = "10000000-0000-0000-0000-000000000002"
+    private val uuidSup = "10000000-0000-0000-0000-000000000003"
     private val initAd = MkplAd(
         id = MkplAdId(uuidOld),
         title = "abc",
@@ -24,6 +25,14 @@ class V2AdTestApiTest {
         adType = MkplDealSide.DEMAND,
         visibility = MkplVisibility.VISIBLE_PUBLIC,
         lock = MkplAdLock(uuidOld),
+    )
+    private val initAdSupply = MkplAd(
+        id = MkplAdId(uuidSup),
+        title = "abc",
+        description = "abc",
+        adType = MkplDealSide.SUPPLY,
+        visibility = MkplVisibility.VISIBLE_PUBLIC,
+        lock = MkplAdLock(uuidSup),
     )
 
 
@@ -136,6 +145,13 @@ class V2AdTestApiTest {
 
     @Test
     fun search() = testApplication {
+        application {
+            val repo by lazy { AdRepoInMemory(initObjects = listOf(initAd), randomUuid = { uuidNew }) }
+            val settings by lazy {
+                MkplSettings(repoProd = repo)
+            }
+            module(settings)
+        }
         val response = client.post("/v2/ad/search") {
             val requestObj = AdSearchRequest(
                 requestId = "12345",
@@ -146,11 +162,18 @@ class V2AdTestApiTest {
         }
         val responseObj = apiV2ResponseDeserialize<AdSearchResponse>(response.bodyAsText())
         assertEquals(200, response.status.value)
-        assertEquals("d-666-01", responseObj.ads?.first()?.id)
+        assertEquals(uuidOld, responseObj.ads?.first()?.id)
     }
 
     @Test
     fun offers() = testApplication {
+        application {
+            val repo by lazy { AdRepoInMemory(initObjects = listOf(initAd, initAdSupply), randomUuid = { uuidNew }) }
+            val settings by lazy {
+                MkplSettings(repoProd = repo)
+            }
+            module(settings)
+        }
         val response = client.post("/v2/ad/offers") {
             val requestObj = AdOffersRequest(
                 requestId = "12345",
@@ -163,8 +186,8 @@ class V2AdTestApiTest {
         val responseJson = response.bodyAsText()
         val responseObj = apiV2ResponseDeserialize<AdOffersResponse>(responseJson)
         assertEquals(200, response.status.value)
-        assertEquals("666", responseObj.ad?.id)
-        assertEquals("s-666-01", responseObj.offers?.first()?.id)
+        assertEquals(uuidOld, responseObj.ad?.id)
+        assertEquals(uuidSup, responseObj.offers?.first()?.id)
     }
 
 }

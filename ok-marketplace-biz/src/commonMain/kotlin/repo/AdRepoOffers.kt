@@ -17,7 +17,7 @@ fun ICorChainDsl<MkplContext>.repoOffers(title: String) = worker {
         val adRequest = adRepoPrepare
         val filter = DbAdFilterRequest(
             titleFilter = adRequest.title,
-            dealSide = when(adRequest.adType) {
+            dealSide = when (adRequest.adType) {
                 MkplDealSide.DEMAND -> MkplDealSide.SUPPLY
                 MkplDealSide.SUPPLY -> MkplDealSide.DEMAND
                 MkplDealSide.NONE -> MkplDealSide.NONE
@@ -39,11 +39,13 @@ fun ICorChainDsl<MkplContext>.repoOffers(title: String) = worker {
         }
 
         val resultAds = dbResponse.result
-        if (dbResponse.isSuccess && resultAds != null) {
-            adsRepoDone = resultAds.toMutableList()
-        } else {
-            state = MkplState.FAILING
-            errors.addAll(dbResponse.errors)
+        when {
+            !resultAds.isNullOrEmpty() -> adsRepoDone = resultAds.toMutableList()
+            dbResponse.isSuccess -> return@handle
+            else -> {
+                state = MkplState.FAILING
+                errors.addAll(dbResponse.errors)
+            }
         }
     }
 }

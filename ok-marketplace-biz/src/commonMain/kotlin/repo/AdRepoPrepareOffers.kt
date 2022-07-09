@@ -11,5 +11,6 @@ fun ICorChainDsl<MkplContext>.repoPrepareOffers(title: String) = worker {
     on { state == MkplState.RUNNING }
     handle {
         adRepoPrepare = adRepoRead.deepCopy()
+        adRepoDone = adRepoRead.deepCopy()
     }
 }

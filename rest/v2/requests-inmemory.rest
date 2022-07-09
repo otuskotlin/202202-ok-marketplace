@@ -1,0 +1,112 @@
+
+### Create
+POST http://127.0.0.1:8080/v2/ad/create
+Content-Type: application/json
+
+{
+  "requestType": "create",
+  "requestId": "12345",
+  "ad": {
+    "title": "Болт",
+    "description": "КРУТЕЙШИЙ",
+    "ownerId": "9435",
+    "visibility": "public",
+    "adType": "demand"
+  },
+  "debug": {
+    "mode": "test"
+  }
+}
+
+### Get unexisted ID
+POST http://127.0.0.1:8080/v2/ad/read
+Content-Type: application/json
+
+{
+  "requestType": "read",
+  "requestId": "12345",
+  "ad": {
+    "id": "99999"
+  },
+  "debug": {
+    "mode": "test"
+  }
+}
+
+### Read With Existed id
+POST http://127.0.0.1:8080/v2/ad/read
+Content-Type: application/json
+
+{
+  "requestType": "read",
+  "requestId": "12345",
+  "ad": {
+    "id": "64089ecf-654c-4a8d-8d23-103dd3175d59"
+  },
+  "debug": {
+    "mode": "test"
+  }
+}
+
+### Update
+POST http://localhost:8080/v2/ad/update
+Content-Type: application/json
+
+{
+  "requestType": "update",
+  "requestId": "666",
+  "ad": {
+    "title": "sdfasd",
+    "description": "asldkjflsk",
+    "adType": "supply",
+    "id": "32187204-5111-4f5e-bcc2-5080cb16d719",
+    "lock": "278ad9a9-f747-4061-9475-19506b9e9c22"
+  },
+  "debug": {
+    "mode": "test"
+  }
+}
+
+### Delete existed
+POST http://localhost:8080/v2/ad/delete
+Content-Type: application/json
+
+{
+  "requestType": "delete",
+  "requestId": "deleteId",
+  "ad": {
+    "id": "existed_id"
+  },
+  "debug": {
+    "mode": "test"
+  }
+}
+
+### Search by string
+POST http://localhost:8080/v2/ad/search
+Content-Type: application/json
+
+{
+  "requestType": "search",
+  "requestId": "search_1",
+  "adFilter": {
+  },
+  "debug": {
+    "mode": "test"
+  }
+}
+
+### Search offer by unknown id
+POST http://localhost:8080/v2/ad/offers
+Content-Type: application/json
+
+{
+  "requestType": "offers",
+  "requestId": "offer_search",
+  "ad": {
+    "id": "3dc3c778-f9d7-4972-b850-493bb5306dab"
+  },
+  "debug": {
+    "mode": "test"
+  }
+}

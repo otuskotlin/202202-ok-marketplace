@@ -6,32 +6,29 @@ import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.server.engine.*
 import io.ktor.server.http.content.*
-import io.ktor.server.locations.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.autohead.*
 import io.ktor.server.plugins.cachingheaders.*
-import io.ktor.server.plugins.callloging.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.plugins.defaultheaders.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
-import org.slf4j.event.Level
 import ru.otus.otuskotlin.marketplace.app.config.jsonConfig
 import ru.otus.otuskotlin.marketplace.app.v1.mpWsHandlerV1
 import ru.otus.otuskotlin.marketplace.app.v1.v1Ad
 import ru.otus.otuskotlin.marketplace.app.v1.v1Offer
-import ru.otus.otuskotlin.marketplace.app.v2.*
+import ru.otus.otuskotlin.marketplace.app.v2.KtorUserSession
+import ru.otus.otuskotlin.marketplace.app.v2.mpWsHandlerV2
+import ru.otus.otuskotlin.marketplace.app.v2.v2Ad
+import ru.otus.otuskotlin.marketplace.app.v2.v2Offer
 import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.AdRepoInMemory
 import ru.otus.otuskotlin.marketplace.backend.services.AdService
 import ru.otus.otuskotlin.marketplace.common.models.MkplSettings
 
-// function with config (application.conf.old)
-//fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 fun main() {
     embeddedServer(Netty, environment = applicationEngineEnvironment {
-//        log = LoggerFactory.getLogger("ktor.application")
         config = MapApplicationConfig()
         module {
             module()
@@ -44,7 +41,6 @@ fun main() {
     }).start(true)
 }
 
-@OptIn(KtorExperimentalLocationsAPI::class)
 @Suppress("unused") // Referenced in application.conf.old
 fun Application.module(
     settings: MkplSettings? = null,
@@ -72,26 +68,12 @@ fun Application.module(
         jackson {
             jsonConfig()
         }
-        register(ContentType.Application.Json, CustomJsonConverter())
     }
-
-
-    install(CallLogging) {
-        level = Level.INFO
-    }
-
-    install(Locations)
 
     val corSettings by lazy {
-        if (settings != null) {
-            println("USING test settings")
-            settings
-        } else {
-            println("USING app settings")
-            MkplSettings(
-                repoTest = AdRepoInMemory(),
-            )
-        }
+        settings ?: MkplSettings(
+            repoTest = AdRepoInMemory(),
+        )
     }
     val service by lazy { AdService(corSettings) }
     val sessions = mutableSetOf<KtorUserSession>()

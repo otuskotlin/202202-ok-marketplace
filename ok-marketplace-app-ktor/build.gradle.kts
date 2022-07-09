@@ -13,7 +13,8 @@ plugins {
 }
 
 application {
-    mainClass.set("io.ktor.server.netty.EngineMain")
+//    mainClass.set("io.ktor.server.netty.EngineMain")
+    mainClass.set("ru.otus.otuskotlin.marketplace.app.ApplicationKt")
 }
 
 docker {

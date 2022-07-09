@@ -6,6 +6,7 @@ import io.ktor.websocket.*
 import ru.otus.otuskotlin.marketplace.api.v1.apiV1RequestSerialize
 import ru.otus.otuskotlin.marketplace.api.v1.apiV1ResponseDeserialize
 import ru.otus.otuskotlin.marketplace.api.v1.models.*
+import ru.otus.otuskotlin.marketplace.app.module
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -15,6 +16,7 @@ class WebsocketTest {
     @Test
     fun create() {
         testApplication {
+            application { module() }
             val client = createClient {
                 install(WebSockets)
             }
