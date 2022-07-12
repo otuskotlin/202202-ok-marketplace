@@ -1,5 +1,7 @@
 package ru.otus.otuskotlin.marketplace.backend.repo.sql
 
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.and
@@ -10,8 +12,10 @@ import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
+import ru.otus.otuskotlin.marketplace.common.helpers.errorConcurrency
 import ru.otus.otuskotlin.marketplace.common.models.MkplAd
 import ru.otus.otuskotlin.marketplace.common.models.MkplAdId
+import ru.otus.otuskotlin.marketplace.common.models.MkplAdLock
 import ru.otus.otuskotlin.marketplace.common.models.MkplDealSide
 import ru.otus.otuskotlin.marketplace.common.models.MkplError
 import ru.otus.otuskotlin.marketplace.common.models.MkplUserId
@@ -22,6 +26,7 @@ import ru.otus.otuskotlin.marketplace.common.repo.DbAdResponse
 import ru.otus.otuskotlin.marketplace.common.repo.DbAdsResponse
 import ru.otus.otuskotlin.marketplace.common.repo.IAdRepository
 import java.sql.SQLException
+import java.util.*
 
 class RepoAdSQL(
     url: String = "jdbc:postgresql://localhost:5432/marketplacedevdb",
@@ -31,6 +36,7 @@ class RepoAdSQL(
     initObjects: Collection<MkplAd> = emptyList()
 ) : IAdRepository {
     private val db by lazy { SqlConnector(url, user, password, schema).connect(AdsTable, UsersTable) }
+    private val mutex = Mutex()
 
     init {
         initObjects.forEach {
@@ -43,7 +49,6 @@ class RepoAdSQL(
             val realOwnerId = UsersTable.insertIgnore {
                 if (item.ownerId != MkplUserId.NONE) {
                     it[id] = item.ownerId.asString()
-                    it[name] = item.ownerId.asString()
                 }
             } get UsersTable.id
 
@@ -56,6 +61,7 @@ class RepoAdSQL(
                 it[ownerId] = realOwnerId
                 it[visibility] = item.visibility
                 it[adType] = item.adType
+                it[lock] = item.lock.asString()
             }
 
             DbAdResponse(AdsTable.from(res), true)
@@ -69,7 +75,10 @@ class RepoAdSQL(
     }
 
     override suspend fun createAd(rq: DbAdRequest): DbAdResponse {
-        return save(rq.ad)
+        val ad = rq.ad.copy(lock = MkplAdLock(UUID.randomUUID().toString()))
+        return mutex.withLock {
+            save(ad)
+        }
     }
 
     override suspend fun readAd(rq: DbAdIdRequest): DbAdResponse {
@@ -88,50 +97,69 @@ class RepoAdSQL(
     }
 
     override suspend fun updateAd(rq: DbAdRequest): DbAdResponse {
-        val ad = rq.ad
-        return safeTransaction({
-            UsersTable.insertIgnore {
-                if (ad.ownerId != MkplUserId.NONE) {
-                    it[id] = ad.ownerId.asString()
+        val key = rq.ad.id.takeIf { it != MkplAdId.NONE }?.asString() ?: return resultErrorEmptyId
+        val oldLock = rq.ad.lock.takeIf { it != MkplAdLock.NONE }?.asString()
+        val newAd = rq.ad.copy(lock = MkplAdLock(UUID.randomUUID().toString()))
+
+        return mutex.withLock {
+            safeTransaction({
+                val local = AdsTable.select { AdsTable.id.eq(key) }.singleOrNull()?.let {
+                    AdsTable.from(it)
+                } ?: return@safeTransaction resultErrorNotFound
+
+                return@safeTransaction when (oldLock) {
+                    null, local.lock.asString() -> updateDb(newAd)
+                    else -> resultErrorConcurrent
                 }
-                it[name] = ad.ownerId.asString().toString()
-            }
-            UsersTable.update({ UsersTable.id.eq(ad.ownerId.asString()) }) {
-                it[name] = ad.ownerId.asString().toString()
-            }
+            }, {
+                DbAdResponse(
+                    result = null,
+                    isSuccess = false,
+                    errors = listOf(MkplError(field = "id", message = "Not Found"))
+                )
+            })
+        }
+    }
 
-            AdsTable.update({ AdsTable.id.eq(ad.id.asString()) }) {
-                it[title] = ad.title
-                it[description] = ad.description
-                it[ownerId] = ad.ownerId.asString()
-                it[visibility] = ad.visibility
-                it[adType] = ad.adType
+    private fun updateDb(newAd: MkplAd): DbAdResponse {
+        UsersTable.insertIgnore {
+            if (newAd.ownerId != MkplUserId.NONE) {
+                it[id] = newAd.ownerId.asString()
             }
-            val result = AdsTable.select { AdsTable.id.eq(ad.id.asString()) }.single()
+        }
 
-            DbAdResponse(result = AdsTable.from(result), isSuccess = true)
-        }, {
-            DbAdResponse(
-                result = null,
-                isSuccess = false,
-                errors = listOf(MkplError(field = "id", message = "Not Found"))
-            )
-        })
+        AdsTable.update({ AdsTable.id.eq(newAd.id.asString()) }) {
+            it[title] = newAd.title
+            it[description] = newAd.description
+            it[ownerId] = newAd.ownerId.asString()
+            it[visibility] = newAd.visibility
+            it[adType] = newAd.adType
+        }
+        val result = AdsTable.select { AdsTable.id.eq(newAd.id.asString()) }.single()
+
+        return DbAdResponse(result = AdsTable.from(result), isSuccess = true)
     }
 
     override suspend fun deleteAd(rq: DbAdIdRequest): DbAdResponse {
-        return safeTransaction({
-            val result = AdsTable.select { AdsTable.id.eq(rq.id.asString()) }.single()
-            AdsTable.deleteWhere { AdsTable.id eq rq.id.asString() }
+        val key = rq.id.takeIf { it != MkplAdId.NONE }?.asString() ?: return resultErrorEmptyId
 
-            DbAdResponse(result = AdsTable.from(result), isSuccess = true)
-        }, {
-            DbAdResponse(
-                result = null,
-                isSuccess = false,
-                errors = listOf(MkplError(field = "id", message = "Not Found"))
-            )
-        })
+        return mutex.withLock {
+            safeTransaction({
+                val local = AdsTable.select { AdsTable.id.eq(key) }.single().let { AdsTable.from(it) }
+                if (local.lock == rq.lock) {
+                    AdsTable.deleteWhere { AdsTable.id eq rq.id.asString() }
+                    DbAdResponse(result = local, isSuccess = true)
+                } else {
+                    resultErrorConcurrent
+                }
+            }, {
+                DbAdResponse(
+                    result = null,
+                    isSuccess = false,
+                    errors = listOf(MkplError(field = "id", message = "Not Found"))
+                )
+            })
+        }
     }
 
     override suspend fun searchAd(rq: DbAdFilterRequest): DbAdsResponse {
@@ -163,5 +191,38 @@ class RepoAdSQL(
         } catch (e: Throwable) {
             return handleException(e)
         }
+    }
+
+    companion object {
+        val resultErrorEmptyId = DbAdResponse(
+            result = null,
+            isSuccess = false,
+            errors = listOf(
+                MkplError(
+                    field = "id",
+                    message = "Id must not be null or blank"
+                )
+            )
+        )
+        val resultErrorConcurrent = DbAdResponse(
+            result = null,
+            isSuccess = false,
+            errors = listOf(
+                errorConcurrency(
+                    violationCode = "changed",
+                    description = "Object has changed during request handling"
+                ),
+            )
+        )
+        val resultErrorNotFound = DbAdResponse(
+            isSuccess = false,
+            result = null,
+            errors = listOf(
+                MkplError(
+                    field = "id",
+                    message = "Not Found"
+                )
+            )
+        )
     }
 }
