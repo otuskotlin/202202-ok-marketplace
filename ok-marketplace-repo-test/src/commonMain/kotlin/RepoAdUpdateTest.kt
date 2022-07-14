@@ -35,6 +35,7 @@ abstract class RepoAdUpdateTest {
             createInitTestModel("update")
         )
         private val updateId = initObjects.first().id
+        private val updateLock = initObjects.first().lock
         private val updateIdNotFound = MkplAdId("ad-repo-update-not-found")
 
         private val updateObj = MkplAd(
@@ -44,6 +45,7 @@ abstract class RepoAdUpdateTest {
             ownerId = MkplUserId("owner-123"),
             visibility = MkplVisibility.VISIBLE_TO_GROUP,
             adType = MkplDealSide.SUPPLY,
+            lock = updateLock
         )
 
         private val updateObjNotFound = MkplAd(
@@ -53,6 +55,7 @@ abstract class RepoAdUpdateTest {
             ownerId = MkplUserId("owner-123"),
             visibility = MkplVisibility.VISIBLE_TO_GROUP,
             adType = MkplDealSide.SUPPLY,
+            lock = updateLock
         )
     }
 }

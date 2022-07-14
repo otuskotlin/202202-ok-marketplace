@@ -8,7 +8,6 @@ import com.datastax.oss.driver.internal.core.util.concurrent.CompletableFutures
 import org.testcontainers.containers.CassandraContainer
 import ru.otus.otuskotlin.marketplace.backend.repo.cassandra.model.AdCassandraDTO
 import ru.otus.otuskotlin.marketplace.backend.repo.cassandra.model.AdDealSide
-import ru.otus.otuskotlin.marketplace.backend.repo.cassandra.model.AdPermissionClient
 import ru.otus.otuskotlin.marketplace.backend.repo.cassandra.model.AdVisibility
 import ru.otus.otuskotlin.marketplace.backend.repo.test.RepoAdCreateTest
 import ru.otus.otuskotlin.marketplace.backend.repo.test.RepoAdDeleteTest
@@ -16,9 +15,6 @@ import ru.otus.otuskotlin.marketplace.backend.repo.test.RepoAdReadTest
 import ru.otus.otuskotlin.marketplace.backend.repo.test.RepoAdSearchTest
 import ru.otus.otuskotlin.marketplace.backend.repo.test.RepoAdUpdateTest
 import ru.otus.otuskotlin.marketplace.common.models.MkplAd
-import ru.otus.otuskotlin.marketplace.common.models.MkplAdPermissionClient
-import ru.otus.otuskotlin.marketplace.common.models.MkplDealSide
-import ru.otus.otuskotlin.marketplace.common.models.MkplVisibility
 import ru.otus.otuskotlin.marketplace.common.repo.IAdRepository
 import java.net.InetSocketAddress
 
@@ -51,7 +47,6 @@ object TestCompanion {
         DefaultCodecRegistry("default").apply {
             register(EnumNameCodec(AdVisibility::class.java))
             register(EnumNameCodec(AdDealSide::class.java))
-            register(EnumNameCodec(AdPermissionClient::class.java))
         }
     }
 

@@ -18,11 +18,11 @@ interface AdCassandraDAO {
     @Select
     fun read(id: String): CompletionStage<AdCassandraDTO?>
 
-    @Update(ifExists = true)
-    fun update(dto: AdCassandraDTO): CompletionStage<Unit>
+    @Update(customIfClause = "lock = :prevLock")
+    fun update(dto: AdCassandraDTO, prevLock: String): CompletionStage<Boolean>
 
-    @Delete
-    fun delete(dto: AdCassandraDTO): CompletionStage<Unit>
+    @Delete(customWhereClause = "id = :id", customIfClause = "lock = :prevLock", entityClass = [AdCassandraDTO::class])
+    fun delete(id: String, prevLock: String): CompletionStage<Boolean>
 
     @QueryProvider(providerClass = AdCassandraSearchProvider::class, entityHelpers = [AdCassandraDTO::class])
     fun search(filter: DbAdFilterRequest): CompletionStage<Collection<AdCassandraDTO>>

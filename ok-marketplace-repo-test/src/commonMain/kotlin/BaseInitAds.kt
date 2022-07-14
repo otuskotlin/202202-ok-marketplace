@@ -15,5 +15,6 @@ abstract class BaseInitAds(val op: String): IInitObjects<MkplAd> {
         ownerId = ownerId,
         visibility = MkplVisibility.VISIBLE_TO_OWNER,
         adType = adType,
+        lock = MkplAdLock("lock-$op-$suf")
     )
 }

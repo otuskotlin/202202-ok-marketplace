@@ -1,11 +1,13 @@
 package ru.otus.otuskotlin.marketplace.backend.repo.cassandra
 
+import com.benasher44.uuid.uuid4
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.withTimeout
 import org.slf4j.LoggerFactory
 import ru.otus.otuskotlin.marketplace.backend.repo.cassandra.model.AdCassandraDTO
 import ru.otus.otuskotlin.marketplace.common.helpers.asMkplError
 import ru.otus.otuskotlin.marketplace.common.models.MkplAdId
+import ru.otus.otuskotlin.marketplace.common.models.MkplAdLock
 import ru.otus.otuskotlin.marketplace.common.models.MkplError
 import ru.otus.otuskotlin.marketplace.common.repo.DbAdFilterRequest
 import ru.otus.otuskotlin.marketplace.common.repo.DbAdIdRequest
@@ -17,7 +19,8 @@ import java.util.*
 
 class RepoAdCassandra(
     private val dao: AdCassandraDAO,
-    private val timeoutMillis: Long = 30_000
+    private val timeoutMillis: Long = 30_000,
+    private val randomUuid: () -> String = { uuid4().toString() }
 ) : IAdRepository {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -30,7 +33,7 @@ class RepoAdCassandra(
         }
 
     override suspend fun createAd(rq: DbAdRequest): DbAdResponse {
-        val new = rq.ad.copy(id = MkplAdId(UUID.randomUUID().toString()))
+        val new = rq.ad.copy(id = MkplAdId(randomUuid()), lock = MkplAdLock(randomUuid()))
         return doDbAction("create") {
             withTimeout(timeoutMillis) { dao.create(AdCassandraDTO(new)).await() }
             DbAdResponse.success(new)
@@ -51,12 +54,14 @@ class RepoAdCassandra(
         return if (rq.ad.id == MkplAdId.NONE)
             ID_IS_EMPTY
         else doDbAction("update") {
+            val prevLock = rq.ad.lock.asString()
+            val new = rq.ad.copy(lock = MkplAdLock(randomUuid()))
+            val dto = AdCassandraDTO(new)
             val updated = withTimeout(timeoutMillis) {
-                dao.update(AdCassandraDTO(rq.ad)).await()
-                dao.read(rq.ad.id.asString()).await()
+                dao.update(dto, prevLock).await()
             }
-            if (updated != null) DbAdResponse.success(updated.toAdModel())
-            else DbAdResponse.error(MkplError(field = "id", message = "Not Found"))
+            if (updated) DbAdResponse.success(new)
+            else ID_NOT_FOUND
         }
     }
 
@@ -65,10 +70,9 @@ class RepoAdCassandra(
             ID_IS_EMPTY
         else doDbAction("delete") {
             val deleted = withTimeout(timeoutMillis) {
-                dao.read(rq.id.asString()).await()
-                    ?.also { dao.delete(it).await() }
+                dao.delete(rq.id.asString(), rq.lock.asString()).await()
             }
-            if (deleted != null) DbAdResponse.success(deleted.toAdModel())
+            if (deleted) DbAdResponse(null, true)
             else ID_NOT_FOUND
         }
     }

@@ -7,6 +7,7 @@ import com.datastax.oss.driver.api.mapper.annotations.PartitionKey
 import com.datastax.oss.driver.api.querybuilder.SchemaBuilder
 import ru.otus.otuskotlin.marketplace.common.models.MkplAd
 import ru.otus.otuskotlin.marketplace.common.models.MkplAdId
+import ru.otus.otuskotlin.marketplace.common.models.MkplAdLock
 import ru.otus.otuskotlin.marketplace.common.models.MkplUserId
 
 @Entity
@@ -22,14 +23,13 @@ data class AdCassandraDTO(
     var ownerId: String? = null,
     @field:CqlName(COLUMN_VISIBILITY)
     var visibility: AdVisibility? = null,
-    @field:CqlName(COLUMN_AD_TYPE)
-
     // Нельзя использовать в моделях хранения внутренние модели.
     // При изменении внутренних моделей, БД автоматически не изменится,
     // а потому будет Runtime ошибка, которая вылезет только на продуктовом стенде
+    @field:CqlName(COLUMN_AD_TYPE)
     var adType: AdDealSide? = null,
-    @field:CqlName(COLUMN_PERMISSIONS)
-    var permissions: Set<AdPermissionClient>? = null
+    @field:CqlName(COLUMN_LOCK)
+    var lock: String?
 ) {
     constructor(adModel: MkplAd) : this(
         ownerId = adModel.ownerId.takeIf { it != MkplUserId.NONE }?.asString(),
@@ -38,7 +38,7 @@ data class AdCassandraDTO(
         description = adModel.description.takeIf { it.isNotBlank() },
         visibility = adModel.visibility.toTransport(),
         adType = adModel.adType.toTransport(),
-        permissions = adModel.permissionsClient.takeIf { it.isNotEmpty() }?.mapTo(mutableSetOf()) { it.toTransport() }
+        lock = adModel.lock.takeIf { it != MkplAdLock.NONE }?.asString()
     )
 
     fun toAdModel(): MkplAd =
@@ -49,7 +49,7 @@ data class AdCassandraDTO(
             description = description ?: "",
             visibility = visibility.fromTransport(),
             adType = adType.fromTransport(),
-            permissionsClient = permissions.orEmpty().mapTo(mutableSetOf()) { it.fromTransport() }
+            lock = lock?.let { MkplAdLock(it) } ?: MkplAdLock.NONE
         )
 
     companion object {
@@ -58,10 +58,10 @@ data class AdCassandraDTO(
         const val COLUMN_ID = "id"
         const val COLUMN_TITLE = "title"
         const val COLUMN_DESCRIPTION = "description"
-        const val COLUMN_OWNER_ID = "\"owner_id_my\""
+        const val COLUMN_OWNER_ID = "owner_id_my"
         const val COLUMN_VISIBILITY = "visibility"
         const val COLUMN_AD_TYPE = "deal_side"
-        const val COLUMN_PERMISSIONS = "permissions"
+        const val COLUMN_LOCK = "lock"
 
         fun table(keyspace: String, tableName: String) =
             SchemaBuilder
@@ -73,7 +73,7 @@ data class AdCassandraDTO(
                 .withColumn(COLUMN_OWNER_ID, DataTypes.TEXT)
                 .withColumn(COLUMN_VISIBILITY, DataTypes.TEXT)
                 .withColumn(COLUMN_AD_TYPE, DataTypes.TEXT)
-                .withColumn(COLUMN_PERMISSIONS, DataTypes.setOf(DataTypes.TEXT))
+                .withColumn(COLUMN_LOCK, DataTypes.TEXT)
                 .build()
 
         fun titleIndex(keyspace: String, tableName: String, locale: String = "en") =
