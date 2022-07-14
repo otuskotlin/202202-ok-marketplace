@@ -7,4 +7,11 @@ data class DbAdResponse(
     override val result: MkplAd?,
     override val isSuccess: Boolean,
     override val errors: List<MkplError> = emptyList()
-): IDbResponse<MkplAd>
+): IDbResponse<MkplAd> {
+
+    companion object {
+        fun success(result: MkplAd) = DbAdResponse(result, true)
+        fun error(errors: List<MkplError>) = DbAdResponse(null, false, errors)
+        fun error(error: MkplError) = DbAdResponse(null, false, listOf(error))
+    }
+}
