@@ -50,6 +50,17 @@ object TestCompanion {
         }
     }
 
+    private val session by lazy {
+        CqlSession.builder()
+            .addContactPoint(InetSocketAddress(container.host, container.getMappedPort(CassandraContainer.CQL_PORT)))
+            .withLocalDatacenter("datacenter1")
+            .withAuthCredentials(container.username, container.password)
+            .withCodecRegistry(codecRegistry)
+            .build()
+    }
+
+    private val mapper by lazy { CassandraMapper.builder(session).build() }
+
     private fun createSchema(keyspace: String) {
         session.execute(
             SchemaBuilder
@@ -61,17 +72,6 @@ object TestCompanion {
         session.execute(AdCassandraDTO.table(keyspace, AdCassandraDTO.TABLE_NAME))
         session.execute(AdCassandraDTO.titleIndex(keyspace, AdCassandraDTO.TABLE_NAME))
     }
-
-    private val session by lazy {
-        CqlSession.builder()
-            .addContactPoint(InetSocketAddress(container.host, container.getMappedPort(CassandraContainer.CQL_PORT)))
-            .withLocalDatacenter("datacenter1")
-            .withAuthCredentials(container.username, container.password)
-            .withCodecRegistry(codecRegistry)
-            .build()
-    }
-
-    private val mapper by lazy { CassandraMapper.builder(session).build() }
 
     fun repository(initObjects: List<MkplAd>, keyspace: String): RepoAdCassandra {
         createSchema(keyspace)

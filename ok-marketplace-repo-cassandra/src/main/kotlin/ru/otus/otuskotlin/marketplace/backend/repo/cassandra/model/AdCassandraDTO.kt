@@ -13,7 +13,7 @@ import ru.otus.otuskotlin.marketplace.common.models.MkplUserId
 @Entity
 data class AdCassandraDTO(
     @field:CqlName(COLUMN_ID)
-    @field:PartitionKey
+    @field:PartitionKey // можно задать порядок
     var id: String? = null,
     @field:CqlName(COLUMN_TITLE)
     var title: String? = null,

@@ -15,7 +15,7 @@ import ru.otus.otuskotlin.marketplace.common.repo.DbAdRequest
 import ru.otus.otuskotlin.marketplace.common.repo.DbAdResponse
 import ru.otus.otuskotlin.marketplace.common.repo.DbAdsResponse
 import ru.otus.otuskotlin.marketplace.common.repo.IAdRepository
-import java.util.*
+import java.util.concurrent.CompletionStage
 
 class RepoAdCassandra(
     private val dao: AdCassandraDAO,
@@ -24,69 +24,87 @@ class RepoAdCassandra(
 ) : IAdRepository {
     private val log = LoggerFactory.getLogger(javaClass)
 
-    private suspend fun doDbAction(name: String, action: suspend () -> DbAdResponse): DbAdResponse =
+    private fun errorToAdResponse(e: Exception) = DbAdResponse.error(e.asMkplError())
+    private fun errorToAdsResponse(e: Exception) = DbAdsResponse.error(e.asMkplError())
+
+    private suspend fun <DbRes, Response> doDbAction(
+        name: String,
+        daoAction: () -> CompletionStage<DbRes>,
+        okToResponse: (DbRes) -> Response,
+        errorToResponse: (Exception) -> Response
+    ): Response =
         try {
-            action()
+            var dbRes = withTimeout(timeoutMillis) { daoAction().await() }
+            okToResponse(dbRes)
         } catch (e: Exception) {
             log.error("Failed to $name", e)
-            DbAdResponse.error(e.asMkplError())
+            errorToResponse(e)
         }
 
     override suspend fun createAd(rq: DbAdRequest): DbAdResponse {
         val new = rq.ad.copy(id = MkplAdId(randomUuid()), lock = MkplAdLock(randomUuid()))
-        return doDbAction("create") {
-            withTimeout(timeoutMillis) { dao.create(AdCassandraDTO(new)).await() }
-            DbAdResponse.success(new)
-        }
+        return doDbAction(
+            "create",
+            { dao.create(AdCassandraDTO(new)) },
+            { DbAdResponse.success(new) },
+            ::errorToAdResponse
+        )
     }
 
-    override suspend fun readAd(rq: DbAdIdRequest): DbAdResponse {
-        return if (rq.id == MkplAdId.NONE)
+    override suspend fun readAd(rq: DbAdIdRequest): DbAdResponse =
+        if (rq.id == MkplAdId.NONE)
             ID_IS_EMPTY
-        else doDbAction("read") {
-            val found = withTimeout(timeoutMillis) { dao.read(rq.id.asString()).await() }
-            if (found != null) DbAdResponse.success(found.toAdModel())
-            else ID_NOT_FOUND
-        }
-    }
+        else doDbAction(
+            "read",
+            { dao.read(rq.id.asString()) },
+            { found ->
+                if (found != null) DbAdResponse.success(found.toAdModel())
+                else ID_NOT_FOUND
+            },
+            ::errorToAdResponse
+        )
 
-    override suspend fun updateAd(rq: DbAdRequest): DbAdResponse {
-        return if (rq.ad.id == MkplAdId.NONE)
+    override suspend fun updateAd(rq: DbAdRequest): DbAdResponse =
+        if (rq.ad.id == MkplAdId.NONE)
             ID_IS_EMPTY
-        else doDbAction("update") {
+        else {
             val prevLock = rq.ad.lock.asString()
             val new = rq.ad.copy(lock = MkplAdLock(randomUuid()))
             val dto = AdCassandraDTO(new)
-            val updated = withTimeout(timeoutMillis) {
-                dao.update(dto, prevLock).await()
-            }
-            if (updated) DbAdResponse.success(new)
-            else ID_NOT_FOUND
+            doDbAction(
+                "update",
+                { dao.update(dto, prevLock) },
+                { updated ->
+                    if (updated) DbAdResponse.success(new)
+                    else ID_NOT_FOUND
+                },
+                ::errorToAdResponse
+            )
         }
-    }
 
-    override suspend fun deleteAd(rq: DbAdIdRequest): DbAdResponse {
-        return if (rq.id == MkplAdId.NONE)
+    override suspend fun deleteAd(rq: DbAdIdRequest): DbAdResponse =
+        if (rq.id == MkplAdId.NONE)
             ID_IS_EMPTY
-        else doDbAction("delete") {
-            val deleted = withTimeout(timeoutMillis) {
-                dao.delete(rq.id.asString(), rq.lock.asString()).await()
-            }
-            if (deleted) DbAdResponse(null, true)
-            else ID_NOT_FOUND
-        }
-    }
+        else doDbAction(
+            "delete",
+            { dao.delete(rq.id.asString(), rq.lock.asString()) },
+            { deleted ->
+                if (deleted) DbAdResponse(null, true)
+                else ID_NOT_FOUND
+            },
+            ::errorToAdResponse
+        )
 
 
-    override suspend fun searchAd(rq: DbAdFilterRequest): DbAdsResponse {
-        return try {
-            val found = withTimeout(timeoutMillis) { dao.search(rq) }.await()
-            DbAdsResponse.success(found.map { it.toAdModel() })
-        } catch (e: Exception) {
-            log.error("Failed to search", e)
-            DbAdsResponse.error(e.asMkplError())
-        }
-    }
+    override suspend fun searchAd(rq: DbAdFilterRequest): DbAdsResponse =
+        doDbAction(
+            "search",
+            { dao.search(rq) },
+            { found ->
+                DbAdsResponse.success(found.map { it.toAdModel() })
+            },
+            ::errorToAdsResponse
+        )
 
     companion object {
         private val ID_IS_EMPTY = DbAdResponse.error(MkplError(field = "id", message = "Id is empty"))
