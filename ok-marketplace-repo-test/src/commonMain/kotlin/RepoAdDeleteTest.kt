@@ -15,7 +15,7 @@ abstract class RepoAdDeleteTest {
 
     @Test
     fun deleteSuccess() {
-        val result = runBlocking { repo.deleteAd(DbAdIdRequest(successId)) }
+        val result = runBlocking { repo.deleteAd(DbAdIdRequest(successId, successLock)) }
 
         assertEquals(true, result.isSuccess)
         assertEquals(emptyList(), result.errors)
@@ -40,5 +40,6 @@ abstract class RepoAdDeleteTest {
         private val deleteSuccessStub = initObjects.first()
         val successId = MkplAdId(deleteSuccessStub.id.asString())
         val notFoundId = MkplAdId("ad-repo-delete-notFound")
+        val successLock = deleteSuccessStub.lock
     }
 }
