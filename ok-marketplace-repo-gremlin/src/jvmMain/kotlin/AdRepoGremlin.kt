@@ -1,6 +1,7 @@
 package ru.otus.otuskotlin.marketplace.backend.repository.gremlin
 
 import org.apache.tinkerpop.gremlin.driver.Cluster
+import org.apache.tinkerpop.gremlin.driver.exception.ResponseException
 import org.apache.tinkerpop.gremlin.driver.remote.DriverRemoteConnection
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.traversal
 import org.apache.tinkerpop.gremlin.structure.T
@@ -9,6 +10,7 @@ import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.exceptions.Wron
 import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.mappers.addMkplAd
 import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.mappers.label
 import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.mappers.toMkplAd
+import ru.otus.otuskotlin.marketplace.common.helpers.asMkplError
 import ru.otus.otuskotlin.marketplace.common.helpers.errorAdministration
 import ru.otus.otuskotlin.marketplace.common.helpers.errorConcurrency
 import ru.otus.otuskotlin.marketplace.common.models.*
@@ -23,6 +25,8 @@ actual class AdRepoGremlin actual constructor(
     val randomUuid: () -> String,
 ) : IAdRepository {
 
+    val initializedObjects: List<MkplAd>
+
     private val cluster by lazy {
         Cluster.build().apply {
             addContactPoints(*hosts.split(Regex("\\s*,\\s*")).toTypedArray())
@@ -33,17 +37,13 @@ actual class AdRepoGremlin actual constructor(
     private val g by lazy { traversal().withRemote(DriverRemoteConnection.using(cluster)) }
 
     init {
-        initObjects.forEach {
-            save(it)
+        initializedObjects = initObjects.map {
+            val id = save(it)
+            it.copy(id = MkplAdId(id))
         }
     }
 
-    private fun save(ad: MkplAd) {
-        if (ad.id == MkplAdId.NONE) {
-            return
-        }
-        g.addV(ad.label()).addMkplAd(ad)?.iterate()
-    }
+    private fun save(ad: MkplAd): String = g.addV(ad.label()).addMkplAd(ad)?.next()?.id() as? String ?: ""
 
     actual override suspend fun createAd(rq: DbAdRequest): DbAdResponse {
         val key = randomUuid()
@@ -62,7 +62,7 @@ actual class AdRepoGremlin actual constructor(
                                 description = "Unexpected result got. Please, contact administrator",
                                 exception = WrongIdTypeException(
                                     "createAd for ${this@AdRepoGremlin::class} " +
-                                            "returned id = '$it' that is not addmitted by the application"
+                                            "returned id = '$it' that is not admitted by the application"
                                 )
                             )
                         )
@@ -78,7 +78,18 @@ actual class AdRepoGremlin actual constructor(
 
     actual override suspend fun readAd(rq: DbAdIdRequest): DbAdResponse {
         val key = rq.id.takeIf { it != MkplAdId.NONE }?.asString() ?: return resultErrorEmptyId
-        val dbRes = g.V(key).has(T.id, key).elementMap<Any>().toList()
+        val dbRes = try {
+            g.V(key).has(T.id, key).elementMap<Any>().toList()
+        } catch (e: Throwable) {
+            if (e is ResponseException || e.cause is ResponseException) {
+                return resultErrorNotFound
+            }
+            return DbAdResponse(
+                result = null,
+                isSuccess = false,
+                errors = listOf(e.asMkplError())
+            )
+        }
         when (dbRes.size) {
             0 -> return resultErrorNotFound
             1 -> return DbAdResponse(
@@ -120,7 +131,6 @@ actual class AdRepoGremlin actual constructor(
 
     actual override suspend fun deleteAd(rq: DbAdIdRequest): DbAdResponse {
         val key = rq.id.takeIf { it != MkplAdId.NONE }?.asString() ?: return resultErrorEmptyId
-//        mutex.withLock {
 //            val local = cache.get(key)
 //            if (local?.lock == null || local.lock == rq.lock.asString()) {
 //                cache.invalidate(key)

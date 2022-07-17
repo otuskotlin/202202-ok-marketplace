@@ -12,13 +12,16 @@ import kotlin.test.assertEquals
 
 abstract class RepoAdDeleteTest {
     abstract val repo: IAdRepository
+    protected open val successId = MkplAdId(deleteSuccessStub.id.asString())
+
 
     @Test
     fun deleteSuccess() {
-        val result = runBlocking { repo.deleteAd(DbAdIdRequest(successId)) }
+        val result = runBlocking { repo.deleteAd(DbAdIdRequest(id = successId, lock = deleteSuccessStub.lock)) }
 
         assertEquals(true, result.isSuccess)
         assertEquals(emptyList(), result.errors)
+        assertEquals(deleteSuccessStub.copy(id = successId), result.result)
     }
 
     @Test
@@ -33,12 +36,11 @@ abstract class RepoAdDeleteTest {
         )
     }
 
-    companion object: BaseInitAds("search") {
+    companion object: BaseInitAds("delete") {
         override val initObjects: List<MkplAd> = listOf(
             createInitTestModel("delete")
         )
         private val deleteSuccessStub = initObjects.first()
-        val successId = MkplAdId(deleteSuccessStub.id.asString())
         val notFoundId = MkplAdId("ad-repo-delete-notFound")
     }
 }
