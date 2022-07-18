@@ -4,10 +4,14 @@ import org.apache.tinkerpop.gremlin.driver.Cluster
 import org.apache.tinkerpop.gremlin.driver.exception.ResponseException
 import org.apache.tinkerpop.gremlin.driver.remote.DriverRemoteConnection
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.traversal
+import org.apache.tinkerpop.gremlin.process.traversal.TextP
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.`__`.*
 import org.apache.tinkerpop.gremlin.structure.T
 import org.apache.tinkerpop.gremlin.structure.Vertex
+import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.AdGremlinConst.FIELD_AD_TYPE
 import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.AdGremlinConst.FIELD_LOCK
+import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.AdGremlinConst.FIELD_OWNER_ID
+import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.AdGremlinConst.FIELD_TITLE
 import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.AdGremlinConst.RESULT_LOCK_FAILURE
 import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.AdGremlinConst.RESULT_SUCCESS
 import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.exceptions.DbDuplicatedElementsException
@@ -43,6 +47,7 @@ actual class AdRepoGremlin actual constructor(
     private val g by lazy { traversal().withRemote(DriverRemoteConnection.using(cluster)) }
 
     init {
+        g.V().drop().iterate()
         initializedObjects = initObjects.map {
             val id = save(it)
             it.copy(id = MkplAdId(id))
@@ -194,27 +199,22 @@ actual class AdRepoGremlin actual constructor(
      * Если в фильтре не установлен какой-либо из параметров - по нему фильтрация не идет
      */
     actual override suspend fun searchAd(rq: DbAdFilterRequest): DbAdsResponse {
-//        val result = cache.asMap().asSequence()
-//            .filter { entry ->
-//                rq.ownerId.takeIf { it != MkplUserId.NONE }?.let {
-//                    it.asString() == entry.value.ownerId
-//                } ?: true
-//            }
-//            .filter { entry ->
-//                rq.dealSide.takeIf { it != MkplDealSide.NONE }?.let {
-//                    it.name == entry.value.adType
-//                } ?: true
-//            }
-//            .filter { entry ->
-//                rq.titleFilter.takeIf { it.isNotBlank() }?.let {
-//                    entry.value.title?.contains(it) ?: false
-//                } ?: true
-//            }
-//            .map { it.value.toInternal() }
-//            .toList()
+        val result = try {
+            g.V()
+                .apply { rq.ownerId.takeIf { it != MkplUserId.NONE }?.also { has(FIELD_OWNER_ID, it.asString()) } }
+                .apply { rq.dealSide.takeIf { it != MkplDealSide.NONE }?.also { has(FIELD_AD_TYPE, it.name) } }
+                .apply { rq.titleFilter.takeIf { it.isNotBlank() }?.also { has(FIELD_TITLE, TextP.containing(it)) } }
+                .elementMap<Any>()
+                .toList()
+        } catch (e: Throwable) {
+            return DbAdsResponse(
+                isSuccess = false,
+                result = null,
+                errors = listOf(e.asMkplError())
+            )
+        }
         return DbAdsResponse(
-//            result = result,
-            result = null,
+            result = result.map { it.toMkplAd() },
             isSuccess = true
         )
     }
