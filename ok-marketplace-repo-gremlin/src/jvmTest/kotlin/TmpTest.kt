@@ -3,12 +3,12 @@ package ru.otus.otuskotlin.marketplace.backend.repository.gremlin
 import org.apache.tinkerpop.gremlin.driver.Cluster
 import org.apache.tinkerpop.gremlin.driver.remote.DriverRemoteConnection
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource
-import org.apache.tinkerpop.gremlin.structure.T
 import org.apache.tinkerpop.gremlin.structure.Vertex
+import org.junit.Ignore
 import org.junit.Test
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.`__` as bs
 
-//@Ignore
+@Ignore
 class TmpTest {
     @Test
     fun x() {
@@ -44,17 +44,20 @@ class TmpTest {
         val n = g
             .V(id)
             .`as`("a")
-            .choose<Any>(
+            .choose(
                 bs.select<Vertex, Any>("a")
                     .values<String>("lock")
-                    .`is`("111"),
-                bs.select<Any,Any>("a"),
-                bs.constant("gg")
+                    .`is`("1112"),
+                bs.select<Vertex,String>("a").drop().inject("success"),
+                bs.constant("lock-failure")
             ).toList()
+//            .forEach {
+//                println("FFF: ${it}")
+//            }
         println("YYY: $n")
 
-        val x = g.V().has(T.id, id).`as`("a").elementMap<Any>().toList()
-        println(x)
+        val x = g.V(id).`as`("a").elementMap<Any>().toList()
+        println("CONTENT: ${x}")
         g.close()
     }
 }
