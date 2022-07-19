@@ -1,10 +1,12 @@
 package ru.otus.otuskotlin.marketplace.backend.repository.gremlin
 
+import com.benasher44.uuid.uuid4
 import org.apache.tinkerpop.gremlin.driver.Cluster
 import org.apache.tinkerpop.gremlin.driver.exception.ResponseException
 import org.apache.tinkerpop.gremlin.driver.remote.DriverRemoteConnection
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.traversal
 import org.apache.tinkerpop.gremlin.process.traversal.TextP
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.`__`.*
 import org.apache.tinkerpop.gremlin.structure.T
 import org.apache.tinkerpop.gremlin.structure.Vertex
@@ -27,12 +29,13 @@ import ru.otus.otuskotlin.marketplace.common.models.*
 import ru.otus.otuskotlin.marketplace.common.repo.*
 
 
-actual class AdRepoGremlin actual constructor(
+class AdRepoGremlin(
     private val hosts: String,
-    private val port: Int,
-    private val enableSsl: Boolean,
-    initObjects: List<MkplAd>,
-    val randomUuid: () -> String,
+    private val port: Int = 8182,
+    private val enableSsl: Boolean = false,
+    initObjects: List<MkplAd> = emptyList(),
+    initRepo: ((GraphTraversalSource) -> Unit)? = null,
+    val randomUuid: () -> String = { uuid4().toString() },
 ) : IAdRepository {
 
     val initializedObjects: List<MkplAd>
@@ -47,7 +50,9 @@ actual class AdRepoGremlin actual constructor(
     private val g by lazy { traversal().withRemote(DriverRemoteConnection.using(cluster)) }
 
     init {
-        g.V().drop().iterate()
+        if (initRepo != null) {
+            initRepo(g)
+        }
         initializedObjects = initObjects.map {
             val id = save(it)
             it.copy(id = MkplAdId(id))
@@ -56,7 +61,7 @@ actual class AdRepoGremlin actual constructor(
 
     private fun save(ad: MkplAd): String = g.addV(ad.label()).addMkplAd(ad)?.next()?.id() as? String ?: ""
 
-    actual override suspend fun createAd(rq: DbAdRequest): DbAdResponse {
+    override suspend fun createAd(rq: DbAdRequest): DbAdResponse {
         val key = randomUuid()
         val ad = rq.ad.copy(id = MkplAdId(key), lock = MkplAdLock(randomUuid()))
         val id = g.addV(ad.label()).addMkplAd(ad)
@@ -87,7 +92,7 @@ actual class AdRepoGremlin actual constructor(
         )
     }
 
-    actual override suspend fun readAd(rq: DbAdIdRequest): DbAdResponse {
+    override suspend fun readAd(rq: DbAdIdRequest): DbAdResponse {
         val key = rq.id.takeIf { it != MkplAdId.NONE }?.asString() ?: return resultErrorEmptyId
         val dbRes = try {
             g.V(key).has(T.id, key).elementMap<Any>().toList()
@@ -121,7 +126,7 @@ actual class AdRepoGremlin actual constructor(
         }
     }
 
-    actual override suspend fun updateAd(rq: DbAdRequest): DbAdResponse {
+    override suspend fun updateAd(rq: DbAdRequest): DbAdResponse {
         val key = rq.ad.id.takeIf { it != MkplAdId.NONE }?.asString() ?: return resultErrorEmptyId
         val oldLock = rq.ad.lock.takeIf { it != MkplAdLock.NONE }
         val newLock = MkplAdLock(randomUuid())
@@ -169,12 +174,12 @@ actual class AdRepoGremlin actual constructor(
         }
     }
 
-    actual override suspend fun deleteAd(rq: DbAdIdRequest): DbAdResponse {
+    override suspend fun deleteAd(rq: DbAdIdRequest): DbAdResponse {
         val key = rq.id.takeIf { it != MkplAdId.NONE }?.asString() ?: return resultErrorEmptyId
         val oldLock = rq.lock.takeIf { it != MkplAdLock.NONE }?.asString() ?: return resultErrorEmptyLock
         val readResult = readAd(rq)
         // В случае ошибок чтения, нет смысла продолжать. Выходим
-        if (! readResult.isSuccess) return readResult
+        if (!readResult.isSuccess) return readResult
         val result = g
             .V(key)
             .`as`("a")
@@ -198,7 +203,7 @@ actual class AdRepoGremlin actual constructor(
      * Поиск объявлений по фильтру
      * Если в фильтре не установлен какой-либо из параметров - по нему фильтрация не идет
      */
-    actual override suspend fun searchAd(rq: DbAdFilterRequest): DbAdsResponse {
+    override suspend fun searchAd(rq: DbAdFilterRequest): DbAdsResponse {
         val result = try {
             g.V()
                 .apply { rq.ownerId.takeIf { it != MkplUserId.NONE }?.also { has(FIELD_OWNER_ID, it.asString()) } }

@@ -9,7 +9,8 @@ class AdRepoGremlinSearchTest: RepoAdSearchTest() {
             hosts = ArcadeDbContainer.container.host,
             port = ArcadeDbContainer.container.getMappedPort(8182),
             enableSsl = false,
-            initObjects = initObjects
+            initObjects = initObjects,
+            initRepo = { g -> g.V().drop().iterate() },
         )
     }
     override val initAds: List<MkplAd> = repo.initializedObjects

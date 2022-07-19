@@ -9,7 +9,8 @@ class AdRepoGremlinReadTest : RepoAdReadTest() {
             hosts = ArcadeDbContainer.container.host,
             port = ArcadeDbContainer.container.getMappedPort(8182),
             enableSsl = false,
-            initObjects = initObjects
+            initObjects = initObjects,
+            initRepo = { g -> g.V().drop().iterate() },
         )
     }
     override val successId: MkplAdId by lazy {

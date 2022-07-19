@@ -10,7 +10,8 @@ class AdRepoGremlinCreateTest : RepoAdCreateTest() {
             hosts = ArcadeDbContainer.container.host,
             port = ArcadeDbContainer.container.getMappedPort(8182),
             enableSsl = false,
-            initObjects = RepoAdSearchTest.initObjects
+            initObjects = RepoAdSearchTest.initObjects,
+            initRepo = { g -> g.V().drop().iterate() },
         )
     }
 }
