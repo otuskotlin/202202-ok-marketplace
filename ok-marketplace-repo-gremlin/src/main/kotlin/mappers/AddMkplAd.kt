@@ -15,10 +15,14 @@ import ru.otus.otuskotlin.marketplace.common.models.product.MkplAdProductNone
 
 fun GraphTraversal<Vertex, Vertex>.addMkplAd(ad: MkplAd): GraphTraversal<Vertex, Vertex>? =
     this
-        .property(VertexProperty.Cardinality.single,FIELD_TITLE, ad.title)
+        .property(VertexProperty.Cardinality.single, FIELD_TITLE, ad.title)
         .property(VertexProperty.Cardinality.single, FIELD_DESCRIPTION, ad.description)
         .property(VertexProperty.Cardinality.single, FIELD_LOCK, ad.lock.asString())
-        .property(VertexProperty.Cardinality.single, FIELD_OWNER_ID, ad.ownerId.asString()) // здесь можно сделать ссылку на объект владельца
+        .property(
+            VertexProperty.Cardinality.single,
+            FIELD_OWNER_ID,
+            ad.ownerId.asString()
+        ) // здесь можно сделать ссылку на объект владельца
         .property(VertexProperty.Cardinality.single, FIELD_AD_TYPE, ad.adType.name)
         .property(VertexProperty.Cardinality.single, FIELD_VISIBILITY, ad.visibility.name)
         .apply {

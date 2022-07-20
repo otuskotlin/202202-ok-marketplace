@@ -3,11 +3,7 @@ package ru.otus.otuskotlin.marketplace.backend.repository.gremlin
 import org.apache.tinkerpop.gremlin.driver.Cluster
 import org.apache.tinkerpop.gremlin.driver.remote.DriverRemoteConnection
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource
-import org.apache.tinkerpop.gremlin.structure.Element
-import org.apache.tinkerpop.gremlin.structure.T
 import org.apache.tinkerpop.gremlin.structure.Vertex
-import org.apache.tinkerpop.gremlin.structure.VertexProperty
-import org.junit.Ignore
 import org.junit.Test
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.`__` as bs
 
@@ -43,11 +39,6 @@ class TmpTest {
             .id()
         println("ID: $id")
 
-//        val owner = g
-//            .addE("Owns")
-//            .from(bs.V<Vertex>(userId))
-//            .to(bs.V<Vertex>(id))
-//            .next()
         val owner = g
             .V(userId)
             .outE("Owns")
@@ -67,17 +58,17 @@ class TmpTest {
             ).toList()
         println("YYY: $n")
 
-        val x = g.V(id).`as`("a")
-            .elementMap<Any>().`as`("b")
-            .union(
-                bs.select<Vertex, String>("a")
-                    .outE("Owns")
-                    .inV()
-                    .id()
-                    .map { "userId" as Any to it.get() }
-            )
-            .toList()
-        println("CONTENT: ${x}")
+//        val x = g.V(id).`as`("a")
+//            .union(
+//                bs.select<Vertex, Edge>("a")
+//                    .inE("User")
+//                    .outV()
+//                    .V(),
+//                bs.select<Vertex, Vertex>("a")
+//            )
+//            .elementMap<Any>()
+//            .toList()
+//        println("CONTENT: ${x}")
         g.close()
     }
 }

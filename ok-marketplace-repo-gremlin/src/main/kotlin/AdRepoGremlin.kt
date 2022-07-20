@@ -7,8 +7,8 @@ import org.apache.tinkerpop.gremlin.driver.remote.DriverRemoteConnection
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.traversal
 import org.apache.tinkerpop.gremlin.process.traversal.TextP
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.`__`.*
-import org.apache.tinkerpop.gremlin.structure.T
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.`__`.constant
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.`__`.select
 import org.apache.tinkerpop.gremlin.structure.Vertex
 import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.AdGremlinConst.FIELD_AD_TYPE
 import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.AdGremlinConst.FIELD_LOCK
@@ -18,10 +18,10 @@ import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.AdGremlinConst.
 import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.AdGremlinConst.RESULT_SUCCESS
 import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.exceptions.DbDuplicatedElementsException
 import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.exceptions.WrongIdTypeException
+import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.exceptions.WrongResponseFromDb
 import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.mappers.addMkplAd
 import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.mappers.label
 import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.mappers.toMkplAd
-import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.exceptions.WrongResponseFromDb
 import ru.otus.otuskotlin.marketplace.common.helpers.asMkplError
 import ru.otus.otuskotlin.marketplace.common.helpers.errorAdministration
 import ru.otus.otuskotlin.marketplace.common.helpers.errorConcurrency
@@ -95,7 +95,7 @@ class AdRepoGremlin(
     override suspend fun readAd(rq: DbAdIdRequest): DbAdResponse {
         val key = rq.id.takeIf { it != MkplAdId.NONE }?.asString() ?: return resultErrorEmptyId
         val dbRes = try {
-            g.V(key).has(T.id, key).elementMap<Any>().toList()
+            g.V(key).elementMap<Any>().toList()
         } catch (e: Throwable) {
             if (e is ResponseException || e.cause is ResponseException) {
                 return resultErrorNotFound
