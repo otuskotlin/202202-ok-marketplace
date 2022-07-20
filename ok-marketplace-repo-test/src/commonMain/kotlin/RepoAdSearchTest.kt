@@ -12,11 +12,13 @@ import kotlin.test.assertEquals
 
 abstract class RepoAdSearchTest {
     abstract val repo: IAdRepository
+    protected open val initAds: List<MkplAd> = initObjects
+
     @Test
     fun searchOwner() {
         val result = runBlocking { repo.searchAd(DbAdFilterRequest(ownerId = searchOwnerId)) }
         assertEquals(true, result.isSuccess)
-        val expected = listOf(initObjects[1], initObjects[3])
+        val expected = initAds.filter { it.ownerId == searchOwnerId }.sortedBy { it.id.asString() }
         assertEquals(expected, result.result?.sortedBy { it.id.asString() })
         assertEquals(emptyList(), result.errors)
     }
@@ -25,12 +27,12 @@ abstract class RepoAdSearchTest {
     fun searchDealSide() {
         val result = runBlocking { repo.searchAd(DbAdFilterRequest(dealSide = MkplDealSide.SUPPLY)) }
         assertEquals(true, result.isSuccess)
-        val expected = listOf(initObjects[2], initObjects[4])
+        val expected = initAds.filter { it.adType == MkplDealSide.SUPPLY }.sortedBy { it.id.asString() }
         assertEquals(expected, result.result?.sortedBy { it.id.asString() })
         assertEquals(emptyList(), result.errors)
     }
 
-    companion object: BaseInitAds("search") {
+    companion object : BaseInitAds("search") {
 
         val searchOwnerId = MkplUserId("owner-124")
         override val initObjects: List<MkplAd> = listOf(

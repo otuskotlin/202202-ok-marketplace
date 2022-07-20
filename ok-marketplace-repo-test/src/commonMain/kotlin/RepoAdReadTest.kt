@@ -12,13 +12,14 @@ import kotlin.test.assertEquals
 
 abstract class RepoAdReadTest {
     abstract val repo: IAdRepository
+    protected open val successId = Companion.successId
 
     @Test
     fun readSuccess() {
         val result = runBlocking { repo.readAd(DbAdIdRequest(successId)) }
 
         assertEquals(true, result.isSuccess)
-        assertEquals(readSuccessStub, result.result)
+        assertEquals(readSuccessStub.copy(successId), result.result)
         assertEquals(emptyList(), result.errors)
     }
 
@@ -34,13 +35,13 @@ abstract class RepoAdReadTest {
         )
     }
 
-    companion object: BaseInitAds("search") {
+    companion object: BaseInitAds("read") {
         override val initObjects: List<MkplAd> = listOf(
             createInitTestModel("read")
         )
         private val readSuccessStub = initObjects.first()
 
-        val successId = MkplAdId(readSuccessStub.id.asString())
+        private val successId = MkplAdId(readSuccessStub.id.asString())
         val notFoundId = MkplAdId("ad-repo-read-notFound")
 
     }

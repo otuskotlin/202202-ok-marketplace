@@ -84,11 +84,11 @@ class AdRepoInMemory(
     override suspend fun deleteAd(rq: DbAdIdRequest): DbAdResponse {
         val key = rq.id.takeIf { it != MkplAdId.NONE }?.asString() ?: return resultErrorEmptyId
         mutex.withLock {
-            val local = cache.get(key)
-            if (local?.lock == null || local.lock == rq.lock.asString()) {
+            val local = cache.get(key) ?: return resultErrorNotFound
+            if (local.lock == rq.lock.asString()) {
                 cache.invalidate(key)
                 return DbAdResponse(
-                    result = null,
+                    result = local.toInternal(),
                     isSuccess = true,
                     errors = emptyList()
                 )

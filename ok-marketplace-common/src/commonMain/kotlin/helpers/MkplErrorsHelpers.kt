@@ -81,6 +81,7 @@ fun errorAdministration(
     field: String = "",
     violationCode: String,
     description: String,
+    exception: Exception? = null,
     level: MkplErrorLevels = MkplErrorLevels.ERROR,
 ) = MkplError(
     field = field,

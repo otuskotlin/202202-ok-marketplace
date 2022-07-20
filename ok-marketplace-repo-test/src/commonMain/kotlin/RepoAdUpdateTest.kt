@@ -10,6 +10,18 @@ import kotlin.test.assertEquals
 
 abstract class RepoAdUpdateTest {
     abstract val repo: IAdRepository
+    protected open val updateId = initObjects.first().id
+    protected open val newLock = MkplAdLock("20000000-0000-0000-0000-000000000001")
+    protected open val updateObj = MkplAd(
+        id = updateId,
+        title = "update object",
+        description = "update object description",
+        ownerId = MkplUserId("owner-123"),
+        visibility = MkplVisibility.VISIBLE_TO_GROUP,
+        adType = MkplDealSide.SUPPLY,
+        lock = initObjects.first().lock,
+    )
+
 
     @Test
     fun updateSuccess() {
@@ -19,6 +31,7 @@ abstract class RepoAdUpdateTest {
         assertEquals(updateObj.title, result.result?.title)
         assertEquals(updateObj.description, result.result?.description)
         assertEquals(updateObj.adType, result.result?.adType)
+        assertEquals(newLock, result.result?.lock)
         assertEquals(emptyList(), result.errors)
     }
 
@@ -30,23 +43,11 @@ abstract class RepoAdUpdateTest {
         assertEquals(listOf(MkplError(field = "id", message = "Not Found")), result.errors)
     }
 
-    companion object: BaseInitAds("search") {
+    companion object : BaseInitAds("update") {
         override val initObjects: List<MkplAd> = listOf(
             createInitTestModel("update")
         )
-        private val updateId = initObjects.first().id
-        private val updateLock = initObjects.first().lock
         private val updateIdNotFound = MkplAdId("ad-repo-update-not-found")
-
-        private val updateObj = MkplAd(
-            id = updateId,
-            title = "update object",
-            description = "update object description",
-            ownerId = MkplUserId("owner-123"),
-            visibility = MkplVisibility.VISIBLE_TO_GROUP,
-            adType = MkplDealSide.SUPPLY,
-            lock = updateLock
-        )
 
         private val updateObjNotFound = MkplAd(
             id = updateIdNotFound,
@@ -55,7 +56,6 @@ abstract class RepoAdUpdateTest {
             ownerId = MkplUserId("owner-123"),
             visibility = MkplVisibility.VISIBLE_TO_GROUP,
             adType = MkplDealSide.SUPPLY,
-            lock = updateLock
         )
     }
 }
