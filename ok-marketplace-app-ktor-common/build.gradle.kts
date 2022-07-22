@@ -15,7 +15,7 @@ fun ktor(
 kotlin {
     jvm { }
 //    macosX64 {}
-    linuxX64 {}
+//    linuxX64 {}
 
     sourceSets {
         @Suppress("UNUSED_VARIABLE")

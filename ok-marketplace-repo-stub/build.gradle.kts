@@ -6,7 +6,7 @@ plugins {
 
 kotlin {
     jvm {}
-    linuxX64 {}
+//    linuxX64 {}
 
     sourceSets {
         val coroutinesVersion: String by project

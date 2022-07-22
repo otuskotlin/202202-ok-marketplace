@@ -7,11 +7,16 @@ import ru.otus.otuskotlin.marketplace.app.rabbit.processor.RabbitDirectProcessor
 import ru.otus.otuskotlin.marketplace.app.rabbit.processor.RabbitDirectProcessorV2
 import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.AdRepoInMemory
 import ru.otus.otuskotlin.marketplace.backend.services.AdService
+import ru.otus.otuskotlin.marketplace.common.models.MkplSettings
 
 fun main() {
     val config = RabbitConfig()
-    val repository = AdRepoInMemory()
-    val service = AdService(repository)
+    val settings = MkplSettings(
+        repoTest = AdRepoInMemory(),
+        repoProd = AdRepoInMemory(),
+        repoStub = AdRepoInMemory(),
+    )
+    val service = AdService(settings)
 
     val producerConfig = RabbitExchangeConfiguration(
         keyIn = "in-v1",

@@ -6,11 +6,12 @@ plugins {
 
 kotlin {
     jvm {}
-    linuxX64 {}
+//    linuxX64 {}
 
     sourceSets {
         val coroutinesVersion: String by project
 
+        @Suppress("UNUSED_VARIABLE")
         val commonMain by getting {
             dependencies {
                 implementation(project(":ok-marketplace-common"))

@@ -10,6 +10,7 @@ val kotestVersion = "4.6.1"
 //java.sourceCompatibility = JavaVersion.VERSION_11
 
 dependencies {
+    val kotestVersion: String by project
     implementation("org.springframework.boot:spring-boot-starter-actuator") // info; refresh; springMvc output
     implementation("org.springframework.boot:spring-boot-starter-web") // Controller, Service, etc..
     implementation("org.springframework.boot:spring-boot-starter-websocket") // Controller, Service, etc..

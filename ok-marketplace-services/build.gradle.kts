@@ -5,7 +5,7 @@ plugins {
 kotlin {
     jvm {}
 //    macosX64 {}
-    linuxX64 {}
+//    linuxX64 {}
 
     sourceSets {
         all { languageSettings.optIn("kotlin.RequiresOptIn") }

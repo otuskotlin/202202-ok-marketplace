@@ -107,18 +107,10 @@ Marketplace -- это площадка, на которой пользовате
 1. [ok-marketplace-stubs](ok-marketplace-stubs) - Стабы для ответов сервиса
 1. [ok-marketplace-biz](ok-marketplace-biz) - Модуль бизнес-логики приложения
 
-[//]: # (2. [ok-marketplace-mp-common-cor]&#40;ok-marketplace-mp-common-cor&#41; - Библиотека для реализации шаблона Цепочка обязанностей)
-
-[//]: # (3. [ok-marketplace-be-common-validation]&#40;ok-marketplace-be-common-validation&#41; - Библиотека для валидации)
-
 ## Хранение, репозитории, базы данных
 
-[//]: # (1. [ok-marketplace-be-repo-test]&#40;ok-marketplace-be-repo-test&#41; - Базовые тесты для репозиториев всех баз данных)
-
-[//]: # (2. [ok-marketplace-be-repo-inmemory]&#40;ok-marketplace-be-repo-inmemory&#41; - Репозиторий на базе EhCache для тестирования)
-
-[//]: # (3. [ok-marketplace-be-repo-sql]&#40;ok-marketplace-be-repo-sql&#41; - Репозиторий на базе PostgreSQL)
-
-[//]: # (4. [ok-marketplace-be-repo-cassandra]&#40;ok-marketplace-be-repo-cassandra&#41; - Репозиторий на базе Cassandra)
-
-[//]: # (5. [ok-marketplace-be-repo-dynamo]&#40;ok-marketplace-be-repo-dynamo&#41; - Репозиторий на базе AWS Dynamo)
+1. [ok-marketplace-repo-test](ok-marketplace-repo-test) - Базовые тесты для репозиториев всех баз данных
+2. [ok-marketplace-repo-inmemory](ok-marketplace-repo-inmemory) - Репозиторий на базе кэша в памяти для тестирования
+3. [ok-marketplace-repo-sql](ok-marketplace-repo-sql) - Репозиторий на базе PostgreSQL
+4. [ok-marketplace-repo-cassandra](ok-marketplace-repo-cassandra) - Репозиторий на базе Cassandra
+5. [ok-marketplace-repo-gremlin](ok-marketplace-repo-gremlin) - Репозиторий на базе Apache TinkerPop Gremlin и ArcadeDb
