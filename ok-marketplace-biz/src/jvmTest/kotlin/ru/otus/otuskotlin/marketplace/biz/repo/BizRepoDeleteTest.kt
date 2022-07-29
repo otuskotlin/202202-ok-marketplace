@@ -4,6 +4,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.AdRepoInMemory
 import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
+import ru.otus.otuskotlin.marketplace.biz.helpers.principalUser
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.models.*
 import kotlin.test.Test
@@ -24,6 +25,7 @@ class BizRepoDeleteTest {
         adType = MkplDealSide.DEMAND,
         visibility = MkplVisibility.VISIBLE_PUBLIC,
         lock = MkplAdLock(uuidOld),
+        ownerId = principalUser().id
     )
     private val repo by lazy {
         AdRepoInMemory(initObjects = listOf(initAd), randomUuid = { uuidNew })
@@ -43,6 +45,7 @@ class BizRepoDeleteTest {
         )
         val ctx = MkplContext(
             command = command,
+            principal = principalUser(),
             state = MkplState.NONE,
             workMode = MkplWorkMode.TEST,
             adRequest = adToUpdate,
@@ -66,6 +69,7 @@ class BizRepoDeleteTest {
         )
         val ctx = MkplContext(
             command = command,
+            principal = principalUser(),
             state = MkplState.NONE,
             workMode = MkplWorkMode.TEST,
             adRequest = adToUpdate,

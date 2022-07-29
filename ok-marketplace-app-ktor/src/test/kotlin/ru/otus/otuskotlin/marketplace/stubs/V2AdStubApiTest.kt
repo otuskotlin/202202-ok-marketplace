@@ -8,14 +8,16 @@ import org.junit.Test
 import ru.otus.otuskotlin.marketplace.api.v2.apiV2RequestSerialize
 import ru.otus.otuskotlin.marketplace.api.v2.apiV2ResponseDeserialize
 import ru.otus.otuskotlin.marketplace.api.v2.models.*
+import ru.otus.otuskotlin.marketplace.app.config.KtorAuthConfig
 import ru.otus.otuskotlin.marketplace.app.module
+import ru.otus.otuskotlin.marketplace.auth.addAuth
 import kotlin.test.assertEquals
 
 class V2AdStubApiTest {
 
     @Test
     fun create() = testApplication {
-        application { module() }
+        application { module(authConfig = KtorAuthConfig.TEST) }
         val response = client.post("/v2/ad/create") {
             val requestObj = AdCreateRequest(
                 requestId = "12345",
@@ -31,6 +33,7 @@ class V2AdStubApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth()
             val requestJson = apiV2RequestSerialize(requestObj)
             setBody(requestJson)
         }
@@ -42,7 +45,7 @@ class V2AdStubApiTest {
 
     @Test
     fun read() = testApplication {
-        application { module() }
+        application { module(authConfig = KtorAuthConfig.TEST) }
         val response = client.post("/v2/ad/read") {
             val requestObj = AdReadRequest(
                 requestId = "12345",
@@ -53,6 +56,7 @@ class V2AdStubApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth()
             val requestJson = apiV2RequestSerialize(requestObj)
             setBody(requestJson)
         }
@@ -64,7 +68,7 @@ class V2AdStubApiTest {
 
     @Test
     fun update() = testApplication {
-        application { module() }
+        application { module(authConfig = KtorAuthConfig.TEST) }
         val response = client.post("/v2/ad/update") {
             val requestObj = AdUpdateRequest(
                 requestId = "12345",
@@ -81,6 +85,7 @@ class V2AdStubApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth()
             val requestJson = apiV2RequestSerialize(requestObj)
             setBody(requestJson)
         }
@@ -92,7 +97,7 @@ class V2AdStubApiTest {
 
     @Test
     fun delete() = testApplication {
-        application { module() }
+        application { module(authConfig = KtorAuthConfig.TEST) }
         val response = client.post("/v2/ad/delete") {
             val requestObj = AdDeleteRequest(
                 requestId = "12345",
@@ -106,6 +111,7 @@ class V2AdStubApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth()
             val requestJson = apiV2RequestSerialize(requestObj)
             setBody(requestJson)
         }
@@ -117,7 +123,7 @@ class V2AdStubApiTest {
 
     @Test
     fun search() = testApplication {
-        application { module() }
+        application { module(authConfig = KtorAuthConfig.TEST) }
         val response = client.post("/v2/ad/search") {
             val requestObj = AdSearchRequest(
                 requestId = "12345",
@@ -128,6 +134,7 @@ class V2AdStubApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth()
             val requestJson = apiV2RequestSerialize(requestObj)
             setBody(requestJson)
         }
@@ -139,7 +146,7 @@ class V2AdStubApiTest {
 
     @Test
     fun offers() = testApplication {
-        application { module() }
+        application { module(authConfig = KtorAuthConfig.TEST) }
         val response = client.post("/v2/ad/offers") {
             val requestObj = AdOffersRequest(
                 requestId = "12345",
@@ -150,6 +157,7 @@ class V2AdStubApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth()
             val requestJson = apiV2RequestSerialize(requestObj)
             setBody(requestJson)
         }

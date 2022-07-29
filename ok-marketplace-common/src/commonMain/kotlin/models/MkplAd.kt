@@ -1,5 +1,6 @@
 package ru.otus.otuskotlin.marketplace.common.models
 
+import ru.otus.otuskotlin.marketplace.backend.common.models.MkplPrincipalRelations
 import ru.otus.otuskotlin.marketplace.common.models.product.IMkplAdProduct
 
 data class MkplAd(
@@ -11,6 +12,7 @@ data class MkplAd(
     var visibility: MkplVisibility = MkplVisibility.NONE,
     var product: IMkplAdProduct = IMkplAdProduct.NONE,
     var lock: MkplAdLock = MkplAdLock.NONE,
+    var principalRelations: Set<MkplPrincipalRelations> = emptySet(),
     val permissionsClient: MutableSet<MkplAdPermissionClient> = mutableSetOf(),
 ) {
     fun deepCopy(

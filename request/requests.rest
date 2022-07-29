@@ -1,0 +1,16 @@
+POST http://127.0.0.1:8081/v1/ad/create
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhZC11c2VycyIsImlzcyI6Ik90dXNLb3RsaW4iLCJncm91cHMiOlsiVVNFUiJdLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMSIsImV4cCI6MjA4Mjc1ODQwMH0.31jxvFFxg2PlPS6ejZz0Jax5rgc9X_C4v7QfGu8uUKg
+
+{
+  "requestType": "create",
+  "requestId": "12345",
+  "ad": {
+    "title": "Болт",
+    "description": "КРУТЕЙШИЙ",
+    "visibility": "public"
+  },
+  "debug": {
+    "mode": "test"
+  }
+}

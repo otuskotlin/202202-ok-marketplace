@@ -4,6 +4,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.AdRepoStub
 import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
+import ru.otus.otuskotlin.marketplace.biz.helpers.principalUser
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.models.*
 import ru.otus.otuskotlin.marketplace.stubs.MkplAdStubBolts
@@ -15,6 +16,7 @@ import kotlin.test.assertNotEquals
 fun validationDescriptionCorrect(command: MkplCommand, processor: MkplAdProcessor) = runTest {
     val ctx = MkplContext(
         command = command,
+        principal = principalUser(MkplAdStubBolts.AD_DEMAND_BOLT1.ownerId),
         state = MkplState.NONE,
         workMode = MkplWorkMode.TEST,
         adRepo = AdRepoStub(),
@@ -37,6 +39,7 @@ fun validationDescriptionCorrect(command: MkplCommand, processor: MkplAdProcesso
 fun validationDescriptionTrim(command: MkplCommand, processor: MkplAdProcessor) = runTest {
     val ctx = MkplContext(
         command = command,
+        principal = principalUser(MkplAdStubBolts.AD_DEMAND_BOLT1.ownerId),
         state = MkplState.NONE,
         workMode = MkplWorkMode.TEST,
         adRepo = AdRepoStub(),
@@ -59,6 +62,7 @@ fun validationDescriptionTrim(command: MkplCommand, processor: MkplAdProcessor) 
 fun validationDescriptionEmpty(command: MkplCommand, processor: MkplAdProcessor) = runTest {
     val ctx = MkplContext(
         command = command,
+        principal = principalUser(),
         state = MkplState.NONE,
         workMode = MkplWorkMode.TEST,
         adRepo = AdRepoStub(),
@@ -83,6 +87,7 @@ fun validationDescriptionEmpty(command: MkplCommand, processor: MkplAdProcessor)
 fun validationDescriptionSymbols(command: MkplCommand, processor: MkplAdProcessor) = runTest {
     val ctx = MkplContext(
         command = command,
+        principal = principalUser(),
         state = MkplState.NONE,
         workMode = MkplWorkMode.TEST,
         adRepo = AdRepoStub(),

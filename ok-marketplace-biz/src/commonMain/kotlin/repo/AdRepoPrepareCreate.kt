@@ -11,9 +11,6 @@ fun ICorChainDsl<MkplContext>.repoPrepareCreate(title: String) = worker {
     description = "Подготовка объекта к сохранению в базе данных"
     on { state == MkplState.RUNNING }
     handle {
-        adRepoPrepare = adValidated.deepCopy().apply {
-            ownerId = MkplUserId("my-owner-id")
-        }
-
+        adRepoPrepare = adValidated.deepCopy()
     }
 }
