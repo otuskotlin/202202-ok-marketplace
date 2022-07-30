@@ -6,7 +6,7 @@ import com.crowdproj.kotlin.cor.handlers.chain
 import com.crowdproj.kotlin.cor.handlers.worker
 import ru.otus.otuskotlin.marketplace.backend.common.models.MkplPrincipalModel
 import ru.otus.otuskotlin.marketplace.backend.common.models.MkplPrincipalRelations
-import ru.otus.otuskotlin.marketplace.common.helpers.addError
+import ru.otus.otuskotlin.marketplace.common.helpers.fail
 import ru.otus.otuskotlin.marketplace.common.models.MkplAd
 import ru.otus.otuskotlin.marketplace.common.models.MkplError
 import ru.otus.otuskotlin.marketplace.common.models.MkplState
@@ -37,16 +37,14 @@ fun ICorChainDsl<MkplContext>.accessValidation(title: String) = chain {
         description = "Проверка наличия прав для выполнения операции"
         on { !permitted }
         handle {
-            addError(
-                MkplError(message = "User is not allowed to this operation")
-            )
+            fail(MkplError(message = "User is not allowed to this operation"))
         }
     }
 }
 
-private fun MkplAd.resolveRelationsTo(principal: MkplPrincipalModel): Set<MkplPrincipalRelations> = listOf(
+private fun MkplAd.resolveRelationsTo(principal: MkplPrincipalModel): Set<MkplPrincipalRelations> = setOfNotNull(
     MkplPrincipalRelations.NONE,
     MkplPrincipalRelations.OWN.takeIf { principal.id == ownerId },
     MkplPrincipalRelations.PUBLIC.takeIf { visibility == MkplVisibility.VISIBLE_PUBLIC },
     MkplPrincipalRelations.MODERATABLE.takeIf { visibility != MkplVisibility.VISIBLE_TO_OWNER },
-).filterNotNull().toSet()
+)

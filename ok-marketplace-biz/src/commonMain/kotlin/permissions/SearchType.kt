@@ -13,10 +13,10 @@ fun ICorChainDsl<MkplContext>.searchTypes(title: String) = chain {
     description = "Добавление ограничений в поисковый запрос согласно правам доступа и др. политикам"
     on { state == MkplState.RUNNING }
     worker("Определение типа поиска") {
-        adFilterValidated.searchTypes = listOf(
+        adFilterValidated.searchTypes = setOfNotNull(
             MkplSearchTypes.OWN.takeIf { chainPermissions.contains(MkplUserPermissions.SEARCH_OWN) },
             MkplSearchTypes.PUBLIC.takeIf { chainPermissions.contains(MkplUserPermissions.SEARCH_PUBLIC) },
             MkplSearchTypes.REGISTERED.takeIf { chainPermissions.contains(MkplUserPermissions.SEARCH_REGISTERED) },
-        ).filterNotNull().toMutableSet()
+        ).toMutableSet()
     }
 }
