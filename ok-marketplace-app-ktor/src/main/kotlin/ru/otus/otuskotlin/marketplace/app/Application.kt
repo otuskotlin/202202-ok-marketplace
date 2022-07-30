@@ -19,6 +19,7 @@ import io.ktor.server.websocket.*
 import ru.otus.otuskotlin.marketplace.app.config.KtorAuthConfig
 import ru.otus.otuskotlin.marketplace.app.config.KtorAuthConfig.Companion.GROUPS_CLAIM
 import ru.otus.otuskotlin.marketplace.app.config.jsonConfig
+import ru.otus.otuskotlin.marketplace.app.mappers.toModel
 import ru.otus.otuskotlin.marketplace.app.v1.mpWsHandlerV1
 import ru.otus.otuskotlin.marketplace.app.v1.v1Ad
 import ru.otus.otuskotlin.marketplace.app.v1.v1Offer
@@ -103,8 +104,8 @@ fun Application.module(
                 v1Offer(service)
             }
             route("v2") {
-                v2Ad(service)
-                v2Offer(service)
+                v2Ad(service) { principal<JWTPrincipal>().toModel() }
+                v2Offer(service)  { principal<JWTPrincipal>().toModel() }
             }
         }
 

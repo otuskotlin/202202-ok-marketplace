@@ -27,6 +27,7 @@ class V2AdTestApiTest {
         adType = MkplDealSide.DEMAND,
         visibility = MkplVisibility.VISIBLE_PUBLIC,
         lock = MkplAdLock(uuidOld),
+        ownerId = MkplUserId("user1"),
     )
     private val initAdSupply = MkplAd(
         id = MkplAdId(uuidSup),
