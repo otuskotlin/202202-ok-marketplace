@@ -2,6 +2,8 @@ package ru.otus.otuskotlin.marketplace.common
 
 import ru.otus.otuskotlin.marketplace.common.models.*
 import kotlinx.datetime.Instant
+import ru.otus.otuskotlin.marketplace.backend.common.models.MkplPrincipalModel
+import ru.otus.otuskotlin.marketplace.backend.common.models.MkplUserPermissions
 import ru.otus.otuskotlin.marketplace.common.models.MkplAd
 import ru.otus.otuskotlin.marketplace.common.models.MkplAdFilter
 import ru.otus.otuskotlin.marketplace.common.models.MkplWorkMode
@@ -18,6 +20,9 @@ data class MkplContext(
     var stubCase: MkplStubs = MkplStubs.NONE,
 
     var clientSession: IClientSession<*> = IClientSession.NONE,
+    var principal: MkplPrincipalModel = MkplPrincipalModel.NONE,
+    val chainPermissions: MutableSet<MkplUserPermissions> = mutableSetOf(),
+    var permitted: Boolean = false,
 
     var adRepo: IAdRepository = IAdRepository.NONE,
 

@@ -8,6 +8,7 @@ import ru.otus.otuskotlin.marketplace.api.v2.apiV2RequestDeserialize
 import ru.otus.otuskotlin.marketplace.api.v2.apiV2ResponseSerialize
 import ru.otus.otuskotlin.marketplace.api.v2.models.IRequest
 import ru.otus.otuskotlin.marketplace.api.v2.models.IResponse
+import ru.otus.otuskotlin.marketplace.backend.common.models.MkplPrincipalModel
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.helpers.asMkplError
 import ru.otus.otuskotlin.marketplace.common.models.MkplCommand
@@ -16,9 +17,10 @@ import ru.otus.otuskotlin.marketplace.mappers.v2.fromTransport
 import ru.otus.otuskotlin.marketplace.mappers.v2.toTransportAd
 
 suspend inline fun <reified Q : IRequest, reified R : IResponse>
-        ApplicationCall.controllerHelperV2(command: MkplCommand? = null, block: MkplContext.() -> Unit) {
+        ApplicationCall.controllerHelperV2(command: MkplCommand? = null, principal: MkplPrincipalModel, block: MkplContext.() -> Unit) {
     val ctx = MkplContext(
         timeStart = Clock.System.now(),
+        principal = principal,
     )
     try {
         val request = apiV2RequestDeserialize<Q>(receiveText())

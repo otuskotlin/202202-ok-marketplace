@@ -4,13 +4,14 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.AdRepoInMemory
 import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
+import ru.otus.otuskotlin.marketplace.biz.helpers.principalUser
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.models.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class BizRepoOffersTest {
-
+    private val principal = principalUser()
     private val command = MkplCommand.OFFERS
     private val initAd = MkplAd(
         id = MkplAdId("123"),
@@ -18,6 +19,7 @@ class BizRepoOffersTest {
         description = "abc",
         adType = MkplDealSide.DEMAND,
         visibility = MkplVisibility.VISIBLE_PUBLIC,
+        ownerId = principal.id,
     )
     private val noneTypeAd = MkplAd(
         id = MkplAdId("213"),
@@ -25,6 +27,7 @@ class BizRepoOffersTest {
         description = "abc",
         adType = MkplDealSide.NONE,
         visibility = MkplVisibility.VISIBLE_PUBLIC,
+        ownerId = principal.id,
     )
     private val offerAd = MkplAd(
         id = MkplAdId("321"),
@@ -32,6 +35,7 @@ class BizRepoOffersTest {
         description = "xyz",
         adType = MkplDealSide.SUPPLY,
         visibility = MkplVisibility.VISIBLE_PUBLIC,
+        ownerId = principal.id,
     )
     private val repo by lazy { AdRepoInMemory(initObjects = listOf(initAd, offerAd, noneTypeAd)) }
     private val settings by lazy {
@@ -46,6 +50,7 @@ class BizRepoOffersTest {
     fun repoOffersSuccessTest() = runTest {
         val ctx = MkplContext(
             command = command,
+            principal = principal,
             state = MkplState.NONE,
             workMode = MkplWorkMode.TEST,
             adRequest = MkplAd(
@@ -63,6 +68,7 @@ class BizRepoOffersTest {
     fun repoOffersIllegalTypeTest() = runTest {
         val ctx = MkplContext(
             command = command,
+            principal = principal,
             state = MkplState.NONE,
             workMode = MkplWorkMode.TEST,
             adRequest = MkplAd(

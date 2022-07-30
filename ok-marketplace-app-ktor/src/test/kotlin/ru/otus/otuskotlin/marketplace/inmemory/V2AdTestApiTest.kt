@@ -8,7 +8,9 @@ import org.junit.Test
 import ru.otus.otuskotlin.marketplace.api.v2.apiV2RequestSerialize
 import ru.otus.otuskotlin.marketplace.api.v2.apiV2ResponseDeserialize
 import ru.otus.otuskotlin.marketplace.api.v2.models.*
+import ru.otus.otuskotlin.marketplace.app.config.KtorAuthConfig
 import ru.otus.otuskotlin.marketplace.app.module
+import ru.otus.otuskotlin.marketplace.auth.addAuth
 import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.AdRepoInMemory
 import ru.otus.otuskotlin.marketplace.common.models.*
 import kotlin.test.assertEquals
@@ -25,6 +27,7 @@ class V2AdTestApiTest {
         adType = MkplDealSide.DEMAND,
         visibility = MkplVisibility.VISIBLE_PUBLIC,
         lock = MkplAdLock(uuidOld),
+        ownerId = MkplUserId("user1"),
     )
     private val initAdSupply = MkplAd(
         id = MkplAdId(uuidSup),
@@ -43,7 +46,7 @@ class V2AdTestApiTest {
             val settings by lazy {
                 MkplSettings(repoProd = repo)
             }
-            module(settings)
+            module(settings, authConfig = KtorAuthConfig.TEST)
         }
 
         val response = client.post("/v2/ad/create") {
@@ -57,6 +60,7 @@ class V2AdTestApiTest {
                 ),
             )
             contentType(ContentType.Application.Json)
+            addAuth()
             setBody(apiV2RequestSerialize(requestObj))
         }
         val responseObj = apiV2ResponseDeserialize<AdCreateResponse>(response.bodyAsText())
@@ -72,7 +76,7 @@ class V2AdTestApiTest {
             val settings by lazy {
                 MkplSettings(repoProd = repo)
             }
-            module(settings)
+            module(settings, authConfig = KtorAuthConfig.TEST)
         }
         val response = client.post("/v2/ad/read") {
             val requestObj = AdReadRequest(
@@ -80,6 +84,7 @@ class V2AdTestApiTest {
                 ad = AdIdObject(uuidOld),
             )
             contentType(ContentType.Application.Json)
+            addAuth()
             setBody(apiV2RequestSerialize(requestObj))
         }
         val responseObj = apiV2ResponseDeserialize<AdReadResponse>(response.bodyAsText())
@@ -95,7 +100,7 @@ class V2AdTestApiTest {
             val settings by lazy {
                 MkplSettings(repoProd = repo)
             }
-            module(settings)
+            module(settings, authConfig = KtorAuthConfig.TEST)
         }
         val response = client.post("/v2/ad/update") {
             val requestObj = AdUpdateRequest(
@@ -110,6 +115,7 @@ class V2AdTestApiTest {
                 ),
             )
             contentType(ContentType.Application.Json)
+            addAuth()
             setBody(apiV2RequestSerialize(requestObj))
         }
         val responseObj = apiV2ResponseDeserialize<AdUpdateResponse>(response.bodyAsText())
@@ -124,7 +130,7 @@ class V2AdTestApiTest {
             val settings by lazy {
                 MkplSettings(repoProd = repo)
             }
-            module(settings)
+            module(settings, authConfig = KtorAuthConfig.TEST)
         }
         val response = client.post("/v2/ad/delete") {
             val requestObj = AdDeleteRequest(
@@ -135,6 +141,7 @@ class V2AdTestApiTest {
                 ),
             )
             contentType(ContentType.Application.Json)
+            addAuth()
             setBody(apiV2RequestSerialize(requestObj))
         }
         val responseObj = apiV2ResponseDeserialize<AdDeleteResponse>(response.bodyAsText())
@@ -150,7 +157,7 @@ class V2AdTestApiTest {
             val settings by lazy {
                 MkplSettings(repoProd = repo)
             }
-            module(settings)
+            module(settings, authConfig = KtorAuthConfig.TEST)
         }
         val response = client.post("/v2/ad/search") {
             val requestObj = AdSearchRequest(
@@ -158,6 +165,7 @@ class V2AdTestApiTest {
                 adFilter = AdSearchFilter(),
             )
             contentType(ContentType.Application.Json)
+            addAuth()
             setBody(apiV2RequestSerialize(requestObj))
         }
         val responseObj = apiV2ResponseDeserialize<AdSearchResponse>(response.bodyAsText())
@@ -172,7 +180,7 @@ class V2AdTestApiTest {
             val settings by lazy {
                 MkplSettings(repoProd = repo)
             }
-            module(settings)
+            module(settings, authConfig = KtorAuthConfig.TEST)
         }
         val response = client.post("/v2/ad/offers") {
             val requestObj = AdOffersRequest(
@@ -180,6 +188,7 @@ class V2AdTestApiTest {
                 ad = AdIdObject(id = uuidOld),
             )
             contentType(ContentType.Application.Json)
+            addAuth()
             val requestJson = apiV2RequestSerialize(requestObj)
             setBody(requestJson)
         }
