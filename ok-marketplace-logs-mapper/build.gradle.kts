@@ -7,6 +7,8 @@ kotlin {
 
     sourceSets {
         val coroutinesVersion: String by project
+        val kmpUUIDVersion: String by project
+        val datetimeVersion: String by project
 
         all { languageSettings.optIn("kotlin.RequiresOptIn") }
 
@@ -17,6 +19,8 @@ kotlin {
 
                 implementation(project(":ok-marketplace-api-logs"))
                 implementation(project(":ok-marketplace-common"))
+                implementation("com.benasher44:uuid:$kmpUUIDVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:$datetimeVersion")
             }
         }
         @Suppress("UNUSED_VARIABLE")
