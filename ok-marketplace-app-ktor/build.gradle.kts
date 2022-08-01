@@ -36,6 +36,8 @@ docker {
 
 dependencies {
     val logbackVersion: String by project
+    val kotlinLoggingJvmVersion: String by project
+
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
     implementation(ktor("core")) // "io.ktor:ktor-server-core:$ktorVersion"
     implementation(ktor("netty")) // "io.ktor:ktor-ktor-server-netty:$ktorVersion"
@@ -55,10 +57,11 @@ dependencies {
     implementation(ktor("websockets"))
 
     implementation(ktor("websockets")) // "io.ktor:ktor-websockets:$ktorVersion"
-    // implementation(ktor("auth")) // "io.ktor:ktor-auth:$ktorVersion"
-    // implementation(ktor("auth-jwt")) // "io.ktor:ktor-auth-jwt:$ktorVersion"
+    implementation(ktor("auth")) // "io.ktor:ktor-auth:$ktorVersion"
+    implementation(ktor("auth-jwt")) // "io.ktor:ktor-auth-jwt:$ktorVersion"
 
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
+    implementation("io.github.microutils:kotlin-logging-jvm:$kotlinLoggingJvmVersion")
 
     // transport models
     implementation(project(":ok-marketplace-common"))

@@ -4,6 +4,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.AdRepoInMemory
 import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
+import ru.otus.otuskotlin.marketplace.biz.helpers.principalUser
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.models.*
 import kotlin.test.Test
@@ -34,6 +35,7 @@ class BizRepoReadTest {
             command = command,
             state = MkplState.NONE,
             workMode = MkplWorkMode.TEST,
+            principal = principalUser(),
             adRequest = MkplAd(
                 id = MkplAdId("123"),
             ),

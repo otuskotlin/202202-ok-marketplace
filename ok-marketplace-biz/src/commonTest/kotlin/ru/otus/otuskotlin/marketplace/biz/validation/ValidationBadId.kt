@@ -4,8 +4,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.AdRepoStub
 import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
+import ru.otus.otuskotlin.marketplace.biz.helpers.principalUser
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.models.*
+import ru.otus.otuskotlin.marketplace.stubs.MkplAdStubBolts.AD_DEMAND_BOLT1
 import ru.otus.otuskotlin.marketplace.stubs.MkplAdStubBolts.uuidOld
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -15,6 +17,7 @@ import kotlin.test.assertNotEquals
 fun validationIdCorrect(command: MkplCommand, processor: MkplAdProcessor) = runTest {
     val ctx = MkplContext(
         command = command,
+        principal = principalUser(AD_DEMAND_BOLT1.ownerId),
         state = MkplState.NONE,
         workMode = MkplWorkMode.TEST,
         adRepo = AdRepoStub(),
@@ -36,6 +39,7 @@ fun validationIdCorrect(command: MkplCommand, processor: MkplAdProcessor) = runT
 fun validationIdTrim(command: MkplCommand, processor: MkplAdProcessor) = runTest {
     val ctx = MkplContext(
         command = command,
+        principal = principalUser(AD_DEMAND_BOLT1.ownerId),
         state = MkplState.NONE,
         workMode = MkplWorkMode.TEST,
         adRepo = AdRepoStub(),
