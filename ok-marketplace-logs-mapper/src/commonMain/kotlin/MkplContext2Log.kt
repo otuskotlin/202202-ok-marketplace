@@ -28,12 +28,16 @@ fun MkplContext.toMkplLog():MkplLogModel? {
 
 private fun MkplAdFilter.toLog() = AdFilterLog(
     searchString = searchString.takeIf { it.isNotBlank() },
+    ownerId = ownerId.takeIf { it != MkplUserId.NONE }?.asString(),
+    dealSide = dealSide.takeIf { it != MkplDealSide.NONE }?.name,
+    searchTypes = searchTypes.takeIf { it.isNotEmpty() }?.map { it.name }?.toSet(),
 )
 
 fun MkplError.toLog() = ErrorLogModel(
     message = message.takeIf { it.isNotBlank() },
     field = field.takeIf { it.isNotBlank() },
-    code = code.takeIf { it.isNotBlank() }
+    code = code.takeIf { it.isNotBlank() },
+    level = level.name,
 )
 
 fun MkplAd.toLog() = AdLog(
