@@ -4,3 +4,4 @@ out/
 **/build/
 !src/**/build/
 /kotlin-js-store
+/dockers/arcadedb/

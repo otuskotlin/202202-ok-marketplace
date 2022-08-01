@@ -73,6 +73,9 @@ fun Application.module(
     val corSettings by lazy {
         settings ?: MkplSettings(
             repoTest = AdRepoInMemory(),
+//            repoProd = AdRepoGremlin(
+//
+//            ),
         )
     }
     val service by lazy { AdService(corSettings) }
