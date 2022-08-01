@@ -63,6 +63,8 @@ components:
           type: string
         code:
           type: string
+        level:
+          type: string
 
     AdLog:
       title: Модель лога для объявления
@@ -91,4 +93,13 @@ components:
       properties:
         searchString:
           type: string
+        ownerId:
+          type: string
+        dealSide:
+          type: string
+        searchTypes:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
 
