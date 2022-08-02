@@ -2,6 +2,7 @@ import ru.otus.otuskotlin.marketplace.api.logs.mapper.toLog
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.models.*
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class MapperTest {
 
@@ -29,6 +30,10 @@ class MapperTest {
 
         val log = context.toLog("test-id")
 
-        println(log)
+        assertEquals("test-id", log.logId)
+        assertEquals("ok-marketplace", log.source)
+        assertEquals("1234", log.marketplace?.requestId)
+        assertEquals("VISIBLE_PUBLIC", log.marketplace?.responseAd?.visibility)
+        assertEquals("wrong title", log.errors?.firstOrNull()?.message)
     }
 }

@@ -47,6 +47,21 @@ class MpLogWrapper (
         })
     }
 
+    fun error(
+        msg: String = "",
+        marker: Marker = DefaultMarker("DEV"),
+        e: Throwable? = null,
+        data: Any? = null,
+        vararg objs: Pair<String, Any>?
+    ) = log(msg, Level.ERROR, marker, e, data, *objs)
+
+    fun info(
+        msg: String = "",
+        marker: Marker = DefaultMarker("DEV"),
+        data: Any? = null,
+        vararg objs: Pair<String, Any>?
+    ) = log(msg, Level.INFO, marker, null, data, *objs)
+
     /**
      * Функция обертка для выполнения прикладного кода с логированием перед выполнением и после
      */
