@@ -6,6 +6,6 @@ out/
 /kotlin-js-store
 /dockers/arcadedb/
 
-elk-stack/volumes/kfdata/*
-elk-stack/volumes/esdata/*
-elk-stack/tmp
+dockers/elk-stack/volumes/kfdata/*
+dockers/elk-stack/volumes/esdata/*
+dockers/elk-stack/tmp
