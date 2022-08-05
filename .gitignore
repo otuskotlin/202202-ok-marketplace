@@ -7,7 +7,5 @@ out/
 /dockers/arcadedb/
 
 elk-stack/volumes/kfdata/*
-!elk-stack/volumes/kfdata/.gitkeep
 elk-stack/volumes/esdata/*
-!elk-stack/volumes/esdata/.gitkeep
 elk-stack/tmp
