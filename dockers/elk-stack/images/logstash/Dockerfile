@@ -1,4 +1,4 @@
-FROM docker.elastic.co/logstash/logstash:7.10.1
+FROM logstash:7.10.1
 
 #ADD ./logstash-conf/*.conf ${LOGSTASH_PATH_CONF}/conf.d
 #RUN rm -f /usr/share/logstash/pipeline/logstash.conf

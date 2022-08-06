@@ -61,13 +61,13 @@ services:
 #      - kafka
 #      - zookeeper
 
-#  kafdrop:
-#    image: obsidiandynamics/kafdrop:3.27.0
-#    ports:
-#      - "9000:9000"
-#    depends_on:
-#      - kafka
-#    environment:
-#      KAFKA_BROKERCONNECT: "kafka:9092"
-#    links:
-#      - elasticsearch
+  kafdrop:
+    image: obsidiandynamics/kafdrop:3.27.0
+    ports:
+      - "9000:9000"
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BROKERCONNECT: "kafka:9092"
+    links:
+      - elasticsearch
