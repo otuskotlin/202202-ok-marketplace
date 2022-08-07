@@ -24,6 +24,11 @@ dependencies {
     implementation(project(":ok-marketplace-api-v2-kmp"))
     implementation(project(":ok-marketplace-mappers-v1"))
 
+    // logging
+    implementation(project(":ok-marketplace-logging"))
+    implementation(project(":ok-marketplace-logs-mapper"))
+    implementation(project(":ok-marketplace-api-logs"))
+
     // v2 api
     implementation(project(":ok-marketplace-mappers-v2"))
 
