@@ -5,3 +5,7 @@ out/
 !src/**/build/
 /kotlin-js-store
 /dockers/arcadedb/
+
+dockers/elk-stack/volumes/kfdata/*
+dockers/elk-stack/volumes/esdata/*
+dockers/elk-stack/tmp

@@ -82,6 +82,11 @@ dependencies {
     // Repositories
     implementation(project(":ok-marketplace-repo-inmemory"))
 
+    // Logging
+    implementation(project(":ok-marketplace-logging"))
+    implementation(project(":ok-marketplace-logs-mapper"))
+    implementation(project(":ok-marketplace-api-logs"))
+
     testImplementation(kotlin("test-junit"))
     testImplementation(ktor("test-host")) // "io.ktor:ktor-server-test-host:$ktorVersion"
     testImplementation(ktor("content-negotiation", prefix = "client-"))
